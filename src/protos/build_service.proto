@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package build_service;
+
+option go_package = "proto/build_service_pb;build_service_pb";
+
+service BuildService {
+    rpc GetBuilds(GetBuildsRequest) returns (GetBuildsResponse);
+    rpc Health(HealthRequest) returns (HealthResponse);
+}
+
+message Build {
+    string id = 1;
+    string app_id = 2;
+    string status = 3;
+    string image_url = 4;
+    string commit_hash = 5;
+    string created_at = 6;
+}
+
+message GetBuildsRequest {
+    string app_id = 1;
+}
+message GetBuildsResponse {
+    repeated Build builds = 1;
+}
+
+message HealthRequest {};
+
+message HealthResponse {
+    string status = 1;
+    string message = 2;
+}

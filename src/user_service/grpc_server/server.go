@@ -1,0 +1,299 @@
+package grpc_server
+
+import (
+	"context"
+	"errors"
+	"os"
+	"strconv"
+	"time"
+	githubclient "user/github_client"
+	"user/repositories"
+	"user/utils"
+
+	"apps-hosting.com/logging"
+
+	user_service_pb "user/proto/user_service_pb"
+
+	"github.com/golang-jwt/jwt/v5"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+)
+
+type GRPCUserServiceServer struct {
+	user_service_pb.UnimplementedUserServiceServer
+	UserRepository        repositories.UserRepository
+	UserSessionRepository repositories.UserSessionRepository
+	Logger                logging.ServiceLogger
+}
+
+func NewGRPCUserServiceServer(
+	userRepository repositories.UserRepository,
+	userSessionRepository repositories.UserSessionRepository,
+	logger logging.ServiceLogger,
+) *GRPCUserServiceServer {
+	return &GRPCUserServiceServer{
+		UserRepository:        userRepository,
+		UserSessionRepository: userSessionRepository,
+		Logger:                logger,
+	}
+}
+
+func (server *GRPCUserServiceServer) Health(ctx context.Context, _ *user_service_pb.HealthRequest) (*user_service_pb.HealthResponse, error) {
+	return &user_service_pb.HealthResponse{
+		Status:  "success",
+		Message: "OK",
+	}, nil
+}
+
+func (server *GRPCUserServiceServer) Auth(ctx context.Context, authRequest *user_service_pb.AuthRequest) (*user_service_pb.AuthResponse, error) {
+	type AuthClaims struct {
+		User repositories.User `json:"user"`
+		jwt.RegisteredClaims
+	}
+
+	data := &AuthClaims{}
+	_, err := jwt.ParseWithClaims(authRequest.AccessToken, data, func(t *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	}, jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Alg()}))
+
+	if err != nil {
+		switch {
+		case errors.Is(err, jwt.ErrTokenMalformed):
+			return nil, status.Error(codes.InvalidArgument, "token is malformed")
+		case errors.Is(err, jwt.ErrTokenExpired):
+			return nil, status.Error(codes.InvalidArgument, "token is expired")
+		}
+
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	_, err = server.UserSessionRepository.GetUserSessionByAccessToken(authRequest.AccessToken)
+
+	if err == repositories.ErrUserSessionNotFound {
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	user, err := server.UserRepository.GetUserById(data.User.Id)
+	if err == repositories.ErrUserNotFound {
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	if user.GithubRefreshToken != "" && user.GithubRefreshTokenExpiresAt.Before(time.Now()) {
+		user, err = server.UserRepository.UpdateUserGithub(user.Id, repositories.UpdateUserGithubParams{
+			GithubAppInstalled: false,
+			GithubAccessToken:  "",
+			GithubRefreshToken: "",
+		})
+
+		if err != nil {
+			return nil, status.Error(codes.Internal, err.Error())
+		}
+	}
+
+	if user.GithubAccessToken != "" && user.GithhubAccessTokenExpiresAt.Before(time.Now()) {
+		githubClient := githubclient.NewGithubClient(nil, server.Logger)
+		githubOAuth, err := githubClient.RefreshToken(user.GithubRefreshToken)
+		if err != nil {
+			return nil, status.Error(codes.Internal, err.Error())
+		}
+
+		user, err = server.UserRepository.UpdateUserGithub(user.Id, repositories.UpdateUserGithubParams{
+			GithubAppInstalled:          true,
+			GithubAccessToken:           githubOAuth.AccessToken,
+			GithubRefreshToken:          githubOAuth.RefreshToken,
+			GithhubAccessTokenExpiresAt: time.Now().Add(time.Duration(githubOAuth.ExpiresIn) * time.Second),
+			GithubRefreshTokenExpiresAt: time.Now().Add(time.Duration(githubOAuth.RefreshTokenExpiresIn) * time.Second),
+		})
+
+		if err != nil {
+			return nil, status.Error(codes.Internal, err.Error())
+		}
+	}
+
+	return &user_service_pb.AuthResponse{
+		User: &user_service_pb.User{
+			Id:                 user.Id,
+			Username:           user.Username,
+			Email:              user.Email,
+			GithubAppInstalled: user.GithubAppInstalled,
+			CreatedAt:          data.User.CreatedAt.String(),
+		},
+	}, nil
+}
+
+func (server *GRPCUserServiceServer) SignIn(ctx context.Context, signInRequest *user_service_pb.SignInRequest) (*user_service_pb.SignInResponse, error) {
+	user, err := server.UserRepository.GetUserByEmail(signInRequest.Email)
+
+	if err == repositories.ErrUserNotFound {
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	isValidPassword := utils.VerifyPassword(signInRequest.Password, user.Password)
+	if !isValidPassword {
+		return nil, status.Error(codes.InvalidArgument, "wrong password")
+	}
+
+	// Create a new token object, specifying signing method and the claims
+	// you would like it to contain.
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"user": user,
+	})
+
+	// Sign and get the complete encoded token as a string using the secret
+	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	_, err = server.UserSessionRepository.CreateUserSession(user.Id, repositories.CreateUserSessionParams{
+		AccessToken: tokenString,
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &user_service_pb.SignInResponse{
+		UserSession: &user_service_pb.UserSession{
+			AccessToken: tokenString,
+			User: &user_service_pb.User{
+				Id:                 user.Id,
+				Username:           user.Username,
+				Email:              user.Email,
+				GithubAppInstalled: user.GithubAppInstalled,
+				CreatedAt:          user.CreatedAt.String(),
+			},
+		},
+	}, nil
+}
+
+func (server *GRPCUserServiceServer) SignUp(ctx context.Context, createUser *user_service_pb.SignUpRequest) (*user_service_pb.SignUpResponse, error) {
+	hashedPassword, err := utils.HashPassword(createUser.Password)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	createUser.Password = hashedPassword
+
+	createdUser, err := server.UserRepository.CreateUser(repositories.CreateUserParams{
+		Username: createUser.Username,
+		Password: createUser.Password,
+		Email:    createUser.Email,
+	})
+
+	if err == repositories.ErrUsernameInUse {
+		return nil, status.Error(codes.AlreadyExists, err.Error())
+	}
+
+	if err == repositories.ErrEmailInUse {
+		return nil, status.Error(codes.AlreadyExists, err.Error())
+	}
+
+	if err != nil {
+		server.Logger.LogError(err.Error())
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &user_service_pb.SignUpResponse{
+		User: &user_service_pb.User{
+			Id:        createdUser.Id,
+			Email:     createdUser.Email,
+			Username:  createdUser.Username,
+			CreatedAt: createdUser.CreatedAt.String(),
+		},
+	}, nil
+}
+
+func (server *GRPCUserServiceServer) GetGithubRepositories(ctx context.Context, getGithubRepositoriesRequest *user_service_pb.GetGithubRepositoriesRequest) (*user_service_pb.GetGithubRepositoriesResponse, error) {
+	user, err := server.UserRepository.GetUserById(getGithubRepositoriesRequest.UserId)
+	if err == repositories.ErrUserNotFound {
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
+
+	if err != nil {
+		server.Logger.LogError(err.Error())
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	if user.GithubAccessToken == "" {
+		return nil, status.Error(codes.Unauthenticated, "Github account is not authenticated")
+	}
+
+	githubClient := githubclient.NewGithubClient(&user.GithubAccessToken, server.Logger)
+	githubRepositories, err := githubClient.GetUserRepositories()
+	if err != nil {
+		server.Logger.LogError(err.Error())
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	safeString := func(p *string) string {
+		if p == nil {
+			return ""
+		}
+		return *p
+	}
+
+	// TODO: create a util function
+	_githubRepositories := []*user_service_pb.GithubRepository{}
+	for _, githubRepository := range githubRepositories {
+		_githubRepository := user_service_pb.GithubRepository{
+			Id:            strconv.FormatInt(*githubRepository.ID, 10),
+			Name:          safeString(githubRepository.Name),
+			Description:   safeString(githubRepository.Description),
+			DefaultBranch: safeString(githubRepository.DefaultBranch),
+			GitUrl:        safeString(githubRepository.GitURL),
+			Url:           safeString(githubRepository.URL),
+			Visibility:    safeString(githubRepository.Visibility),
+		}
+		_githubRepositories = append(_githubRepositories, &_githubRepository)
+	}
+
+	return &user_service_pb.GetGithubRepositoriesResponse{
+		GithubRepositories: _githubRepositories,
+	}, nil
+}
+
+func (server *GRPCUserServiceServer) ExchangeGitHubCodeForToken(ctx context.Context, exchangeGitHubCodeForTokenRequest *user_service_pb.ExchangeGitHubCodeForTokenRequest) (*user_service_pb.ExchangeGitHubCodeForTokenResponse, error) {
+	githubClient := githubclient.NewGithubClient(nil, server.Logger)
+	githubOAuth, err := githubClient.Auth(exchangeGitHubCodeForTokenRequest.Code)
+
+	if err != nil {
+		server.Logger.LogError(err.Error())
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	_, err = server.UserRepository.UpdateUserGithub(exchangeGitHubCodeForTokenRequest.UserId, repositories.UpdateUserGithubParams{
+		GithubAppInstalled:          true,
+		GithubAccessToken:           githubOAuth.AccessToken,
+		GithubRefreshToken:          githubOAuth.RefreshToken,
+		GithhubAccessTokenExpiresAt: time.Now().Add(time.Duration(githubOAuth.ExpiresIn) * time.Second),
+		GithubRefreshTokenExpiresAt: time.Now().Add(time.Duration(githubOAuth.RefreshTokenExpiresIn) * time.Second),
+	})
+
+	if err != nil {
+		server.Logger.LogError(err.Error())
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &user_service_pb.ExchangeGitHubCodeForTokenResponse{
+		AccessToken:           githubOAuth.AccessToken,
+		Scope:                 githubOAuth.Scope,
+		TokenType:             githubOAuth.TokenType,
+		RefreshToken:          githubOAuth.RefreshToken,
+		ExpiresIn:             githubOAuth.ExpiresIn,
+		RefreshTokenExpiresIn: githubOAuth.RefreshTokenExpiresIn,
+	}, nil
+}

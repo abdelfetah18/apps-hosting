@@ -1,0 +1,17 @@
+FROM node:20-alpine
+
+ARG BUILD_CMD
+ARG START_CMD
+
+ENV BUILD_CMD=$BUILD_CMD
+ENV START_CMD=$START_CMD
+
+WORKDIR /app
+
+COPY . .
+
+RUN npm install
+
+RUN npm run $BUILD_CMD
+
+CMD npm run $START_CMD

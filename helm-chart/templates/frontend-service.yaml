@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Values.frontendservice.name}}-deployment
+spec:
+  selector:
+    matchLabels:
+      app: {{.Values.frontendservice.name}}
+  template:
+    metadata:
+      labels:
+        app: {{.Values.frontendservice.name}}
+    spec:
+      containers:
+        - name: {{.Values.frontendservice.name}}-container
+          resources:
+          {{- toYaml .Values.frontendservice.resources | nindent 10 }}
+          imagePullPolicy: Always
+          image: {{ .Values.images.repository }}/{{ .Values.frontendservice.name }}:{{ .Values.images.tag | default .Chart.AppVersion }}
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.Values.frontendservice.name}}
+spec:
+  selector:
+    app: {{.Values.frontendservice.name}}
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{.Values.frontendservice.name}}-ingress
+  labels:
+    name: {{.Values.frontendservice.name}}
+spec:
+  tls:
+    - hosts:
+        - {{.Values.frontendservice.ingress.host}}
+      secretName: {{.Values.frontendservice.ingress.tls.secretName}}
+  rules:
+    - host: {{.Values.frontendservice.ingress.host}}
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: {{.Values.frontendservice.name}}
+                port:
+                  number: {{.Values.frontendservice.ingress.port}}

@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-registry-deployment
+spec:
+  selector:
+    matchLabels:
+      app: go-registry
+  template:
+    metadata:
+      labels:
+        app: go-registry
+    spec:
+      containers:
+        - name: go-registry-container
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "250m"
+          imagePullPolicy: Always
+          image: 192.168.49.2:5000/go-artifcat:dev
+          envFrom:
+            - secretRef:
+                name: go-registry-secret
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: go-registry-service
+spec:
+  selector:
+    app: go-registry
+  ports:
+    - port: 8080
+      targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: go-registry-ingress
+  labels:
+    name: go-registry
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  tls:
+    - hosts:
+        - go-registry.apps-hosting.com
+        - minio.apps-hosting.com
+        - minio-ui.apps-hosting.com
+      secretName: tls-wildcard.apps-hosting.com
+  rules:
+    - host: go-registry.apps-hosting.com
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: go-registry-service
+                port:
+                  number: 8080
+    - host: minio.apps-hosting.com
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: object-storage-minio
+                port:
+                  number: 9000
+    - host: minio-ui.apps-hosting.com
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: object-storage-minio-console
+                port:
+                  number: 9001

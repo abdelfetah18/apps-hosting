@@ -1,0 +1,94 @@
+images:
+  repository: 192.168.49.2:5000
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "dev"
+
+appservice:
+  name: app-service
+  resources:
+    requests:
+      memory: 64Mi
+      cpu: 100m
+    limits:
+      memory: 128Mi
+      cpu: 250m
+
+buildservice:
+  name: build-service
+  resources:
+    requests:
+      memory: 64Mi
+      cpu: 100m
+    limits:
+      memory: 128Mi
+      cpu: 250m
+
+deployservice:
+  name: deploy-service
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "100m"
+    limits:
+      memory: "128Mi"
+      cpu: "250m"
+
+userservice:
+  name: user-service
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "100m"
+    limits:
+      memory: "128Mi"
+      cpu: "250m"
+
+projectservice:
+  name: project-service
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "100m"
+    limits:
+      memory: "128Mi"
+      cpu: "250m"
+
+gatewayservice:
+  name: gateway-service
+  ingress:
+    host: api.apps-hosting.com
+    port: 8080
+    tls:
+      secretName: tls-wildcard.apps-hosting.com
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "100m"
+    limits:
+      memory: "128Mi"
+      cpu: "250m"
+
+logservice:
+  name: log-service
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "100m"
+    limits:
+      memory: "128Mi"
+      cpu: "250m"
+
+frontendservice:
+  name: frontend-service
+  ingress:
+    host: apps-hosting.com
+    port: 80
+    tls:
+      secretName: tls-apps-hosting.com
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "100m"
+    limits:
+      memory: "128Mi"
+      cpu: "250m"

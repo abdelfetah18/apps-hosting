@@ -1,0 +1,198 @@
+package repositories
+
+import (
+	"context"
+	"database/sql"
+	"errors"
+	"time"
+
+	"apps-hosting.com/logging"
+
+	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/uptrace/bun"
+)
+
+type AppStatus string
+
+const (
+	AppStatusBuilding     AppStatus = "building"
+	AppStatusDeploying    AppStatus = "deploying"
+	AppStatusDeployed     AppStatus = "deployed"
+	AppStatusBuildFailed  AppStatus = "build_failed"
+	AppStatusDeployFailed AppStatus = "deploy_failed"
+)
+
+type App struct {
+	Id         string    `bun:"id,pk,type:uuid,default:gen_random_uuid()" json:"id"`
+	ProjectId  string    `bun:"project_id" json:"project_id"`
+	Name       string    `bun:"name,unique" json:"name"`
+	DomainName string    `bun:"domain_name,unique" json:"domain_name"`
+	Runtime    string    `bun:"runtime" json:"runtime"`
+	RepoURL    string    `bun:"repo_url" json:"repo_url"`
+	BuildCMD   string    `bun:"build_cmd" json:"build_cmd"`
+	StartCMD   string    `bun:"run_cmd" json:"start_cmd"`
+	CreatedAt  time.Time `bun:"created_at,default:now()" json:"created_at"`
+}
+
+type CreateAppParams struct {
+	Name       string
+	Runtime    string
+	RepoURL    string
+	StartCMD   string
+	BuildCMD   string
+	DomainName string
+}
+
+type UpdateAppParams struct {
+	Name       string
+	Runtime    string
+	RepoURL    string
+	StartCMD   string
+	BuildCMD   string
+	DomainName string
+}
+
+var Runtimes = []string{"NodeJS"}
+
+type AppRepository struct {
+	Database *bun.DB
+	Logger   logging.ServiceLogger
+}
+
+func NewAppRepository(database *bun.DB, logger logging.ServiceLogger) AppRepository {
+	return AppRepository{
+		Database: database,
+		Logger:   logger,
+	}
+}
+
+func (repository *AppRepository) CreateAppsTable() (sql.Result, error) {
+	repository.Logger.LogInfo("Creating apps table.")
+	return repository.Database.NewCreateTable().Model((*App)(nil)).IfNotExists().Exec(context.Background())
+}
+
+func (repository *AppRepository) CreateApp(projectId string, createAppParams CreateAppParams) (*App, error) {
+	app := App{
+		Name:       createAppParams.Name,
+		Runtime:    createAppParams.Runtime,
+		ProjectId:  projectId,
+		RepoURL:    createAppParams.RepoURL,
+		StartCMD:   createAppParams.StartCMD,
+		BuildCMD:   createAppParams.BuildCMD,
+		DomainName: createAppParams.DomainName,
+	}
+	_, err := repository.Database.NewInsert().Model(&app).Exec(context.Background())
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			if pgErr.Code == "23505" {
+				if pgErr.ConstraintName == "apps_name_key" {
+					return nil, ErrAppNameInUse
+				}
+				if pgErr.ConstraintName == "apps_domain_name_key" {
+					return nil, ErrDomainNameInUse
+				}
+			}
+		}
+
+		return nil, err
+	}
+
+	return &app, nil
+}
+
+func (repository *AppRepository) UpdateApp(projectId, appId string, updateAppParams UpdateAppParams) (*App, error) {
+	app := App{
+		Name:       updateAppParams.Name,
+		Runtime:    updateAppParams.Runtime,
+		RepoURL:    updateAppParams.RepoURL,
+		StartCMD:   updateAppParams.StartCMD,
+		BuildCMD:   updateAppParams.BuildCMD,
+		DomainName: updateAppParams.DomainName,
+	}
+
+	result, err := repository.Database.
+		NewUpdate().
+		Model(&app).
+		Column("name", "runtime", "repo_url", "build_cmd", "run_cmd", "domain_name").
+		Where("id = ? and project_id = ?", appId, projectId).
+		Returning("*").
+		Exec(context.Background())
+
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case "23505":
+				if pgErr.ConstraintName == "apps_name_key" {
+					return nil, ErrAppNameInUse
+				}
+				if pgErr.ConstraintName == "apps_domain_name_key" {
+					return nil, ErrDomainNameInUse
+				}
+			}
+		}
+
+		return nil, err
+	}
+
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		return nil, ErrAppNotFound
+	}
+
+	return &app, nil
+}
+
+func (repository *AppRepository) GetAppById(projectId, appId string) (*App, error) {
+	app := App{}
+	err := repository.Database.
+		NewSelect().
+		Model(&app).
+		Where("id = ? and project_id = ?", appId, projectId).
+		Scan(context.Background())
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrAppNotFound
+		}
+		return nil, err
+	}
+
+	return &app, nil
+}
+
+func (repository *AppRepository) GetApps(projectId string) ([]App, error) {
+	var apps []App
+	err := repository.Database.
+		NewSelect().
+		Model(&apps).
+		Where("project_id = ?", projectId).
+		Order("created_at DESC").
+		Scan(context.Background())
+
+	if err != nil {
+		return []App{}, err
+	}
+
+	if apps == nil {
+		return []App{}, err
+	}
+
+	return apps, nil
+}
+
+func (repository *AppRepository) DeleteAppById(projectId string, appId string) error {
+	result, err := repository.Database.
+		NewDelete().
+		Model(&App{Id: appId, ProjectId: projectId}).
+		Where("id = ? AND project_id = ?", appId, projectId).
+		Exec(context.Background())
+
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		return ErrAppNotFound
+	}
+
+	return err
+}

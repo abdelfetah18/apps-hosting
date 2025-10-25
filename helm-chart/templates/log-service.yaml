@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: log-reader
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: log-reader-role
+  namespace: default
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: log-reader-binding
+  namespace: default
+subjects:
+  - kind: ServiceAccount
+    name: log-reader
+    namespace: default
+roleRef:
+  kind: Role
+  name: log-reader-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Values.logservice.name}}-deployment
+spec:
+  selector:
+    matchLabels:
+      app: {{.Values.logservice.name}}
+  template:
+    metadata:
+      labels:
+        app: {{.Values.logservice.name}}
+    spec:
+      serviceAccountName: log-reader
+      containers:
+        - name: {{.Values.logservice.name}}-container
+          resources:
+          {{- toYaml .Values.logservice.resources | nindent 10 }}
+          imagePullPolicy: Always
+          image: {{ .Values.images.repository }}/{{ .Values.logservice.name }}:{{ .Values.images.tag | default .Chart.AppVersion }}
+          envFrom:
+            - secretRef:
+                name: global-secret
+            - secretRef:
+                name: {{.Values.logservice.name}}-secret
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.Values.logservice.name}}
+spec:
+  selector:
+    app: {{.Values.logservice.name}}
+  ports:
+    - port: 8080
+      targetPort: 8080

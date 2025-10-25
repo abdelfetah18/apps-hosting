@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-service-config
+data:
+  PORT: "8080"
+  DATABASE_CONNECTION_STRING: "postgresql://apps_hosting:npg_ZJQN5xlAVH8t@ep-muddy-tooth-a2west2c.eu-central-1.aws.neon.tech/user_service?sslmode=require"
+  NATS_URL: "nats"
+  JWT_SECRET: "my_secret_key"
+  GITHUB_CLIENT_ID: "Iv23liELWALmvVE9pf4P"
+  GITHUB_CLIENT_SECRET: "274e06fbbd19f452bfa855f593687db13e8a3b70"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+spec:
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "250m"
+          imagePullPolicy: Always
+          image: europe-west9-docker.pkg.dev/apps-hosting-1337/apps-hosting/user-service:dev
+          envFrom:
+            - configMapRef:
+                name: user-service-config
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+  annotations:
+    cloud.google.com/backend-config: '{"default": "user-service-backendconfig"}'
+spec:
+  selector:
+    app: user-service
+  ports:
+    - port: 8080
+      targetPort: 8080
+---
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: user-service-backendconfig
+spec:
+  healthCheck:
+    requestPath: /health
+    port: 8080

@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package log_service;
+
+option go_package = "proto/log_service_pb;log_service_pb";
+
+service LogService {
+    rpc QueryLogs(QueryLogsRequest) returns (QueryLogsResponse);
+    rpc Health(HealthRequest) returns (HealthResponse);
+}
+
+message QueryLogsRequest {
+    string user_id = 1;
+    string app_id = 2;
+}
+message QueryLogsResponse {
+    string logs = 1;
+}
+
+message HealthRequest {};
+
+message HealthResponse {
+    string status = 1;
+    string message = 2;
+}

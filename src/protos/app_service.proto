@@ -1,0 +1,124 @@
+syntax = "proto3";
+
+package app_service;
+
+option go_package = "proto/app_service_pb;app_service_pb";
+
+service AppService {
+    rpc Health(HealthRequest) returns (HealthResponse);
+    
+    rpc CreateApp(CreateAppRequest) returns (CreateAppResponse);
+    rpc GetApp(GetAppRequest) returns (GetAppResponse);
+    rpc GetApps(GetAppsRequest) returns (GetAppsResponse);
+    rpc UpdateApp(UpdateAppRequest) returns (UpdateAppResponse);
+    rpc DeleteApp(DeleteAppRequest) returns (DeleteAppResponse);
+
+    rpc GetEnvironmentVariables(GetEnvironmentVariablesRequest) returns (GetEnvironmentVariablesResponse);
+    rpc CreateEnvironmentVariables(CreateEnvironmentVariablesRequest) returns (CreateEnvironmentVariablesResponse);
+    rpc UpdateEnvironmentVariables(UpdateEnvironmentVariablesRequest) returns (UpdateEnvironmentVariablesResponse);
+    rpc DeleteEnvironmentVariables(DeleteEnvironmentVariablesRequest) returns (DeleteEnvironmentVariablesResponse);
+}
+
+message App {
+    string id = 1;
+    string project_id = 2;
+    string name = 3;
+    string domain_name = 4;
+    string runtime = 5;
+    string repo_url = 6;
+    string build_cmd = 7;
+    string start_cmd = 8;
+    string created_at = 9;
+}
+
+message EnvironmentVariables {
+    string id = 1;
+    string value = 2;
+    string create_at = 3;
+}
+
+message CreateAppRequest {
+    string project_id = 1;
+
+    string name = 2;
+    string runtime = 3;
+    string repo_url = 4;
+    string build_cmd = 5;
+    string start_cmd = 6;
+    optional string environment_variables = 7;
+}
+message CreateAppResponse {
+    App app = 1;
+}
+
+message GetAppRequest {
+    string app_id = 1;
+    string project_id = 2;
+}
+message GetAppResponse {
+    App app = 1;
+}
+
+message GetAppsRequest {
+    string project_id = 1;
+}
+message GetAppsResponse {
+    repeated App apps = 1;
+}
+
+message UpdateAppRequest {
+    string project_id = 1;
+    string app_id = 2;
+
+    optional string name = 3;
+    optional string runtime = 4;
+    optional string repo_url = 5;
+    optional string build_cmd = 6;
+    optional string start_cmd = 7;
+}
+message UpdateAppResponse {
+    App app = 1;
+}
+
+message DeleteAppRequest {
+    string project_id = 1;
+    string app_id = 2;
+}
+message DeleteAppResponse {}
+
+message GetEnvironmentVariablesRequest {
+    string app_id = 1;
+}
+message GetEnvironmentVariablesResponse {
+    EnvironmentVariables environment_variable = 1;
+}
+
+message CreateEnvironmentVariablesRequest {
+    string app_id = 1;
+    
+    string value = 2;
+}
+message CreateEnvironmentVariablesResponse {
+    EnvironmentVariables environment_variable = 1;
+}
+
+message UpdateEnvironmentVariablesRequest {
+    string app_id = 1;
+    
+    string value = 2;
+}
+message UpdateEnvironmentVariablesResponse {
+    EnvironmentVariables environment_variable = 1;
+}
+
+message DeleteEnvironmentVariablesRequest {
+    string app_id = 1;
+}
+message DeleteEnvironmentVariablesResponse {}
+
+
+message HealthRequest {}
+message HealthResponse {
+    string status = 1;
+    string message = 2;
+}

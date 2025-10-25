@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Values.userservice.name}}-deployment
+spec:
+  selector:
+    matchLabels:
+      app: {{.Values.userservice.name}}
+  template:
+    metadata:
+      labels:
+        app: {{.Values.userservice.name}}
+    spec:
+      containers:
+        - name: {{.Values.userservice.name}}-container
+          resources:
+          {{- toYaml .Values.userservice.resources | nindent 10 }}
+          imagePullPolicy: Always
+          image: {{ .Values.images.repository }}/{{ .Values.userservice.name }}:{{ .Values.images.tag | default .Chart.AppVersion }}
+          envFrom:
+            - secretRef:
+                name: global-secret
+            - secretRef:
+                name: {{.Values.userservice.name}}-secret
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.Values.userservice.name}}
+spec:
+  selector:
+    app: {{.Values.userservice.name}}
+  ports:
+    - port: 8080
+      targetPort: 8080

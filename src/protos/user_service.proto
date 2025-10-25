@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package user_service;
+
+option go_package = "proto/user_service_pb;user_service_pb";
+
+service UserService {
+    rpc Auth(AuthRequest) returns (AuthResponse);
+    rpc SignIn(SignInRequest) returns (SignInResponse);
+    rpc SignUp(SignUpRequest) returns (SignUpResponse);
+    rpc GetGithubRepositories(GetGithubRepositoriesRequest) returns (GetGithubRepositoriesResponse);
+    rpc ExchangeGitHubCodeForToken(ExchangeGitHubCodeForTokenRequest) returns  (ExchangeGitHubCodeForTokenResponse);
+    rpc Health(HealthRequest) returns (HealthResponse);
+}
+
+message User {
+    string id = 1;
+    string username = 2;
+    string email = 3;
+    bool   github_app_installed = 4;
+    string github_access_token = 5;
+    string github_refresh_token = 6;
+    string created_at = 7;
+}
+
+message GithubRepository {
+    string id = 1;
+    string name = 2;
+    string description = 3;
+    string default_branch = 4;
+    string git_url = 5;
+    string url = 6;
+    string visibility = 7;
+}
+
+message UserSession {
+    string access_token = 1;
+    User user = 2;
+}
+
+message AuthRequest {
+    string access_token = 1;
+}
+message AuthResponse {
+    User user = 1;
+}
+
+message SignInRequest{
+    string email = 1;
+    string password = 2;
+}
+message SignInResponse{
+    UserSession user_session = 1;
+}
+
+message SignUpRequest {
+    string username = 1;
+    string email = 2;
+    string password = 3;
+}
+message SignUpResponse{
+    User user = 1;
+}
+
+message GetGithubRepositoriesRequest{
+    string user_id = 1;
+}
+message GetGithubRepositoriesResponse{
+    repeated GithubRepository github_repositories = 1;
+}
+
+message ExchangeGitHubCodeForTokenRequest{
+    string code = 1;
+    string user_id = 2;
+}
+message ExchangeGitHubCodeForTokenResponse{
+    string access_token = 1;
+    string scope = 2;
+    string token_type = 3;
+    string refresh_token = 4;
+    int64 expires_in = 5;
+    int64 refresh_token_expires_in = 6;
+}
+
+
+message HealthRequest {};
+message HealthResponse {
+    string status = 1;
+    string message = 2;
+}

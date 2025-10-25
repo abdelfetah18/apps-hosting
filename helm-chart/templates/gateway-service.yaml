@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Values.gatewayservice.name}}-deployment
+spec:
+  selector:
+    matchLabels:
+      app: {{.Values.gatewayservice.name}}
+  template:
+    metadata:
+      labels:
+        app: {{.Values.gatewayservice.name}}
+    spec:
+      containers:
+        - name: {{.Values.gatewayservice.name}}-container
+          resources:
+          {{- toYaml .Values.gatewayservice.resources | nindent 10 }}
+          imagePullPolicy: Always
+          image: {{ .Values.images.repository }}/{{ .Values.gatewayservice.name }}:{{ .Values.images.tag | default .Chart.AppVersion }}
+          envFrom:
+            - secretRef:
+                name: global-secret
+            - secretRef:
+                name: {{.Values.gatewayservice.name}}-secret
+          
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{.Values.gatewayservice.name}}
+spec:
+  selector:
+    app: {{.Values.gatewayservice.name}}
+  ports:
+    - port: 8080
+      targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{.Values.gatewayservice.name}}-ingress
+  labels:
+    name: {{.Values.gatewayservice.name}}
+spec:
+  tls:
+    - hosts:
+        - {{.Values.gatewayservice.ingress.host}}
+      secretName: {{.Values.gatewayservice.ingress.tls.secretName}}
+  rules:
+    - host: {{.Values.gatewayservice.ingress.host}}
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: {{.Values.gatewayservice.name}}
+                port:
+                  number: {{.Values.gatewayservice.ingress.port}}

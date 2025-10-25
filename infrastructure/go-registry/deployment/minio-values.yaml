@@ -1,0 +1,12 @@
+resources:
+  requests:
+    memory: 512Mi
+replicas: 1
+persistence:
+  enabled: false
+  size: 2Gi
+mode: standalone 
+rootUser: minioadmin
+rootPassword: minioadmin
+
+

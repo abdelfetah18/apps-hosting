@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package deploy_service;
+
+option go_package = "proto/deploy_service_pb;deploy_service_pb";
+
+service DeployService {
+    rpc GetDeployments(GetDeploymentsRequest) returns (GetDeploymentsResponse);
+    rpc Health(HealthRequest) returns (HealthResponse);
+}
+
+message Deployment {
+    string id = 1;
+    string build_id = 2;
+    string app_id = 3;
+    string status = 4;
+    string created_at = 5;
+}
+
+message GetDeploymentsRequest {
+    string app_id = 1;
+}
+message GetDeploymentsResponse {
+    repeated Deployment deployments = 1;
+}
+
+message HealthRequest {};
+
+message HealthResponse {
+    string status = 1;
+    string message = 2;
+}

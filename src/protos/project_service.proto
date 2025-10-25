@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package project_service;
+
+option go_package = "proto/project_service_pb;project_service_pb";
+
+service ProjectService {
+    rpc Health(HealthRequest) returns (HealthResponse);
+    
+    rpc CreateProject(CreateProjectRequest) returns (CreateProjectResponse);
+    rpc GetUserProjectById(GetUserProjectByIdRequest) returns (GetUserProjectByIdResponse);
+    rpc GetUserProjects(GetUserProjectsRequest) returns (GetUserProjectsResponse);
+    rpc DeleteUserProject(DeleteUserProjectRequest) returns (DeleteUserProjectResponse);
+}
+
+message Project {
+    string id = 1;
+    string name = 2;
+    string user_id = 3;
+    string created_at = 4;
+}
+
+
+message CreateProjectRequest {
+    string name = 2;
+    string user_id = 3;
+}
+
+message CreateProjectResponse {
+    Project project = 1;
+}
+
+message GetUserProjectByIdRequest {
+    string project_id = 1;
+    string user_id = 2;
+}
+message GetUserProjectByIdResponse {
+    Project project = 1;
+}
+
+message GetUserProjectsRequest {
+    string user_id = 1;
+}
+message GetUserProjectsResponse {
+    repeated Project projects = 1;
+}
+
+message DeleteUserProjectRequest {
+    string project_id = 1;
+    string user_id = 2;
+}
+message DeleteUserProjectResponse {}
+
+
+
+message HealthRequest {}
+message HealthResponse {
+    string status = 1;
+    string message = 2;
+}
