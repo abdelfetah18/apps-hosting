@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.6
 // 	protoc        v6.30.2
-// source: protos/log_service.proto
+// source: src/protos/log_service.proto
 
 package log_service_pb
 
@@ -31,7 +31,7 @@ type QueryLogsRequest struct {
 
 func (x *QueryLogsRequest) Reset() {
 	*x = QueryLogsRequest{}
-	mi := &file_protos_log_service_proto_msgTypes[0]
+	mi := &file_src_protos_log_service_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -43,7 +43,7 @@ func (x *QueryLogsRequest) String() string {
 func (*QueryLogsRequest) ProtoMessage() {}
 
 func (x *QueryLogsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_log_service_proto_msgTypes[0]
+	mi := &file_src_protos_log_service_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -56,7 +56,7 @@ func (x *QueryLogsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QueryLogsRequest.ProtoReflect.Descriptor instead.
 func (*QueryLogsRequest) Descriptor() ([]byte, []int) {
-	return file_protos_log_service_proto_rawDescGZIP(), []int{0}
+	return file_src_protos_log_service_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *QueryLogsRequest) GetUserId() string {
@@ -82,7 +82,7 @@ type QueryLogsResponse struct {
 
 func (x *QueryLogsResponse) Reset() {
 	*x = QueryLogsResponse{}
-	mi := &file_protos_log_service_proto_msgTypes[1]
+	mi := &file_src_protos_log_service_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -94,7 +94,7 @@ func (x *QueryLogsResponse) String() string {
 func (*QueryLogsResponse) ProtoMessage() {}
 
 func (x *QueryLogsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_log_service_proto_msgTypes[1]
+	mi := &file_src_protos_log_service_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -107,7 +107,7 @@ func (x *QueryLogsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QueryLogsResponse.ProtoReflect.Descriptor instead.
 func (*QueryLogsResponse) Descriptor() ([]byte, []int) {
-	return file_protos_log_service_proto_rawDescGZIP(), []int{1}
+	return file_src_protos_log_service_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *QueryLogsResponse) GetLogs() string {
@@ -125,7 +125,7 @@ type HealthRequest struct {
 
 func (x *HealthRequest) Reset() {
 	*x = HealthRequest{}
-	mi := &file_protos_log_service_proto_msgTypes[2]
+	mi := &file_src_protos_log_service_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -137,7 +137,7 @@ func (x *HealthRequest) String() string {
 func (*HealthRequest) ProtoMessage() {}
 
 func (x *HealthRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_log_service_proto_msgTypes[2]
+	mi := &file_src_protos_log_service_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -150,7 +150,7 @@ func (x *HealthRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthRequest.ProtoReflect.Descriptor instead.
 func (*HealthRequest) Descriptor() ([]byte, []int) {
-	return file_protos_log_service_proto_rawDescGZIP(), []int{2}
+	return file_src_protos_log_service_proto_rawDescGZIP(), []int{2}
 }
 
 type HealthResponse struct {
@@ -163,7 +163,7 @@ type HealthResponse struct {
 
 func (x *HealthResponse) Reset() {
 	*x = HealthResponse{}
-	mi := &file_protos_log_service_proto_msgTypes[3]
+	mi := &file_src_protos_log_service_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -175,7 +175,7 @@ func (x *HealthResponse) String() string {
 func (*HealthResponse) ProtoMessage() {}
 
 func (x *HealthResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_log_service_proto_msgTypes[3]
+	mi := &file_src_protos_log_service_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -188,7 +188,7 @@ func (x *HealthResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthResponse.ProtoReflect.Descriptor instead.
 func (*HealthResponse) Descriptor() ([]byte, []int) {
-	return file_protos_log_service_proto_rawDescGZIP(), []int{3}
+	return file_src_protos_log_service_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *HealthResponse) GetStatus() string {
@@ -205,11 +205,11 @@ func (x *HealthResponse) GetMessage() string {
 	return ""
 }
 
-var File_protos_log_service_proto protoreflect.FileDescriptor
+var File_src_protos_log_service_proto protoreflect.FileDescriptor
 
-const file_protos_log_service_proto_rawDesc = "" +
+const file_src_protos_log_service_proto_rawDesc = "" +
 	"\n" +
-	"\x18protos/log_service.proto\x12\vlog_service\"B\n" +
+	"\x1csrc/protos/log_service.proto\x12\vlog_service\"B\n" +
 	"\x10QueryLogsRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x15\n" +
 	"\x06app_id\x18\x02 \x01(\tR\x05appId\"'\n" +
@@ -225,25 +225,25 @@ const file_protos_log_service_proto_rawDesc = "" +
 	"\x06Health\x12\x1a.log_service.HealthRequest\x1a\x1b.log_service.HealthResponseB%Z#proto/log_service_pb;log_service_pbb\x06proto3"
 
 var (
-	file_protos_log_service_proto_rawDescOnce sync.Once
-	file_protos_log_service_proto_rawDescData []byte
+	file_src_protos_log_service_proto_rawDescOnce sync.Once
+	file_src_protos_log_service_proto_rawDescData []byte
 )
 
-func file_protos_log_service_proto_rawDescGZIP() []byte {
-	file_protos_log_service_proto_rawDescOnce.Do(func() {
-		file_protos_log_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_protos_log_service_proto_rawDesc), len(file_protos_log_service_proto_rawDesc)))
+func file_src_protos_log_service_proto_rawDescGZIP() []byte {
+	file_src_protos_log_service_proto_rawDescOnce.Do(func() {
+		file_src_protos_log_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_src_protos_log_service_proto_rawDesc), len(file_src_protos_log_service_proto_rawDesc)))
 	})
-	return file_protos_log_service_proto_rawDescData
+	return file_src_protos_log_service_proto_rawDescData
 }
 
-var file_protos_log_service_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
-var file_protos_log_service_proto_goTypes = []any{
+var file_src_protos_log_service_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_src_protos_log_service_proto_goTypes = []any{
 	(*QueryLogsRequest)(nil),  // 0: log_service.QueryLogsRequest
 	(*QueryLogsResponse)(nil), // 1: log_service.QueryLogsResponse
 	(*HealthRequest)(nil),     // 2: log_service.HealthRequest
 	(*HealthResponse)(nil),    // 3: log_service.HealthResponse
 }
-var file_protos_log_service_proto_depIdxs = []int32{
+var file_src_protos_log_service_proto_depIdxs = []int32{
 	0, // 0: log_service.LogService.QueryLogs:input_type -> log_service.QueryLogsRequest
 	2, // 1: log_service.LogService.Health:input_type -> log_service.HealthRequest
 	1, // 2: log_service.LogService.QueryLogs:output_type -> log_service.QueryLogsResponse
@@ -255,26 +255,26 @@ var file_protos_log_service_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_protos_log_service_proto_init() }
-func file_protos_log_service_proto_init() {
-	if File_protos_log_service_proto != nil {
+func init() { file_src_protos_log_service_proto_init() }
+func file_src_protos_log_service_proto_init() {
+	if File_src_protos_log_service_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_protos_log_service_proto_rawDesc), len(file_protos_log_service_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_src_protos_log_service_proto_rawDesc), len(file_src_protos_log_service_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_protos_log_service_proto_goTypes,
-		DependencyIndexes: file_protos_log_service_proto_depIdxs,
-		MessageInfos:      file_protos_log_service_proto_msgTypes,
+		GoTypes:           file_src_protos_log_service_proto_goTypes,
+		DependencyIndexes: file_src_protos_log_service_proto_depIdxs,
+		MessageInfos:      file_src_protos_log_service_proto_msgTypes,
 	}.Build()
-	File_protos_log_service_proto = out.File
-	file_protos_log_service_proto_goTypes = nil
-	file_protos_log_service_proto_depIdxs = nil
+	File_src_protos_log_service_proto = out.File
+	file_src_protos_log_service_proto_goTypes = nil
+	file_src_protos_log_service_proto_depIdxs = nil
 }

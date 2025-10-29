@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v6.30.2
-// source: protos/build_service.proto
+// source: src/protos/build_service.proto
 
 package build_service_pb
 
@@ -155,5 +155,5 @@ var BuildService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "protos/build_service.proto",
+	Metadata: "src/protos/build_service.proto",
 }

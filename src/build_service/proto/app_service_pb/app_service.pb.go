@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.6
 // 	protoc        v6.30.2
-// source: protos/app_service.proto
+// source: src/protos/app_service.proto
 
 package app_service_pb
 
@@ -38,7 +38,7 @@ type App struct {
 
 func (x *App) Reset() {
 	*x = App{}
-	mi := &file_protos_app_service_proto_msgTypes[0]
+	mi := &file_src_protos_app_service_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -50,7 +50,7 @@ func (x *App) String() string {
 func (*App) ProtoMessage() {}
 
 func (x *App) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_app_service_proto_msgTypes[0]
+	mi := &file_src_protos_app_service_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -63,7 +63,7 @@ func (x *App) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use App.ProtoReflect.Descriptor instead.
 func (*App) Descriptor() ([]byte, []int) {
-	return file_protos_app_service_proto_rawDescGZIP(), []int{0}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *App) GetId() string {
@@ -140,7 +140,7 @@ type EnvironmentVariables struct {
 
 func (x *EnvironmentVariables) Reset() {
 	*x = EnvironmentVariables{}
-	mi := &file_protos_app_service_proto_msgTypes[1]
+	mi := &file_src_protos_app_service_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -152,7 +152,7 @@ func (x *EnvironmentVariables) String() string {
 func (*EnvironmentVariables) ProtoMessage() {}
 
 func (x *EnvironmentVariables) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_app_service_proto_msgTypes[1]
+	mi := &file_src_protos_app_service_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -165,7 +165,7 @@ func (x *EnvironmentVariables) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EnvironmentVariables.ProtoReflect.Descriptor instead.
 func (*EnvironmentVariables) Descriptor() ([]byte, []int) {
-	return file_protos_app_service_proto_rawDescGZIP(), []int{1}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *EnvironmentVariables) GetId() string {
@@ -204,7 +204,7 @@ type CreateAppRequest struct {
 
 func (x *CreateAppRequest) Reset() {
 	*x = CreateAppRequest{}
-	mi := &file_protos_app_service_proto_msgTypes[2]
+	mi := &file_src_protos_app_service_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -216,7 +216,7 @@ func (x *CreateAppRequest) String() string {
 func (*CreateAppRequest) ProtoMessage() {}
 
 func (x *CreateAppRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_app_service_proto_msgTypes[2]
+	mi := &file_src_protos_app_service_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -229,7 +229,7 @@ func (x *CreateAppRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateAppRequest.ProtoReflect.Descriptor instead.
 func (*CreateAppRequest) Descriptor() ([]byte, []int) {
-	return file_protos_app_service_proto_rawDescGZIP(), []int{2}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *CreateAppRequest) GetProjectId() string {
@@ -290,7 +290,7 @@ type CreateAppResponse struct {
 
 func (x *CreateAppResponse) Reset() {
 	*x = CreateAppResponse{}
-	mi := &file_protos_app_service_proto_msgTypes[3]
+	mi := &file_src_protos_app_service_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -302,7 +302,7 @@ func (x *CreateAppResponse) String() string {
 func (*CreateAppResponse) ProtoMessage() {}
 
 func (x *CreateAppResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_app_service_proto_msgTypes[3]
+	mi := &file_src_protos_app_service_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -315,7 +315,7 @@ func (x *CreateAppResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateAppResponse.ProtoReflect.Descriptor instead.
 func (*CreateAppResponse) Descriptor() ([]byte, []int) {
-	return file_protos_app_service_proto_rawDescGZIP(), []int{3}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *CreateAppResponse) GetApp() *App {
@@ -335,7 +335,7 @@ type GetAppRequest struct {
 
 func (x *GetAppRequest) Reset() {
 	*x = GetAppRequest{}
-	mi := &file_protos_app_service_proto_msgTypes[4]
+	mi := &file_src_protos_app_service_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -347,7 +347,7 @@ func (x *GetAppRequest) String() string {
 func (*GetAppRequest) ProtoMessage() {}
 
 func (x *GetAppRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_app_service_proto_msgTypes[4]
+	mi := &file_src_protos_app_service_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -360,7 +360,7 @@ func (x *GetAppRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAppRequest.ProtoReflect.Descriptor instead.
 func (*GetAppRequest) Descriptor() ([]byte, []int) {
-	return file_protos_app_service_proto_rawDescGZIP(), []int{4}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *GetAppRequest) GetAppId() string {
@@ -386,7 +386,7 @@ type GetAppResponse struct {
 
 func (x *GetAppResponse) Reset() {
 	*x = GetAppResponse{}
-	mi := &file_protos_app_service_proto_msgTypes[5]
+	mi := &file_src_protos_app_service_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -398,7 +398,7 @@ func (x *GetAppResponse) String() string {
 func (*GetAppResponse) ProtoMessage() {}
 
 func (x *GetAppResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_app_service_proto_msgTypes[5]
+	mi := &file_src_protos_app_service_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -411,7 +411,7 @@ func (x *GetAppResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAppResponse.ProtoReflect.Descriptor instead.
 func (*GetAppResponse) Descriptor() ([]byte, []int) {
-	return file_protos_app_service_proto_rawDescGZIP(), []int{5}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GetAppResponse) GetApp() *App {
@@ -430,7 +430,7 @@ type GetAppsRequest struct {
 
 func (x *GetAppsRequest) Reset() {
 	*x = GetAppsRequest{}
-	mi := &file_protos_app_service_proto_msgTypes[6]
+	mi := &file_src_protos_app_service_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -442,7 +442,7 @@ func (x *GetAppsRequest) String() string {
 func (*GetAppsRequest) ProtoMessage() {}
 
 func (x *GetAppsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_app_service_proto_msgTypes[6]
+	mi := &file_src_protos_app_service_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -455,7 +455,7 @@ func (x *GetAppsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAppsRequest.ProtoReflect.Descriptor instead.
 func (*GetAppsRequest) Descriptor() ([]byte, []int) {
-	return file_protos_app_service_proto_rawDescGZIP(), []int{6}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *GetAppsRequest) GetProjectId() string {
@@ -474,7 +474,7 @@ type GetAppsResponse struct {
 
 func (x *GetAppsResponse) Reset() {
 	*x = GetAppsResponse{}
-	mi := &file_protos_app_service_proto_msgTypes[7]
+	mi := &file_src_protos_app_service_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -486,7 +486,7 @@ func (x *GetAppsResponse) String() string {
 func (*GetAppsResponse) ProtoMessage() {}
 
 func (x *GetAppsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_app_service_proto_msgTypes[7]
+	mi := &file_src_protos_app_service_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -499,7 +499,7 @@ func (x *GetAppsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAppsResponse.ProtoReflect.Descriptor instead.
 func (*GetAppsResponse) Descriptor() ([]byte, []int) {
-	return file_protos_app_service_proto_rawDescGZIP(), []int{7}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *GetAppsResponse) GetApps() []*App {
@@ -524,7 +524,7 @@ type UpdateAppRequest struct {
 
 func (x *UpdateAppRequest) Reset() {
 	*x = UpdateAppRequest{}
-	mi := &file_protos_app_service_proto_msgTypes[8]
+	mi := &file_src_protos_app_service_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -536,7 +536,7 @@ func (x *UpdateAppRequest) String() string {
 func (*UpdateAppRequest) ProtoMessage() {}
 
 func (x *UpdateAppRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_app_service_proto_msgTypes[8]
+	mi := &file_src_protos_app_service_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -549,7 +549,7 @@ func (x *UpdateAppRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateAppRequest.ProtoReflect.Descriptor instead.
 func (*UpdateAppRequest) Descriptor() ([]byte, []int) {
-	return file_protos_app_service_proto_rawDescGZIP(), []int{8}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *UpdateAppRequest) GetProjectId() string {
@@ -610,7 +610,7 @@ type UpdateAppResponse struct {
 
 func (x *UpdateAppResponse) Reset() {
 	*x = UpdateAppResponse{}
-	mi := &file_protos_app_service_proto_msgTypes[9]
+	mi := &file_src_protos_app_service_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -622,7 +622,7 @@ func (x *UpdateAppResponse) String() string {
 func (*UpdateAppResponse) ProtoMessage() {}
 
 func (x *UpdateAppResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_app_service_proto_msgTypes[9]
+	mi := &file_src_protos_app_service_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -635,7 +635,7 @@ func (x *UpdateAppResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateAppResponse.ProtoReflect.Descriptor instead.
 func (*UpdateAppResponse) Descriptor() ([]byte, []int) {
-	return file_protos_app_service_proto_rawDescGZIP(), []int{9}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *UpdateAppResponse) GetApp() *App {
@@ -655,7 +655,7 @@ type DeleteAppRequest struct {
 
 func (x *DeleteAppRequest) Reset() {
 	*x = DeleteAppRequest{}
-	mi := &file_protos_app_service_proto_msgTypes[10]
+	mi := &file_src_protos_app_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -667,7 +667,7 @@ func (x *DeleteAppRequest) String() string {
 func (*DeleteAppRequest) ProtoMessage() {}
 
 func (x *DeleteAppRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_app_service_proto_msgTypes[10]
+	mi := &file_src_protos_app_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -680,7 +680,7 @@ func (x *DeleteAppRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteAppRequest.ProtoReflect.Descriptor instead.
 func (*DeleteAppRequest) Descriptor() ([]byte, []int) {
-	return file_protos_app_service_proto_rawDescGZIP(), []int{10}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *DeleteAppRequest) GetProjectId() string {
@@ -705,7 +705,7 @@ type DeleteAppResponse struct {
 
 func (x *DeleteAppResponse) Reset() {
 	*x = DeleteAppResponse{}
-	mi := &file_protos_app_service_proto_msgTypes[11]
+	mi := &file_src_protos_app_service_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -717,7 +717,7 @@ func (x *DeleteAppResponse) String() string {
 func (*DeleteAppResponse) ProtoMessage() {}
 
 func (x *DeleteAppResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_app_service_proto_msgTypes[11]
+	mi := &file_src_protos_app_service_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -730,7 +730,7 @@ func (x *DeleteAppResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteAppResponse.ProtoReflect.Descriptor instead.
 func (*DeleteAppResponse) Descriptor() ([]byte, []int) {
-	return file_protos_app_service_proto_rawDescGZIP(), []int{11}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{11}
 }
 
 type GetEnvironmentVariablesRequest struct {
@@ -742,7 +742,7 @@ type GetEnvironmentVariablesRequest struct {
 
 func (x *GetEnvironmentVariablesRequest) Reset() {
 	*x = GetEnvironmentVariablesRequest{}
-	mi := &file_protos_app_service_proto_msgTypes[12]
+	mi := &file_src_protos_app_service_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -754,7 +754,7 @@ func (x *GetEnvironmentVariablesRequest) String() string {
 func (*GetEnvironmentVariablesRequest) ProtoMessage() {}
 
 func (x *GetEnvironmentVariablesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_app_service_proto_msgTypes[12]
+	mi := &file_src_protos_app_service_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -767,7 +767,7 @@ func (x *GetEnvironmentVariablesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetEnvironmentVariablesRequest.ProtoReflect.Descriptor instead.
 func (*GetEnvironmentVariablesRequest) Descriptor() ([]byte, []int) {
-	return file_protos_app_service_proto_rawDescGZIP(), []int{12}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetEnvironmentVariablesRequest) GetAppId() string {
@@ -786,7 +786,7 @@ type GetEnvironmentVariablesResponse struct {
 
 func (x *GetEnvironmentVariablesResponse) Reset() {
 	*x = GetEnvironmentVariablesResponse{}
-	mi := &file_protos_app_service_proto_msgTypes[13]
+	mi := &file_src_protos_app_service_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -798,7 +798,7 @@ func (x *GetEnvironmentVariablesResponse) String() string {
 func (*GetEnvironmentVariablesResponse) ProtoMessage() {}
 
 func (x *GetEnvironmentVariablesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_app_service_proto_msgTypes[13]
+	mi := &file_src_protos_app_service_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -811,7 +811,7 @@ func (x *GetEnvironmentVariablesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetEnvironmentVariablesResponse.ProtoReflect.Descriptor instead.
 func (*GetEnvironmentVariablesResponse) Descriptor() ([]byte, []int) {
-	return file_protos_app_service_proto_rawDescGZIP(), []int{13}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GetEnvironmentVariablesResponse) GetEnvironmentVariable() *EnvironmentVariables {
@@ -831,7 +831,7 @@ type CreateEnvironmentVariablesRequest struct {
 
 func (x *CreateEnvironmentVariablesRequest) Reset() {
 	*x = CreateEnvironmentVariablesRequest{}
-	mi := &file_protos_app_service_proto_msgTypes[14]
+	mi := &file_src_protos_app_service_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -843,7 +843,7 @@ func (x *CreateEnvironmentVariablesRequest) String() string {
 func (*CreateEnvironmentVariablesRequest) ProtoMessage() {}
 
 func (x *CreateEnvironmentVariablesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_app_service_proto_msgTypes[14]
+	mi := &file_src_protos_app_service_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -856,7 +856,7 @@ func (x *CreateEnvironmentVariablesRequest) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use CreateEnvironmentVariablesRequest.ProtoReflect.Descriptor instead.
 func (*CreateEnvironmentVariablesRequest) Descriptor() ([]byte, []int) {
-	return file_protos_app_service_proto_rawDescGZIP(), []int{14}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *CreateEnvironmentVariablesRequest) GetAppId() string {
@@ -882,7 +882,7 @@ type CreateEnvironmentVariablesResponse struct {
 
 func (x *CreateEnvironmentVariablesResponse) Reset() {
 	*x = CreateEnvironmentVariablesResponse{}
-	mi := &file_protos_app_service_proto_msgTypes[15]
+	mi := &file_src_protos_app_service_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -894,7 +894,7 @@ func (x *CreateEnvironmentVariablesResponse) String() string {
 func (*CreateEnvironmentVariablesResponse) ProtoMessage() {}
 
 func (x *CreateEnvironmentVariablesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_app_service_proto_msgTypes[15]
+	mi := &file_src_protos_app_service_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -907,7 +907,7 @@ func (x *CreateEnvironmentVariablesResponse) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use CreateEnvironmentVariablesResponse.ProtoReflect.Descriptor instead.
 func (*CreateEnvironmentVariablesResponse) Descriptor() ([]byte, []int) {
-	return file_protos_app_service_proto_rawDescGZIP(), []int{15}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *CreateEnvironmentVariablesResponse) GetEnvironmentVariable() *EnvironmentVariables {
@@ -927,7 +927,7 @@ type UpdateEnvironmentVariablesRequest struct {
 
 func (x *UpdateEnvironmentVariablesRequest) Reset() {
 	*x = UpdateEnvironmentVariablesRequest{}
-	mi := &file_protos_app_service_proto_msgTypes[16]
+	mi := &file_src_protos_app_service_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -939,7 +939,7 @@ func (x *UpdateEnvironmentVariablesRequest) String() string {
 func (*UpdateEnvironmentVariablesRequest) ProtoMessage() {}
 
 func (x *UpdateEnvironmentVariablesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_app_service_proto_msgTypes[16]
+	mi := &file_src_protos_app_service_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -952,7 +952,7 @@ func (x *UpdateEnvironmentVariablesRequest) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use UpdateEnvironmentVariablesRequest.ProtoReflect.Descriptor instead.
 func (*UpdateEnvironmentVariablesRequest) Descriptor() ([]byte, []int) {
-	return file_protos_app_service_proto_rawDescGZIP(), []int{16}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *UpdateEnvironmentVariablesRequest) GetAppId() string {
@@ -978,7 +978,7 @@ type UpdateEnvironmentVariablesResponse struct {
 
 func (x *UpdateEnvironmentVariablesResponse) Reset() {
 	*x = UpdateEnvironmentVariablesResponse{}
-	mi := &file_protos_app_service_proto_msgTypes[17]
+	mi := &file_src_protos_app_service_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -990,7 +990,7 @@ func (x *UpdateEnvironmentVariablesResponse) String() string {
 func (*UpdateEnvironmentVariablesResponse) ProtoMessage() {}
 
 func (x *UpdateEnvironmentVariablesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_app_service_proto_msgTypes[17]
+	mi := &file_src_protos_app_service_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1003,7 +1003,7 @@ func (x *UpdateEnvironmentVariablesResponse) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use UpdateEnvironmentVariablesResponse.ProtoReflect.Descriptor instead.
 func (*UpdateEnvironmentVariablesResponse) Descriptor() ([]byte, []int) {
-	return file_protos_app_service_proto_rawDescGZIP(), []int{17}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *UpdateEnvironmentVariablesResponse) GetEnvironmentVariable() *EnvironmentVariables {
@@ -1022,7 +1022,7 @@ type DeleteEnvironmentVariablesRequest struct {
 
 func (x *DeleteEnvironmentVariablesRequest) Reset() {
 	*x = DeleteEnvironmentVariablesRequest{}
-	mi := &file_protos_app_service_proto_msgTypes[18]
+	mi := &file_src_protos_app_service_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1034,7 +1034,7 @@ func (x *DeleteEnvironmentVariablesRequest) String() string {
 func (*DeleteEnvironmentVariablesRequest) ProtoMessage() {}
 
 func (x *DeleteEnvironmentVariablesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_app_service_proto_msgTypes[18]
+	mi := &file_src_protos_app_service_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1047,7 +1047,7 @@ func (x *DeleteEnvironmentVariablesRequest) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use DeleteEnvironmentVariablesRequest.ProtoReflect.Descriptor instead.
 func (*DeleteEnvironmentVariablesRequest) Descriptor() ([]byte, []int) {
-	return file_protos_app_service_proto_rawDescGZIP(), []int{18}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *DeleteEnvironmentVariablesRequest) GetAppId() string {
@@ -1065,7 +1065,7 @@ type DeleteEnvironmentVariablesResponse struct {
 
 func (x *DeleteEnvironmentVariablesResponse) Reset() {
 	*x = DeleteEnvironmentVariablesResponse{}
-	mi := &file_protos_app_service_proto_msgTypes[19]
+	mi := &file_src_protos_app_service_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1077,7 +1077,7 @@ func (x *DeleteEnvironmentVariablesResponse) String() string {
 func (*DeleteEnvironmentVariablesResponse) ProtoMessage() {}
 
 func (x *DeleteEnvironmentVariablesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_app_service_proto_msgTypes[19]
+	mi := &file_src_protos_app_service_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1090,7 +1090,7 @@ func (x *DeleteEnvironmentVariablesResponse) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use DeleteEnvironmentVariablesResponse.ProtoReflect.Descriptor instead.
 func (*DeleteEnvironmentVariablesResponse) Descriptor() ([]byte, []int) {
-	return file_protos_app_service_proto_rawDescGZIP(), []int{19}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{19}
 }
 
 type HealthRequest struct {
@@ -1101,7 +1101,7 @@ type HealthRequest struct {
 
 func (x *HealthRequest) Reset() {
 	*x = HealthRequest{}
-	mi := &file_protos_app_service_proto_msgTypes[20]
+	mi := &file_src_protos_app_service_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1113,7 +1113,7 @@ func (x *HealthRequest) String() string {
 func (*HealthRequest) ProtoMessage() {}
 
 func (x *HealthRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_app_service_proto_msgTypes[20]
+	mi := &file_src_protos_app_service_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1126,7 +1126,7 @@ func (x *HealthRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthRequest.ProtoReflect.Descriptor instead.
 func (*HealthRequest) Descriptor() ([]byte, []int) {
-	return file_protos_app_service_proto_rawDescGZIP(), []int{20}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{20}
 }
 
 type HealthResponse struct {
@@ -1139,7 +1139,7 @@ type HealthResponse struct {
 
 func (x *HealthResponse) Reset() {
 	*x = HealthResponse{}
-	mi := &file_protos_app_service_proto_msgTypes[21]
+	mi := &file_src_protos_app_service_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1151,7 +1151,7 @@ func (x *HealthResponse) String() string {
 func (*HealthResponse) ProtoMessage() {}
 
 func (x *HealthResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_app_service_proto_msgTypes[21]
+	mi := &file_src_protos_app_service_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1164,7 +1164,7 @@ func (x *HealthResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthResponse.ProtoReflect.Descriptor instead.
 func (*HealthResponse) Descriptor() ([]byte, []int) {
-	return file_protos_app_service_proto_rawDescGZIP(), []int{21}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *HealthResponse) GetStatus() string {
@@ -1181,11 +1181,11 @@ func (x *HealthResponse) GetMessage() string {
 	return ""
 }
 
-var File_protos_app_service_proto protoreflect.FileDescriptor
+var File_src_protos_app_service_proto protoreflect.FileDescriptor
 
-const file_protos_app_service_proto_rawDesc = "" +
+const file_src_protos_app_service_proto_rawDesc = "" +
 	"\n" +
-	"\x18protos/app_service.proto\x12\vapp_service\"\xf7\x01\n" +
+	"\x1csrc/protos/app_service.proto\x12\vapp_service\"\xf7\x01\n" +
 	"\x03App\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
 	"\n" +
@@ -1285,19 +1285,19 @@ const file_protos_app_service_proto_rawDesc = "" +
 	"\x1aDeleteEnvironmentVariables\x12..app_service.DeleteEnvironmentVariablesRequest\x1a/.app_service.DeleteEnvironmentVariablesResponseB%Z#proto/app_service_pb;app_service_pbb\x06proto3"
 
 var (
-	file_protos_app_service_proto_rawDescOnce sync.Once
-	file_protos_app_service_proto_rawDescData []byte
+	file_src_protos_app_service_proto_rawDescOnce sync.Once
+	file_src_protos_app_service_proto_rawDescData []byte
 )
 
-func file_protos_app_service_proto_rawDescGZIP() []byte {
-	file_protos_app_service_proto_rawDescOnce.Do(func() {
-		file_protos_app_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_protos_app_service_proto_rawDesc), len(file_protos_app_service_proto_rawDesc)))
+func file_src_protos_app_service_proto_rawDescGZIP() []byte {
+	file_src_protos_app_service_proto_rawDescOnce.Do(func() {
+		file_src_protos_app_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_src_protos_app_service_proto_rawDesc), len(file_src_protos_app_service_proto_rawDesc)))
 	})
-	return file_protos_app_service_proto_rawDescData
+	return file_src_protos_app_service_proto_rawDescData
 }
 
-var file_protos_app_service_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
-var file_protos_app_service_proto_goTypes = []any{
+var file_src_protos_app_service_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
+var file_src_protos_app_service_proto_goTypes = []any{
 	(*App)(nil),                                // 0: app_service.App
 	(*EnvironmentVariables)(nil),               // 1: app_service.EnvironmentVariables
 	(*CreateAppRequest)(nil),                   // 2: app_service.CreateAppRequest
@@ -1321,7 +1321,7 @@ var file_protos_app_service_proto_goTypes = []any{
 	(*HealthRequest)(nil),                      // 20: app_service.HealthRequest
 	(*HealthResponse)(nil),                     // 21: app_service.HealthResponse
 }
-var file_protos_app_service_proto_depIdxs = []int32{
+var file_src_protos_app_service_proto_depIdxs = []int32{
 	0,  // 0: app_service.CreateAppResponse.app:type_name -> app_service.App
 	0,  // 1: app_service.GetAppResponse.app:type_name -> app_service.App
 	0,  // 2: app_service.GetAppsResponse.apps:type_name -> app_service.App
@@ -1356,28 +1356,28 @@ var file_protos_app_service_proto_depIdxs = []int32{
 	0,  // [0:7] is the sub-list for field type_name
 }
 
-func init() { file_protos_app_service_proto_init() }
-func file_protos_app_service_proto_init() {
-	if File_protos_app_service_proto != nil {
+func init() { file_src_protos_app_service_proto_init() }
+func file_src_protos_app_service_proto_init() {
+	if File_src_protos_app_service_proto != nil {
 		return
 	}
-	file_protos_app_service_proto_msgTypes[2].OneofWrappers = []any{}
-	file_protos_app_service_proto_msgTypes[8].OneofWrappers = []any{}
+	file_src_protos_app_service_proto_msgTypes[2].OneofWrappers = []any{}
+	file_src_protos_app_service_proto_msgTypes[8].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_protos_app_service_proto_rawDesc), len(file_protos_app_service_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_src_protos_app_service_proto_rawDesc), len(file_src_protos_app_service_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   22,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_protos_app_service_proto_goTypes,
-		DependencyIndexes: file_protos_app_service_proto_depIdxs,
-		MessageInfos:      file_protos_app_service_proto_msgTypes,
+		GoTypes:           file_src_protos_app_service_proto_goTypes,
+		DependencyIndexes: file_src_protos_app_service_proto_depIdxs,
+		MessageInfos:      file_src_protos_app_service_proto_msgTypes,
 	}.Build()
-	File_protos_app_service_proto = out.File
-	file_protos_app_service_proto_goTypes = nil
-	file_protos_app_service_proto_depIdxs = nil
+	File_src_protos_app_service_proto = out.File
+	file_src_protos_app_service_proto_goTypes = nil
+	file_src_protos_app_service_proto_depIdxs = nil
 }

@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.6
 // 	protoc        v6.30.2
-// source: protos/project_service.proto
+// source: src/protos/project_service.proto
 
 package project_service_pb
 
@@ -33,7 +33,7 @@ type Project struct {
 
 func (x *Project) Reset() {
 	*x = Project{}
-	mi := &file_protos_project_service_proto_msgTypes[0]
+	mi := &file_src_protos_project_service_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -45,7 +45,7 @@ func (x *Project) String() string {
 func (*Project) ProtoMessage() {}
 
 func (x *Project) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_project_service_proto_msgTypes[0]
+	mi := &file_src_protos_project_service_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -58,7 +58,7 @@ func (x *Project) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Project.ProtoReflect.Descriptor instead.
 func (*Project) Descriptor() ([]byte, []int) {
-	return file_protos_project_service_proto_rawDescGZIP(), []int{0}
+	return file_src_protos_project_service_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Project) GetId() string {
@@ -99,7 +99,7 @@ type CreateProjectRequest struct {
 
 func (x *CreateProjectRequest) Reset() {
 	*x = CreateProjectRequest{}
-	mi := &file_protos_project_service_proto_msgTypes[1]
+	mi := &file_src_protos_project_service_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -111,7 +111,7 @@ func (x *CreateProjectRequest) String() string {
 func (*CreateProjectRequest) ProtoMessage() {}
 
 func (x *CreateProjectRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_project_service_proto_msgTypes[1]
+	mi := &file_src_protos_project_service_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -124,7 +124,7 @@ func (x *CreateProjectRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateProjectRequest.ProtoReflect.Descriptor instead.
 func (*CreateProjectRequest) Descriptor() ([]byte, []int) {
-	return file_protos_project_service_proto_rawDescGZIP(), []int{1}
+	return file_src_protos_project_service_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *CreateProjectRequest) GetName() string {
@@ -150,7 +150,7 @@ type CreateProjectResponse struct {
 
 func (x *CreateProjectResponse) Reset() {
 	*x = CreateProjectResponse{}
-	mi := &file_protos_project_service_proto_msgTypes[2]
+	mi := &file_src_protos_project_service_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -162,7 +162,7 @@ func (x *CreateProjectResponse) String() string {
 func (*CreateProjectResponse) ProtoMessage() {}
 
 func (x *CreateProjectResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_project_service_proto_msgTypes[2]
+	mi := &file_src_protos_project_service_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -175,7 +175,7 @@ func (x *CreateProjectResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateProjectResponse.ProtoReflect.Descriptor instead.
 func (*CreateProjectResponse) Descriptor() ([]byte, []int) {
-	return file_protos_project_service_proto_rawDescGZIP(), []int{2}
+	return file_src_protos_project_service_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *CreateProjectResponse) GetProject() *Project {
@@ -195,7 +195,7 @@ type GetUserProjectByIdRequest struct {
 
 func (x *GetUserProjectByIdRequest) Reset() {
 	*x = GetUserProjectByIdRequest{}
-	mi := &file_protos_project_service_proto_msgTypes[3]
+	mi := &file_src_protos_project_service_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -207,7 +207,7 @@ func (x *GetUserProjectByIdRequest) String() string {
 func (*GetUserProjectByIdRequest) ProtoMessage() {}
 
 func (x *GetUserProjectByIdRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_project_service_proto_msgTypes[3]
+	mi := &file_src_protos_project_service_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -220,7 +220,7 @@ func (x *GetUserProjectByIdRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUserProjectByIdRequest.ProtoReflect.Descriptor instead.
 func (*GetUserProjectByIdRequest) Descriptor() ([]byte, []int) {
-	return file_protos_project_service_proto_rawDescGZIP(), []int{3}
+	return file_src_protos_project_service_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *GetUserProjectByIdRequest) GetProjectId() string {
@@ -246,7 +246,7 @@ type GetUserProjectByIdResponse struct {
 
 func (x *GetUserProjectByIdResponse) Reset() {
 	*x = GetUserProjectByIdResponse{}
-	mi := &file_protos_project_service_proto_msgTypes[4]
+	mi := &file_src_protos_project_service_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -258,7 +258,7 @@ func (x *GetUserProjectByIdResponse) String() string {
 func (*GetUserProjectByIdResponse) ProtoMessage() {}
 
 func (x *GetUserProjectByIdResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_project_service_proto_msgTypes[4]
+	mi := &file_src_protos_project_service_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -271,7 +271,7 @@ func (x *GetUserProjectByIdResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUserProjectByIdResponse.ProtoReflect.Descriptor instead.
 func (*GetUserProjectByIdResponse) Descriptor() ([]byte, []int) {
-	return file_protos_project_service_proto_rawDescGZIP(), []int{4}
+	return file_src_protos_project_service_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *GetUserProjectByIdResponse) GetProject() *Project {
@@ -290,7 +290,7 @@ type GetUserProjectsRequest struct {
 
 func (x *GetUserProjectsRequest) Reset() {
 	*x = GetUserProjectsRequest{}
-	mi := &file_protos_project_service_proto_msgTypes[5]
+	mi := &file_src_protos_project_service_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -302,7 +302,7 @@ func (x *GetUserProjectsRequest) String() string {
 func (*GetUserProjectsRequest) ProtoMessage() {}
 
 func (x *GetUserProjectsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_project_service_proto_msgTypes[5]
+	mi := &file_src_protos_project_service_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -315,7 +315,7 @@ func (x *GetUserProjectsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUserProjectsRequest.ProtoReflect.Descriptor instead.
 func (*GetUserProjectsRequest) Descriptor() ([]byte, []int) {
-	return file_protos_project_service_proto_rawDescGZIP(), []int{5}
+	return file_src_protos_project_service_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GetUserProjectsRequest) GetUserId() string {
@@ -334,7 +334,7 @@ type GetUserProjectsResponse struct {
 
 func (x *GetUserProjectsResponse) Reset() {
 	*x = GetUserProjectsResponse{}
-	mi := &file_protos_project_service_proto_msgTypes[6]
+	mi := &file_src_protos_project_service_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -346,7 +346,7 @@ func (x *GetUserProjectsResponse) String() string {
 func (*GetUserProjectsResponse) ProtoMessage() {}
 
 func (x *GetUserProjectsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_project_service_proto_msgTypes[6]
+	mi := &file_src_protos_project_service_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -359,7 +359,7 @@ func (x *GetUserProjectsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUserProjectsResponse.ProtoReflect.Descriptor instead.
 func (*GetUserProjectsResponse) Descriptor() ([]byte, []int) {
-	return file_protos_project_service_proto_rawDescGZIP(), []int{6}
+	return file_src_protos_project_service_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *GetUserProjectsResponse) GetProjects() []*Project {
@@ -379,7 +379,7 @@ type DeleteUserProjectRequest struct {
 
 func (x *DeleteUserProjectRequest) Reset() {
 	*x = DeleteUserProjectRequest{}
-	mi := &file_protos_project_service_proto_msgTypes[7]
+	mi := &file_src_protos_project_service_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -391,7 +391,7 @@ func (x *DeleteUserProjectRequest) String() string {
 func (*DeleteUserProjectRequest) ProtoMessage() {}
 
 func (x *DeleteUserProjectRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_project_service_proto_msgTypes[7]
+	mi := &file_src_protos_project_service_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -404,7 +404,7 @@ func (x *DeleteUserProjectRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteUserProjectRequest.ProtoReflect.Descriptor instead.
 func (*DeleteUserProjectRequest) Descriptor() ([]byte, []int) {
-	return file_protos_project_service_proto_rawDescGZIP(), []int{7}
+	return file_src_protos_project_service_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *DeleteUserProjectRequest) GetProjectId() string {
@@ -429,7 +429,7 @@ type DeleteUserProjectResponse struct {
 
 func (x *DeleteUserProjectResponse) Reset() {
 	*x = DeleteUserProjectResponse{}
-	mi := &file_protos_project_service_proto_msgTypes[8]
+	mi := &file_src_protos_project_service_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -441,7 +441,7 @@ func (x *DeleteUserProjectResponse) String() string {
 func (*DeleteUserProjectResponse) ProtoMessage() {}
 
 func (x *DeleteUserProjectResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_project_service_proto_msgTypes[8]
+	mi := &file_src_protos_project_service_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -454,7 +454,7 @@ func (x *DeleteUserProjectResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteUserProjectResponse.ProtoReflect.Descriptor instead.
 func (*DeleteUserProjectResponse) Descriptor() ([]byte, []int) {
-	return file_protos_project_service_proto_rawDescGZIP(), []int{8}
+	return file_src_protos_project_service_proto_rawDescGZIP(), []int{8}
 }
 
 type HealthRequest struct {
@@ -465,7 +465,7 @@ type HealthRequest struct {
 
 func (x *HealthRequest) Reset() {
 	*x = HealthRequest{}
-	mi := &file_protos_project_service_proto_msgTypes[9]
+	mi := &file_src_protos_project_service_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -477,7 +477,7 @@ func (x *HealthRequest) String() string {
 func (*HealthRequest) ProtoMessage() {}
 
 func (x *HealthRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_project_service_proto_msgTypes[9]
+	mi := &file_src_protos_project_service_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -490,7 +490,7 @@ func (x *HealthRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthRequest.ProtoReflect.Descriptor instead.
 func (*HealthRequest) Descriptor() ([]byte, []int) {
-	return file_protos_project_service_proto_rawDescGZIP(), []int{9}
+	return file_src_protos_project_service_proto_rawDescGZIP(), []int{9}
 }
 
 type HealthResponse struct {
@@ -503,7 +503,7 @@ type HealthResponse struct {
 
 func (x *HealthResponse) Reset() {
 	*x = HealthResponse{}
-	mi := &file_protos_project_service_proto_msgTypes[10]
+	mi := &file_src_protos_project_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -515,7 +515,7 @@ func (x *HealthResponse) String() string {
 func (*HealthResponse) ProtoMessage() {}
 
 func (x *HealthResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_project_service_proto_msgTypes[10]
+	mi := &file_src_protos_project_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -528,7 +528,7 @@ func (x *HealthResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthResponse.ProtoReflect.Descriptor instead.
 func (*HealthResponse) Descriptor() ([]byte, []int) {
-	return file_protos_project_service_proto_rawDescGZIP(), []int{10}
+	return file_src_protos_project_service_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *HealthResponse) GetStatus() string {
@@ -545,11 +545,11 @@ func (x *HealthResponse) GetMessage() string {
 	return ""
 }
 
-var File_protos_project_service_proto protoreflect.FileDescriptor
+var File_src_protos_project_service_proto protoreflect.FileDescriptor
 
-const file_protos_project_service_proto_rawDesc = "" +
+const file_src_protos_project_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1cprotos/project_service.proto\x12\x0fproject_service\"e\n" +
+	" src/protos/project_service.proto\x12\x0fproject_service\"e\n" +
 	"\aProject\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12\x17\n" +
@@ -588,19 +588,19 @@ const file_protos_project_service_proto_rawDesc = "" +
 	"\x11DeleteUserProject\x12).project_service.DeleteUserProjectRequest\x1a*.project_service.DeleteUserProjectResponseB-Z+proto/project_service_pb;project_service_pbb\x06proto3"
 
 var (
-	file_protos_project_service_proto_rawDescOnce sync.Once
-	file_protos_project_service_proto_rawDescData []byte
+	file_src_protos_project_service_proto_rawDescOnce sync.Once
+	file_src_protos_project_service_proto_rawDescData []byte
 )
 
-func file_protos_project_service_proto_rawDescGZIP() []byte {
-	file_protos_project_service_proto_rawDescOnce.Do(func() {
-		file_protos_project_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_protos_project_service_proto_rawDesc), len(file_protos_project_service_proto_rawDesc)))
+func file_src_protos_project_service_proto_rawDescGZIP() []byte {
+	file_src_protos_project_service_proto_rawDescOnce.Do(func() {
+		file_src_protos_project_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_src_protos_project_service_proto_rawDesc), len(file_src_protos_project_service_proto_rawDesc)))
 	})
-	return file_protos_project_service_proto_rawDescData
+	return file_src_protos_project_service_proto_rawDescData
 }
 
-var file_protos_project_service_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
-var file_protos_project_service_proto_goTypes = []any{
+var file_src_protos_project_service_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_src_protos_project_service_proto_goTypes = []any{
 	(*Project)(nil),                    // 0: project_service.Project
 	(*CreateProjectRequest)(nil),       // 1: project_service.CreateProjectRequest
 	(*CreateProjectResponse)(nil),      // 2: project_service.CreateProjectResponse
@@ -613,7 +613,7 @@ var file_protos_project_service_proto_goTypes = []any{
 	(*HealthRequest)(nil),              // 9: project_service.HealthRequest
 	(*HealthResponse)(nil),             // 10: project_service.HealthResponse
 }
-var file_protos_project_service_proto_depIdxs = []int32{
+var file_src_protos_project_service_proto_depIdxs = []int32{
 	0,  // 0: project_service.CreateProjectResponse.project:type_name -> project_service.Project
 	0,  // 1: project_service.GetUserProjectByIdResponse.project:type_name -> project_service.Project
 	0,  // 2: project_service.GetUserProjectsResponse.projects:type_name -> project_service.Project
@@ -634,26 +634,26 @@ var file_protos_project_service_proto_depIdxs = []int32{
 	0,  // [0:3] is the sub-list for field type_name
 }
 
-func init() { file_protos_project_service_proto_init() }
-func file_protos_project_service_proto_init() {
-	if File_protos_project_service_proto != nil {
+func init() { file_src_protos_project_service_proto_init() }
+func file_src_protos_project_service_proto_init() {
+	if File_src_protos_project_service_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_protos_project_service_proto_rawDesc), len(file_protos_project_service_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_src_protos_project_service_proto_rawDesc), len(file_src_protos_project_service_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_protos_project_service_proto_goTypes,
-		DependencyIndexes: file_protos_project_service_proto_depIdxs,
-		MessageInfos:      file_protos_project_service_proto_msgTypes,
+		GoTypes:           file_src_protos_project_service_proto_goTypes,
+		DependencyIndexes: file_src_protos_project_service_proto_depIdxs,
+		MessageInfos:      file_src_protos_project_service_proto_msgTypes,
 	}.Build()
-	File_protos_project_service_proto = out.File
-	file_protos_project_service_proto_goTypes = nil
-	file_protos_project_service_proto_depIdxs = nil
+	File_src_protos_project_service_proto = out.File
+	file_src_protos_project_service_proto_goTypes = nil
+	file_src_protos_project_service_proto_depIdxs = nil
 }
