@@ -39,7 +39,12 @@ kubectl delete -f ./infrastructure/go-registry/deployment/deployment.yaml
 echo "[*] Deleting tls secrets..."
 kubectl delete secret tls-apps-hosting.com tls-wildcard.apps-hosting.com
 
-# 5. Stop minikube
+# 5. Delete grafana UI only
+helm uninstall my-grafana
+helm uninstall tempo
+kubectl delete -f ./infrastructure/grafana/ingress.yaml
+
+# 6. Stop minikube
 minikube stop
 
 echo "[*] Done."

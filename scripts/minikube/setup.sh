@@ -59,3 +59,10 @@ fi
 if ! kubectl create secret tls tls-wildcard.apps-hosting.com --key "config/tls/_wildcard.apps-hosting.com-key.pem" --cert "config/tls/_wildcard.apps-hosting.com.pem"; then
     echo "Failed to create tls-wildcard secret"
 fi
+
+# 5. Deply grafana UI only
+helm repo add grafana https://grafana.github.io/helm-charts --force-update
+helm install my-grafana grafana/grafana
+helm install tempo grafana/tempo
+kubectl apply -f ./infrastructure/grafana/ingress.yaml
+

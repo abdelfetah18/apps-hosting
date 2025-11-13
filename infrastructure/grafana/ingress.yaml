@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana-ui-ingress
+  labels:
+    name: grafana-ui
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  tls:
+    - hosts:
+        - grafana.apps-hosting.com
+      secretName: tls-wildcard.apps-hosting.com
+  rules:
+    - host: grafana.apps-hosting.com
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: my-grafana
+                port:
+                  number: 80
