@@ -2,7 +2,6 @@ package kaniko
 
 import (
 	"build/utils"
-	"os"
 
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -10,7 +9,7 @@ import (
 )
 
 func NewKanikoJob(appId, appName, imageName, repoFile string) batchv1.Job {
-	registryURL := os.Getenv("REGISTRY_URL")
+	containerRestartPolicy := corev1.ContainerRestartPolicyNever
 
 	return batchv1.Job{
 		ObjectMeta: metav1.ObjectMeta{
@@ -34,15 +33,20 @@ func NewKanikoJob(appId, appName, imageName, repoFile string) batchv1.Job {
 					Containers: []corev1.Container{
 						{
 							Name:  "kaniko",
-							Image: registryURL + "executor:latest",
+							Image: "gcr.io/kaniko-project/executor:latest",
 							Args: []string{
-								"--context=http://build-service:8081/repos/" + repoFile,
+								"--context=s3://apps-source/" + repoFile,
 								"--destination=" + imageName,
-								"--insecure",
-								"--skip-tls-verify",
 								"--build-arg=START_CMD=start",
 								"--build-arg=BUILD_CMD=build",
 							},
+							Env: []corev1.EnvVar{
+								{Name: "AWS_ACCESS_KEY_ID", Value: "minioadmin"},
+								{Name: "AWS_SECRET_ACCESS_KEY", Value: "minioadmin"},
+								{Name: "S3_ENDPOINT", Value: "http://object-storage-minio:9000"},
+								{Name: "S3_FORCE_PATH_STYLE", Value: "true"},
+							},
+							RestartPolicy: &containerRestartPolicy,
 						},
 					},
 				},

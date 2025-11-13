@@ -8,6 +8,7 @@ import (
 	"build/kaniko"
 	"build/repositories"
 	"build/runtime"
+	"build/storage"
 	"build/utils"
 
 	"apps-hosting.com/messaging"
@@ -113,14 +114,23 @@ func (handler *NatsHandler) HandleAppCreatedEvent(message messaging.Message[mess
 	}
 
 	// 4. Create Tar Archive
-	err = utils.CompressTarGZ(gitRepo.Path, "/shared/repos/"+gitRepo.Id+".tar.gz")
+	err = utils.CompressTarGZ(gitRepo.Path, gitRepo.Id+".tar.gz")
 	if err != nil {
 		handler.Logger.LogError("Failed to create tar archive")
 		handleBuildFailure(build.Id, err)
 		return
 	}
 
-	// 5. Build & Push Docker image
+	// 5. Upload Tar Archive to Minio Storage
+	minioStorage := storage.NewMinioStorage(false)
+	err = minioStorage.PutFile(gitRepo.Id+".tar.gz", gitRepo.Id+".tar.gz")
+	if err != nil {
+		handler.Logger.LogError("Failed to upload tar archive to minio bucket")
+		handleBuildFailure(build.Id, err)
+		return
+	}
+
+	// 6. Build & Push Docker image
 	imageURL := registryURL + utils.ToImageName(message.Data.AppName)
 	handler.Logger.LogInfoF("RunKanikoBuild: repoPath=%s, imageURL=%s\n", gitRepo.Id+".tar.gz", imageURL)
 	handler.Logger.LogInfoF("URL=http://build-service:8081/repos/%s", gitRepo.Id+".tar.gz")
@@ -131,7 +141,7 @@ func (handler *NatsHandler) HandleAppCreatedEvent(message messaging.Message[mess
 		return
 	}
 
-	// 6. Update build status
+	// 7. Update build status
 	build, err = handler.BuildRepository.UpdateBuildById(ctx, message.Data.AppId, build.Id, repositories.UpdateBuildParams{
 		Status:     repositories.BuildStatusSuccessed,
 		ImageURL:   imageURL,

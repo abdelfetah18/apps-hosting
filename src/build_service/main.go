@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"net"
-	"net/http"
 	"os"
 
 	"apps-hosting.com/logging"
@@ -12,14 +11,12 @@ import (
 	"build/database"
 	gitclient "build/git_client"
 	"build/grpc_server"
-	"build/handlers"
 	"build/kaniko"
 	"build/nats_service"
 	"build/proto/build_service_pb"
 	"build/repositories"
 	"build/runtime"
 
-	"github.com/gorilla/mux"
 	"github.com/nats-io/nats.go"
 	"google.golang.org/grpc"
 	"k8s.io/client-go/kubernetes"
@@ -121,8 +118,6 @@ func main() {
 
 	natsService.SubscribeToEvents()
 
-	go StartRestServer(logger)
-
 	grpcServer := grpc.NewServer(grpc.StatsHandler(otelgrpc.NewServerHandler()))
 	grpcBuildServiceServer := grpc_server.NewGRPCBuildServiceServer(buildRepository)
 	build_service_pb.RegisterBuildServiceServer(grpcServer, grpcBuildServiceServer)
@@ -141,25 +136,6 @@ func main() {
 	logger.LogErrorF("gRPC server listening at %v", lis.Addr())
 	if err := grpcServer.Serve(lis); err != nil {
 		logger.LogErrorF("failed to serve: %v", err)
-		return
-	}
-}
-
-func StartRestServer(logger logging.ServiceLogger) {
-	router := mux.NewRouter()
-
-	buildHandler := handlers.NewBuildHandler()
-
-	// API endpoints
-	router.HandleFunc("/health", buildHandler.HealthCheckHandler)
-	router.HandleFunc("/repos/{repo_id}", buildHandler.DownloadSourceCode).Methods("GET")
-
-	PORT := "8081"
-
-	logger.LogInfo("Http Server running on port " + PORT)
-	err := http.ListenAndServe(":"+PORT, router)
-	if err != nil {
-		logger.LogError(err.Error())
 		return
 	}
 }
