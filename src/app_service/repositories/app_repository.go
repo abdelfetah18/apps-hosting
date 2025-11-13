@@ -71,7 +71,7 @@ func (repository *AppRepository) CreateAppsTable() (sql.Result, error) {
 	return repository.Database.NewCreateTable().Model((*App)(nil)).IfNotExists().Exec(context.Background())
 }
 
-func (repository *AppRepository) CreateApp(projectId string, createAppParams CreateAppParams) (*App, error) {
+func (repository *AppRepository) CreateApp(ctx context.Context, projectId string, createAppParams CreateAppParams) (*App, error) {
 	app := App{
 		Name:       createAppParams.Name,
 		Runtime:    createAppParams.Runtime,
@@ -81,7 +81,7 @@ func (repository *AppRepository) CreateApp(projectId string, createAppParams Cre
 		BuildCMD:   createAppParams.BuildCMD,
 		DomainName: createAppParams.DomainName,
 	}
-	_, err := repository.Database.NewInsert().Model(&app).Exec(context.Background())
+	_, err := repository.Database.NewInsert().Model(&app).Exec(ctx)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
@@ -101,7 +101,7 @@ func (repository *AppRepository) CreateApp(projectId string, createAppParams Cre
 	return &app, nil
 }
 
-func (repository *AppRepository) UpdateApp(projectId, appId string, updateAppParams UpdateAppParams) (*App, error) {
+func (repository *AppRepository) UpdateApp(ctx context.Context, projectId, appId string, updateAppParams UpdateAppParams) (*App, error) {
 	app := App{
 		Name:       updateAppParams.Name,
 		Runtime:    updateAppParams.Runtime,
@@ -117,7 +117,7 @@ func (repository *AppRepository) UpdateApp(projectId, appId string, updateAppPar
 		Column("name", "runtime", "repo_url", "build_cmd", "run_cmd", "domain_name").
 		Where("id = ? and project_id = ?", appId, projectId).
 		Returning("*").
-		Exec(context.Background())
+		Exec(ctx)
 
 	if err != nil {
 		var pgErr *pgconn.PgError
@@ -144,13 +144,13 @@ func (repository *AppRepository) UpdateApp(projectId, appId string, updateAppPar
 	return &app, nil
 }
 
-func (repository *AppRepository) GetAppById(projectId, appId string) (*App, error) {
+func (repository *AppRepository) GetAppById(ctx context.Context, projectId, appId string) (*App, error) {
 	app := App{}
 	err := repository.Database.
 		NewSelect().
 		Model(&app).
 		Where("id = ? and project_id = ?", appId, projectId).
-		Scan(context.Background())
+		Scan(ctx)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -162,14 +162,14 @@ func (repository *AppRepository) GetAppById(projectId, appId string) (*App, erro
 	return &app, nil
 }
 
-func (repository *AppRepository) GetApps(projectId string) ([]App, error) {
+func (repository *AppRepository) GetApps(ctx context.Context, projectId string) ([]App, error) {
 	var apps []App
 	err := repository.Database.
 		NewSelect().
 		Model(&apps).
 		Where("project_id = ?", projectId).
 		Order("created_at DESC").
-		Scan(context.Background())
+		Scan(ctx)
 
 	if err != nil {
 		return []App{}, err
@@ -182,12 +182,12 @@ func (repository *AppRepository) GetApps(projectId string) ([]App, error) {
 	return apps, nil
 }
 
-func (repository *AppRepository) DeleteAppById(projectId string, appId string) error {
+func (repository *AppRepository) DeleteAppById(ctx context.Context, projectId string, appId string) error {
 	result, err := repository.Database.
 		NewDelete().
 		Model(&App{Id: appId, ProjectId: projectId}).
 		Where("id = ? AND project_id = ?", appId, projectId).
-		Exec(context.Background())
+		Exec(ctx)
 
 	rowsAffected, _ := result.RowsAffected()
 	if rowsAffected == 0 {

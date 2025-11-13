@@ -1,11 +1,12 @@
 package handlers
 
 import (
-	"context"
 	"gateway/proto/log_service_pb"
 	"net/http"
 
 	"apps-hosting.com/messaging"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 
 	"apps-hosting.com/logging"
 
@@ -26,13 +27,17 @@ func NewLogHandler(logServiceClient log_service_pb.LogServiceClient, logger logg
 }
 
 func (handler *LogHandler) QueryLogsHandler(w http.ResponseWriter, r *http.Request) {
+	span := trace.SpanFromContext(r.Context())
 	params := mux.Vars(r)
+
 	appId := params["app_id"]
+	span.SetAttributes(attribute.String("app_id", appId))
 
 	query := r.URL.Query()
 	userId := query.Get("user_id")
+	span.SetAttributes(attribute.String("user_id", userId))
 
-	QueryLogsResponse, err := handler.LogServiceClient.QueryLogs(context.Background(), &log_service_pb.QueryLogsRequest{
+	QueryLogsResponse, err := handler.LogServiceClient.QueryLogs(r.Context(), &log_service_pb.QueryLogsRequest{
 		UserId: userId,
 		AppId:  appId,
 	})
@@ -40,6 +45,7 @@ func (handler *LogHandler) QueryLogsHandler(w http.ResponseWriter, r *http.Reque
 	if err != nil {
 		status, _ := status.FromError(err)
 		messaging.WriteError(w, http.StatusInternalServerError, status.Message())
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return
 	}
 

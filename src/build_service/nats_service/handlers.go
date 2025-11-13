@@ -11,6 +11,8 @@ import (
 	"build/utils"
 
 	"apps-hosting.com/messaging"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 
 	"apps-hosting.com/logging"
 
@@ -47,11 +49,27 @@ func NewNatsHandler(
 }
 
 func (handler *NatsHandler) HandleAppCreatedEvent(message messaging.Message[messaging.AppCreatedData]) {
+	ctx := message.Context
+	span := trace.SpanFromContext(ctx)
+
+	span.SetAttributes(
+		attribute.String("user_id", message.Data.UserId),
+		attribute.String("app_id", message.Data.AppId),
+		attribute.String("app_name", message.Data.AppName),
+		attribute.String("domain_name", message.Data.DomainName),
+		attribute.String("runtime", message.Data.Runtime),
+		attribute.String("repo_url", message.Data.RepoURL),
+		attribute.String("build_cmd", message.Data.BuildCMD),
+		attribute.String("start_cmd", message.Data.StartCMD),
+	)
+
 	handler.Logger.LogInfo("HandleAppCreatedEvent")
+
 	userAppLogger := logging.NewUserAppLogger(message.Data.AppId, message.Data.UserId, logging.StageBuild)
 
 	handleBuildFailure := func(buildId string, err error) {
-		messaging.PublishMessage(handler.JetStream,
+		span.SetAttributes(attribute.String("error", err.Error()))
+		messaging.PublishMessage(ctx, handler.JetStream,
 			messaging.NewMessage(
 				messaging.BuildFailed,
 				messaging.BuildFailedData{
@@ -61,7 +79,7 @@ func (handler *NatsHandler) HandleAppCreatedEvent(message messaging.Message[mess
 					Reason:  err.Error(),
 				}))
 
-		handler.BuildRepository.UpdateBuildById(
+		handler.BuildRepository.UpdateBuildById(ctx,
 			message.Data.AppId,
 			buildId,
 			repositories.UpdateBuildParams{Status: repositories.BuildStatusFailed})
@@ -69,9 +87,10 @@ func (handler *NatsHandler) HandleAppCreatedEvent(message messaging.Message[mess
 
 	// 1. Create Build Entity
 	handler.Logger.LogInfo("Create Build model")
-	build, err := handler.BuildRepository.CreateBuild(message.Data.AppId, repositories.CreateBuildParams{Status: repositories.BuildStatusPending})
+	build, err := handler.BuildRepository.CreateBuild(ctx, message.Data.AppId, repositories.CreateBuildParams{Status: repositories.BuildStatusPending})
 	if err != nil {
 		handler.Logger.LogError(err.Error())
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return
 	}
 
@@ -113,17 +132,25 @@ func (handler *NatsHandler) HandleAppCreatedEvent(message messaging.Message[mess
 	}
 
 	// 6. Update build status
-	build, err = handler.BuildRepository.UpdateBuildById(message.Data.AppId, build.Id, repositories.UpdateBuildParams{
+	build, err = handler.BuildRepository.UpdateBuildById(ctx, message.Data.AppId, build.Id, repositories.UpdateBuildParams{
 		Status:     repositories.BuildStatusSuccessed,
 		ImageURL:   imageURL,
 		CommitHash: gitRepo.LastCommitHash,
 	})
 	if err != nil {
 		handler.Logger.LogError("Failed to update build status")
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return
 	}
 
-	_, err = messaging.PublishMessage(handler.JetStream,
+	span.SetAttributes(
+		attribute.String("build_id", build.Id),
+		attribute.String("build_image_url", imageURL),
+		attribute.String("build_commit_hash", gitRepo.LastCommitHash),
+		attribute.String("build_created_at", build.CreatedAt.String()),
+	)
+
+	_, err = messaging.PublishMessage(ctx, handler.JetStream,
 		messaging.NewMessage(
 			messaging.BuildCompleted,
 			messaging.BuildCompletedData{
@@ -135,21 +162,32 @@ func (handler *NatsHandler) HandleAppCreatedEvent(message messaging.Message[mess
 			}))
 	if err != nil {
 		handler.Logger.LogError(err.Error())
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return
 	}
 }
 
 func (handler *NatsHandler) HandleAppDeletedEvent(message messaging.Message[messaging.AppDeletedData]) {
+	ctx := message.Context
+	span := trace.SpanFromContext(ctx)
+
+	span.SetAttributes(
+		attribute.String("app_id", message.Data.AppId),
+		attribute.String("app_name", message.Data.AppName),
+	)
+
 	handler.Logger.LogInfo("HandleAppDeletedEvent")
-	err := handler.BuildRepository.DeleteBuilds(message.Data.AppId)
+	err := handler.BuildRepository.DeleteBuilds(ctx, message.Data.AppId)
 	if err != nil {
 		handler.Logger.LogError(err.Error())
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return
 	}
 
 	err = handler.KanikoBuilder.DeleteJobs(message.Data.AppName)
 	if err != nil {
 		handler.Logger.LogError(err.Error())
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return
 	}
 }

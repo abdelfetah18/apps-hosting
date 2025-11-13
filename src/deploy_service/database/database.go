@@ -8,6 +8,7 @@ import (
 	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
+	"github.com/uptrace/bun/extra/bunotel"
 )
 
 func NewDatabase() *bun.DB {
@@ -19,5 +20,7 @@ func NewDatabase() *bun.DB {
 
 	sqldb := sql.OpenDB(stdlib.GetConnector(*config))
 
-	return bun.NewDB(sqldb, pgdialect.New())
+	db := bun.NewDB(sqldb, pgdialect.New())
+	db.AddQueryHook(bunotel.NewQueryHook(bunotel.WithDBName("deploy_service_database")))
+	return db
 }

@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"apps-hosting.com/messaging"
+	"github.com/gorilla/mux"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 
 	"apps-hosting.com/logging"
 
@@ -48,9 +50,20 @@ func (handler *GatewayHandler) ReverseProxyHandler(serviceURL string) http.Handl
 }
 
 func (handler *GatewayHandler) LoggingMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return otelhttp.NewHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 		next.ServeHTTP(w, r)
 		handler.Logger.LogInfo(fmt.Sprintf("%s %s %d %s", r.Method, r.RequestURI, http.StatusOK, time.Since(start)))
-	})
+	}),
+		"",
+		otelhttp.WithSpanNameFormatter(func(operation string, r *http.Request) string {
+			route := mux.CurrentRoute(r)
+			path := r.URL.Path
+			if route != nil {
+				if tmpl, err := route.GetPathTemplate(); err == nil {
+					path = tmpl
+				}
+			}
+			return path
+		}))
 }

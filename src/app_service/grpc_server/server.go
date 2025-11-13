@@ -10,6 +10,8 @@ import (
 	"slices"
 
 	"apps-hosting.com/messaging"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 
 	"apps-hosting.com/logging"
 
@@ -48,7 +50,22 @@ func (server *GRPCAppServiceServer) Health(ctx context.Context, _ *app_service_p
 	}, nil
 }
 
-func (server *GRPCAppServiceServer) CreateApp(context context.Context, createAppRequest *app_service_pb.CreateAppRequest) (*app_service_pb.CreateAppResponse, error) {
+func (server *GRPCAppServiceServer) CreateApp(ctx context.Context, createAppRequest *app_service_pb.CreateAppRequest) (*app_service_pb.CreateAppResponse, error) {
+	span := trace.SpanFromContext(ctx)
+
+	span.SetAttributes(
+		attribute.String("project_id", createAppRequest.ProjectId),
+		attribute.String("app_name", createAppRequest.Name),
+		attribute.String("app_runtime", createAppRequest.Runtime),
+		attribute.String("app_repo_url", createAppRequest.RepoUrl),
+		attribute.String("app_build_cmd", createAppRequest.BuildCmd),
+		attribute.String("app_start_cmd", createAppRequest.StartCmd),
+	)
+
+	if createAppRequest.EnvironmentVariables != nil {
+		span.SetAttributes(attribute.String("app_environment_variables", *createAppRequest.EnvironmentVariables))
+	}
+
 	if len(createAppRequest.Name) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "Name is required")
 	}
@@ -62,7 +79,7 @@ func (server *GRPCAppServiceServer) CreateApp(context context.Context, createApp
 		return nil, status.Error(codes.InvalidArgument, "Invalid GitHub URL")
 	}
 
-	createdApp, err := server.AppRepository.CreateApp(createAppRequest.ProjectId, repositories.CreateAppParams{
+	createdApp, err := server.AppRepository.CreateApp(ctx, createAppRequest.ProjectId, repositories.CreateAppParams{
 		Name:       createAppRequest.Name,
 		Runtime:    createAppRequest.Runtime,
 		RepoURL:    createAppRequest.RepoUrl,
@@ -73,7 +90,7 @@ func (server *GRPCAppServiceServer) CreateApp(context context.Context, createApp
 
 	if err == repositories.ErrDomainNameInUse {
 		appName := createAppRequest.Name + "-" + uuid.NewString()
-		createdApp, err = server.AppRepository.CreateApp(createAppRequest.ProjectId, repositories.CreateAppParams{
+		createdApp, err = server.AppRepository.CreateApp(ctx, createAppRequest.ProjectId, repositories.CreateAppParams{
 			Name:       createAppRequest.Name,
 			Runtime:    createAppRequest.Runtime,
 			RepoURL:    createAppRequest.RepoUrl,
@@ -84,30 +101,39 @@ func (server *GRPCAppServiceServer) CreateApp(context context.Context, createApp
 	}
 
 	if err == repositories.ErrAppNameInUse {
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	if err != nil {
 		server.Logger.LogError(err.Error())
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	server.Logger.LogInfo("App created successfully")
 
 	if createAppRequest.EnvironmentVariables != nil {
-		_, err = server.EnvironmentVariablesRepository.CreateEnvironmentVariables(createdApp.Id, repositories.CreateEnvironmentVariableParams{
+		_, err = server.EnvironmentVariablesRepository.CreateEnvironmentVariables(ctx, createdApp.Id, repositories.CreateEnvironmentVariableParams{
 			Value: *createAppRequest.EnvironmentVariables,
 		})
 
 		if err != nil {
+			span.SetAttributes(attribute.String("error", err.Error()))
 			return nil, status.Error(codes.Internal, err.Error())
 		}
 
 		server.Logger.LogInfo("Environment variables created successfully")
 	}
 
+	span.SetAttributes(
+		attribute.String("app_id", createdApp.Id),
+		attribute.String("app_domain_name", createdApp.DomainName),
+		attribute.String("app_created_at", createdApp.CreatedAt.String()),
+	)
+
 	server.Logger.LogInfo("Send AppCreated Event")
-	_, err = messaging.PublishMessage(server.NatsService.JetStream,
+	_, err = messaging.PublishMessage(ctx, server.NatsService.JetStream,
 		messaging.NewMessage(
 			messaging.AppCreated,
 			messaging.AppCreatedData{
@@ -123,6 +149,7 @@ func (server *GRPCAppServiceServer) CreateApp(context context.Context, createApp
 	if err != nil {
 		// FIXME: Handle this case
 		server.Logger.LogError(err.Error())
+		span.SetAttributes(attribute.String("error", err.Error()))
 	}
 
 	return &app_service_pb.CreateAppResponse{
@@ -139,14 +166,33 @@ func (server *GRPCAppServiceServer) CreateApp(context context.Context, createApp
 	}, nil
 }
 
-func (server *GRPCAppServiceServer) GetApp(context context.Context, getAppRequest *app_service_pb.GetAppRequest) (*app_service_pb.GetAppResponse, error) {
-	app, err := server.AppRepository.GetAppById(getAppRequest.ProjectId, getAppRequest.AppId)
+func (server *GRPCAppServiceServer) GetApp(ctx context.Context, getAppRequest *app_service_pb.GetAppRequest) (*app_service_pb.GetAppResponse, error) {
+	span := trace.SpanFromContext(ctx)
+
+	span.SetAttributes(
+		attribute.String("app_id", getAppRequest.AppId),
+		attribute.String("project_id", getAppRequest.ProjectId),
+	)
+
+	app, err := server.AppRepository.GetAppById(ctx, getAppRequest.ProjectId, getAppRequest.AppId)
+
+	span.SetAttributes(
+		attribute.String("app_name", app.Name),
+		attribute.String("app_runtime", app.Runtime),
+		attribute.String("app_repo_url", app.RepoURL),
+		attribute.String("app_domain_name", app.DomainName),
+		attribute.String("app_build_cmd", app.BuildCMD),
+		attribute.String("app_start_cmd", app.StartCMD),
+		attribute.String("app_created_at", app.CreatedAt.String()),
+	)
 
 	if err == repositories.ErrAppNotFound {
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return nil, status.Error(codes.NotFound, err.Error())
 	}
 
 	if err != nil {
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
@@ -164,15 +210,20 @@ func (server *GRPCAppServiceServer) GetApp(context context.Context, getAppReques
 	}, nil
 }
 
-func (server *GRPCAppServiceServer) GetApps(context context.Context, getAppsRequest *app_service_pb.GetAppsRequest) (*app_service_pb.GetAppsResponse, error) {
-	apps, err := server.AppRepository.GetApps(getAppsRequest.ProjectId)
+func (server *GRPCAppServiceServer) GetApps(ctx context.Context, getAppsRequest *app_service_pb.GetAppsRequest) (*app_service_pb.GetAppsResponse, error) {
+	span := trace.SpanFromContext(ctx)
 
+	span.SetAttributes(attribute.String("project_id", getAppsRequest.ProjectId))
+
+	apps, err := server.AppRepository.GetApps(ctx, getAppsRequest.ProjectId)
 	if err != nil {
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	// TODO: create a util function
 	_apps := []*app_service_pb.App{}
+	apps_ids := []string{}
 	for _, app := range apps {
 		_app := app_service_pb.App{
 			Id:         app.Id,
@@ -185,14 +236,29 @@ func (server *GRPCAppServiceServer) GetApps(context context.Context, getAppsRequ
 			CreatedAt:  app.CreatedAt.String(),
 		}
 		_apps = append(_apps, &_app)
+		apps_ids = append(apps_ids, app.Id)
 	}
+
+	span.SetAttributes(attribute.StringSlice("apps_ids", apps_ids))
 
 	return &app_service_pb.GetAppsResponse{
 		Apps: _apps,
 	}, nil
 }
 
-func (server *GRPCAppServiceServer) UpdateApp(context context.Context, updateAppRequest *app_service_pb.UpdateAppRequest) (*app_service_pb.UpdateAppResponse, error) {
+func (server *GRPCAppServiceServer) UpdateApp(ctx context.Context, updateAppRequest *app_service_pb.UpdateAppRequest) (*app_service_pb.UpdateAppResponse, error) {
+	span := trace.SpanFromContext(ctx)
+
+	span.SetAttributes(
+		attribute.String("project_id", updateAppRequest.ProjectId),
+		attribute.String("app_id", updateAppRequest.AppId),
+		attribute.String("app_name", utils.SafeString(updateAppRequest.Name)),
+		attribute.String("app_runtime", utils.SafeString(updateAppRequest.Runtime)),
+		attribute.String("app_repo_url", utils.SafeString(updateAppRequest.RepoUrl)),
+		attribute.String("app_build_cmd", utils.SafeString(updateAppRequest.BuildCmd)),
+		attribute.String("app_start_cmd", utils.SafeString(updateAppRequest.StartCmd)),
+	)
+
 	if len(*updateAppRequest.Name) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "Name cannot be empty")
 	}
@@ -203,10 +269,12 @@ func (server *GRPCAppServiceServer) UpdateApp(context context.Context, updateApp
 
 	repoURL, err := url.Parse(*updateAppRequest.RepoUrl)
 	if err != nil || repoURL.Hostname() != "github.com" {
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return nil, status.Error(codes.InvalidArgument, "Invalid GitHub URL")
 	}
 
 	updatedApp, err := server.AppRepository.UpdateApp(
+		ctx,
 		updateAppRequest.ProjectId,
 		updateAppRequest.AppId,
 		repositories.UpdateAppParams{
@@ -221,6 +289,7 @@ func (server *GRPCAppServiceServer) UpdateApp(context context.Context, updateApp
 	if err == repositories.ErrDomainNameInUse {
 		appName := *updateAppRequest.Name + "-" + uuid.NewString()
 		updatedApp, err = server.AppRepository.UpdateApp(
+			ctx,
 			updateAppRequest.ProjectId,
 			updateAppRequest.AppId,
 			repositories.UpdateAppParams{
@@ -234,10 +303,12 @@ func (server *GRPCAppServiceServer) UpdateApp(context context.Context, updateApp
 	}
 
 	if err == repositories.ErrAppNameInUse {
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	if err != nil {
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
@@ -255,27 +326,38 @@ func (server *GRPCAppServiceServer) UpdateApp(context context.Context, updateApp
 	}, nil
 }
 
-func (server *GRPCAppServiceServer) DeleteApp(context context.Context, deleteAppRequest *app_service_pb.DeleteAppRequest) (*app_service_pb.DeleteAppResponse, error) {
-	app, err := server.AppRepository.GetAppById(deleteAppRequest.ProjectId, deleteAppRequest.AppId)
+func (server *GRPCAppServiceServer) DeleteApp(ctx context.Context, deleteAppRequest *app_service_pb.DeleteAppRequest) (*app_service_pb.DeleteAppResponse, error) {
+	span := trace.SpanFromContext(ctx)
+
+	span.SetAttributes(
+		attribute.String("project_id", deleteAppRequest.ProjectId),
+		attribute.String("app_id", deleteAppRequest.AppId),
+	)
+
+	app, err := server.AppRepository.GetAppById(ctx, deleteAppRequest.ProjectId, deleteAppRequest.AppId)
 
 	if err == repositories.ErrAppNotFound {
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	if err != nil {
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	err = server.AppRepository.DeleteAppById(deleteAppRequest.ProjectId, deleteAppRequest.AppId)
+	err = server.AppRepository.DeleteAppById(ctx, deleteAppRequest.ProjectId, deleteAppRequest.AppId)
 	if err == repositories.ErrAppNotFound {
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	if err != nil {
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	_, err = messaging.PublishMessage(server.NatsService.JetStream,
+	_, err = messaging.PublishMessage(ctx, server.NatsService.JetStream,
 		messaging.NewMessage(
 			messaging.AppDeleted,
 			messaging.AppDeletedData{
@@ -285,21 +367,34 @@ func (server *GRPCAppServiceServer) DeleteApp(context context.Context, deleteApp
 	if err != nil {
 		// FIXME: handle this case
 		server.Logger.LogError(err.Error())
+
+		span.SetAttributes(attribute.String("error", err.Error()))
 	}
 
 	return &app_service_pb.DeleteAppResponse{}, nil
 }
 
-func (server *GRPCAppServiceServer) GetEnvironmentVariables(context context.Context, getEnvironmentVariablesRequest *app_service_pb.GetEnvironmentVariablesRequest) (*app_service_pb.GetEnvironmentVariablesResponse, error) {
-	environmentVariables, err := server.EnvironmentVariablesRepository.GetEnvironmentVariable(getEnvironmentVariablesRequest.AppId)
+func (server *GRPCAppServiceServer) GetEnvironmentVariables(ctx context.Context, getEnvironmentVariablesRequest *app_service_pb.GetEnvironmentVariablesRequest) (*app_service_pb.GetEnvironmentVariablesResponse, error) {
+	span := trace.SpanFromContext(ctx)
+
+	span.SetAttributes(attribute.String("app_id", getEnvironmentVariablesRequest.AppId))
+
+	environmentVariables, err := server.EnvironmentVariablesRepository.GetEnvironmentVariable(ctx, getEnvironmentVariablesRequest.AppId)
 
 	if err == repositories.ErrEnvVarNotFound {
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return nil, status.Error(codes.NotFound, err.Error())
 	}
 
 	if err != nil {
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return nil, status.Error(codes.Internal, err.Error())
 	}
+
+	span.SetAttributes(
+		attribute.String("app_environment_variables_id", environmentVariables.Id),
+		attribute.String("app_environment_variables_value", environmentVariables.Value),
+	)
 
 	return &app_service_pb.GetEnvironmentVariablesResponse{
 		EnvironmentVariable: &app_service_pb.EnvironmentVariables{
@@ -310,14 +405,24 @@ func (server *GRPCAppServiceServer) GetEnvironmentVariables(context context.Cont
 	}, nil
 }
 
-func (server *GRPCAppServiceServer) CreateEnvironmentVariables(context context.Context, createEnvironmentVariablesRequest *app_service_pb.CreateEnvironmentVariablesRequest) (*app_service_pb.CreateEnvironmentVariablesResponse, error) {
-	environmentVariables, err := server.EnvironmentVariablesRepository.CreateEnvironmentVariables(createEnvironmentVariablesRequest.AppId, repositories.CreateEnvironmentVariableParams{
+func (server *GRPCAppServiceServer) CreateEnvironmentVariables(ctx context.Context, createEnvironmentVariablesRequest *app_service_pb.CreateEnvironmentVariablesRequest) (*app_service_pb.CreateEnvironmentVariablesResponse, error) {
+	span := trace.SpanFromContext(ctx)
+
+	span.SetAttributes(
+		attribute.String("app_id", createEnvironmentVariablesRequest.AppId),
+		attribute.String("environment_variables_value", createEnvironmentVariablesRequest.Value),
+	)
+
+	environmentVariables, err := server.EnvironmentVariablesRepository.CreateEnvironmentVariables(ctx, createEnvironmentVariablesRequest.AppId, repositories.CreateEnvironmentVariableParams{
 		Value: createEnvironmentVariablesRequest.Value,
 	})
 
 	if err != nil {
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return nil, status.Error(codes.Internal, err.Error())
 	}
+
+	span.SetAttributes(attribute.String("environment_variables_id", environmentVariables.Id))
 
 	return &app_service_pb.CreateEnvironmentVariablesResponse{
 		EnvironmentVariable: &app_service_pb.EnvironmentVariables{
@@ -328,20 +433,31 @@ func (server *GRPCAppServiceServer) CreateEnvironmentVariables(context context.C
 	}, nil
 }
 
-func (server *GRPCAppServiceServer) UpdateEnvironmentVariables(context context.Context, updateEnvironmentVariablesRequest *app_service_pb.UpdateEnvironmentVariablesRequest) (*app_service_pb.UpdateEnvironmentVariablesResponse, error) {
-	_, err := server.EnvironmentVariablesRepository.GetEnvironmentVariable(updateEnvironmentVariablesRequest.AppId)
+func (server *GRPCAppServiceServer) UpdateEnvironmentVariables(ctx context.Context, updateEnvironmentVariablesRequest *app_service_pb.UpdateEnvironmentVariablesRequest) (*app_service_pb.UpdateEnvironmentVariablesResponse, error) {
+	span := trace.SpanFromContext(ctx)
+
+	span.SetAttributes(
+		attribute.String("app_id", updateEnvironmentVariablesRequest.AppId),
+		attribute.String("environment_variables_value", updateEnvironmentVariablesRequest.Value),
+	)
+
+	_, err := server.EnvironmentVariablesRepository.GetEnvironmentVariable(ctx, updateEnvironmentVariablesRequest.AppId)
 	if err == repositories.ErrEnvVarNotFound {
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return nil, status.Error(codes.NotFound, err.Error())
 	}
 
 	if err != nil {
-		environmentVariables, err := server.EnvironmentVariablesRepository.CreateEnvironmentVariables(updateEnvironmentVariablesRequest.AppId, repositories.CreateEnvironmentVariableParams{
+		environmentVariables, err := server.EnvironmentVariablesRepository.CreateEnvironmentVariables(ctx, updateEnvironmentVariablesRequest.AppId, repositories.CreateEnvironmentVariableParams{
 			Value: updateEnvironmentVariablesRequest.Value,
 		})
 
 		if err != nil {
+			span.SetAttributes(attribute.String("error", err.Error()))
 			return nil, status.Error(codes.Internal, err.Error())
 		}
+
+		span.SetAttributes(attribute.String("environment_variables_id", environmentVariables.Id))
 
 		return &app_service_pb.UpdateEnvironmentVariablesResponse{
 			EnvironmentVariable: &app_service_pb.EnvironmentVariables{
@@ -352,17 +468,21 @@ func (server *GRPCAppServiceServer) UpdateEnvironmentVariables(context context.C
 		}, nil
 	}
 
-	environmentVariables, err := server.EnvironmentVariablesRepository.UpdateEnvironmentVariables(updateEnvironmentVariablesRequest.AppId, repositories.UpdateEnvironmentVariableParams{
+	environmentVariables, err := server.EnvironmentVariablesRepository.UpdateEnvironmentVariables(ctx, updateEnvironmentVariablesRequest.AppId, repositories.UpdateEnvironmentVariableParams{
 		Value: updateEnvironmentVariablesRequest.Value,
 	})
 
 	if err == repositories.ErrEnvVarNotFound {
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return nil, status.Error(codes.NotFound, err.Error())
 	}
 
 	if err != nil {
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return nil, status.Error(codes.Internal, err.Error())
 	}
+
+	span.SetAttributes(attribute.String("environment_variables_id", environmentVariables.Id))
 
 	return &app_service_pb.UpdateEnvironmentVariablesResponse{
 		EnvironmentVariable: &app_service_pb.EnvironmentVariables{
@@ -373,6 +493,6 @@ func (server *GRPCAppServiceServer) UpdateEnvironmentVariables(context context.C
 	}, nil
 }
 
-func (server *GRPCAppServiceServer) DeleteEnvironmentVariables(context context.Context, deleteEnvironmentVariablesRequest *app_service_pb.DeleteEnvironmentVariablesRequest) (*app_service_pb.DeleteEnvironmentVariablesResponse, error) {
+func (server *GRPCAppServiceServer) DeleteEnvironmentVariables(ctx context.Context, deleteEnvironmentVariablesRequest *app_service_pb.DeleteEnvironmentVariablesRequest) (*app_service_pb.DeleteEnvironmentVariablesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "Unimplemented")
 }

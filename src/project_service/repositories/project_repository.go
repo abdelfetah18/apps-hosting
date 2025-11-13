@@ -14,10 +14,10 @@ import (
 
 type ProjectRepositoryInterface interface {
 	CreateProjectsTable() error
-	CreateProject(userId string, createProjectParams CreateProjectParams) (*Project, error)
-	GetProjectById(userId, projectId string) (*Project, error)
-	GetProjects(userId string) ([]Project, error)
-	DeleteProjectById(userId, projectId string) error
+	CreateProject(ctx context.Context, userId string, createProjectParams CreateProjectParams) (*Project, error)
+	GetProjectById(ctx context.Context, userId, projectId string) (*Project, error)
+	GetProjects(ctx context.Context, userId string) ([]Project, error)
+	DeleteProjectById(ctx context.Context, userId, projectId string) error
 }
 
 type Project struct {
@@ -49,13 +49,13 @@ func (repository *ProjectRepository) CreateProjectsTable() error {
 	return err
 }
 
-func (repository *ProjectRepository) CreateProject(userId string, createProjectParams CreateProjectParams) (*Project, error) {
+func (repository *ProjectRepository) CreateProject(ctx context.Context, userId string, createProjectParams CreateProjectParams) (*Project, error) {
 	project := Project{
 		UserId: userId,
 		Name:   createProjectParams.Name,
 	}
 
-	_, err := repository.Database.NewInsert().Model(&project).Exec(context.Background())
+	_, err := repository.Database.NewInsert().Model(&project).Exec(ctx)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
@@ -72,14 +72,14 @@ func (repository *ProjectRepository) CreateProject(userId string, createProjectP
 	return &project, nil
 }
 
-func (repository *ProjectRepository) GetProjectById(userId, projectId string) (*Project, error) {
+func (repository *ProjectRepository) GetProjectById(ctx context.Context, userId, projectId string) (*Project, error) {
 	project := Project{}
 
 	err := repository.Database.
 		NewSelect().
 		Model(&project).
 		Where("id = ? and user_id = ?", projectId, userId).
-		Scan(context.Background())
+		Scan(ctx)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -91,13 +91,13 @@ func (repository *ProjectRepository) GetProjectById(userId, projectId string) (*
 	return &project, nil
 }
 
-func (repository *ProjectRepository) GetProjects(userId string) ([]Project, error) {
+func (repository *ProjectRepository) GetProjects(ctx context.Context, userId string) ([]Project, error) {
 	var projects []Project
 	err := repository.Database.NewSelect().
 		Model(&projects).
 		Where("user_id = ?", userId).
 		Order("created_at DESC").
-		Scan(context.Background())
+		Scan(ctx)
 	if err != nil {
 		return []Project{}, err
 	}
@@ -109,12 +109,12 @@ func (repository *ProjectRepository) GetProjects(userId string) ([]Project, erro
 	return projects, nil
 }
 
-func (repository *ProjectRepository) DeleteProjectById(userId, projectId string) error {
+func (repository *ProjectRepository) DeleteProjectById(ctx context.Context, userId, projectId string) error {
 	result, err := repository.Database.
 		NewDelete().
 		Model(&Project{}).
 		Where("id = ? AND user_id = ?", projectId, userId).
-		Exec(context.Background())
+		Exec(ctx)
 
 	rowsAffected, _ := result.RowsAffected()
 	if rowsAffected == 0 {

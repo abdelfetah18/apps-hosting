@@ -3,6 +3,7 @@ package kaniko
 import (
 	"build/utils"
 	"context"
+	"fmt"
 
 	"apps-hosting.com/logging"
 
@@ -49,7 +50,7 @@ func (kanikoBuilder *KanikoBuilder) RunKanikoBuild(repoFile, appId, appName, ima
 
 			if evt.Status.Failed > 0 {
 				kanikoBuilder.Logger.LogErrorF("job %s failed", job.Name)
-				return nil
+				return fmt.Errorf("job %s failed", job.Name)
 			}
 		}
 	}

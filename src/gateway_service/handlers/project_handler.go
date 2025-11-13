@@ -1,13 +1,14 @@
 package handlers
 
 import (
-	"context"
 	"encoding/json"
 	"gateway/proto/project_service_pb"
 	"gateway/utils"
 	"net/http"
 
 	"apps-hosting.com/messaging"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 
 	"apps-hosting.com/logging"
 
@@ -30,13 +31,18 @@ func NewProjectHandler(projectServiceClient project_service_pb.ProjectServiceCli
 
 func (handler *ProjectHandler) OwnershipMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		span := trace.SpanFromContext(r.Context())
+
 		params := mux.Vars(r)
 		projectId := params["project_id"]
 		userId := r.URL.Query().Get("user_id")
 
+		span.SetAttributes(attribute.String("user_id", userId))
+		span.SetAttributes(attribute.String("project_id", projectId))
+
 		handler.Logger.LogErrorF("projectId=%s, userId=%s", projectId, userId)
 
-		_, err := handler.ProjectServiceClient.GetUserProjectById(context.Background(), &project_service_pb.GetUserProjectByIdRequest{
+		_, err := handler.ProjectServiceClient.GetUserProjectById(r.Context(), &project_service_pb.GetUserProjectByIdRequest{
 			ProjectId: projectId,
 			UserId:    userId,
 		})
@@ -44,6 +50,8 @@ func (handler *ProjectHandler) OwnershipMiddleware(next http.Handler) http.Handl
 		if err != nil {
 			handler.Logger.LogError(err.Error())
 			status, _ := status.FromError(err)
+
+			span.SetAttributes(attribute.String("error", err.Error()))
 
 			if status.Code() == codes.NotFound {
 				messaging.WriteError(w, http.StatusUnauthorized, "you don't own this project")
@@ -59,20 +67,27 @@ func (handler *ProjectHandler) OwnershipMiddleware(next http.Handler) http.Handl
 }
 
 func (handler *ProjectHandler) CreateProjectHandler(w http.ResponseWriter, r *http.Request) {
+	span := trace.SpanFromContext(r.Context())
+
 	userId := r.URL.Query().Get("user_id")
+	span.SetAttributes(attribute.String("user_id", userId))
 	createProjectRequest := project_service_pb.CreateProjectRequest{}
 
 	err := json.NewDecoder(r.Body).Decode(&createProjectRequest)
 	if err != nil {
 		messaging.WriteError(w, http.StatusBadRequest, "failed at decoding json request")
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return
 	}
 
+	span.SetAttributes(attribute.String("project_name", createProjectRequest.Name))
+
 	createProjectRequest.UserId = userId
-	createAppResponse, err := handler.ProjectServiceClient.CreateProject(context.Background(), &createProjectRequest)
+	createAppResponse, err := handler.ProjectServiceClient.CreateProject(r.Context(), &createProjectRequest)
 	if err != nil {
 		status, _ := status.FromError(err)
 		messaging.WriteError(w, utils.GrpcCodeToHttpStatusCode(status.Code()), status.Message())
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return
 	}
 
@@ -80,12 +95,16 @@ func (handler *ProjectHandler) CreateProjectHandler(w http.ResponseWriter, r *ht
 }
 
 func (handler *ProjectHandler) DeleteProjectHandler(w http.ResponseWriter, r *http.Request) {
+	span := trace.SpanFromContext(r.Context())
 	params := mux.Vars(r)
 
 	projectId := params["project_id"]
 	userId := r.URL.Query().Get("user_id")
 
-	_, err := handler.ProjectServiceClient.DeleteUserProject(context.Background(), &project_service_pb.DeleteUserProjectRequest{
+	span.SetAttributes(attribute.String("user_id", userId))
+	span.SetAttributes(attribute.String("project_id", projectId))
+
+	_, err := handler.ProjectServiceClient.DeleteUserProject(r.Context(), &project_service_pb.DeleteUserProjectRequest{
 		ProjectId: projectId,
 		UserId:    userId,
 	})
@@ -93,6 +112,7 @@ func (handler *ProjectHandler) DeleteProjectHandler(w http.ResponseWriter, r *ht
 	if err != nil {
 		status, _ := status.FromError(err)
 		messaging.WriteError(w, utils.GrpcCodeToHttpStatusCode(status.Code()), status.Message())
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return
 	}
 
@@ -100,14 +120,18 @@ func (handler *ProjectHandler) DeleteProjectHandler(w http.ResponseWriter, r *ht
 }
 
 func (handler *ProjectHandler) GetUserProjectByIdHandler(w http.ResponseWriter, r *http.Request) {
+	span := trace.SpanFromContext(r.Context())
 	params := mux.Vars(r)
 
 	projectId := params["project_id"]
 	userId := r.URL.Query().Get("user_id")
 
+	span.SetAttributes(attribute.String("user_Id", userId))
+	span.SetAttributes(attribute.String("project_id", projectId))
+
 	handler.Logger.LogErrorF("projectId=%s, userId=%s", projectId, userId)
 
-	getUserProjectByIdResponse, err := handler.ProjectServiceClient.GetUserProjectById(context.Background(), &project_service_pb.GetUserProjectByIdRequest{
+	getUserProjectByIdResponse, err := handler.ProjectServiceClient.GetUserProjectById(r.Context(), &project_service_pb.GetUserProjectByIdRequest{
 		ProjectId: projectId,
 		UserId:    userId,
 	})
@@ -115,22 +139,30 @@ func (handler *ProjectHandler) GetUserProjectByIdHandler(w http.ResponseWriter, 
 	if err != nil {
 		status, _ := status.FromError(err)
 		messaging.WriteError(w, utils.GrpcCodeToHttpStatusCode(status.Code()), status.Message())
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return
 	}
+
+	span.SetAttributes(attribute.String("project_name", getUserProjectByIdResponse.Project.Name))
 
 	messaging.WriteSuccess(w, "Project Fetched Successfully", getUserProjectByIdResponse.Project)
 }
 
 func (handler *ProjectHandler) GetUserProjectsHandler(w http.ResponseWriter, r *http.Request) {
+	span := trace.SpanFromContext(r.Context())
+
 	userId := r.URL.Query().Get("user_id")
+	span.SetAttributes(attribute.String("user_id", userId))
 
 	handler.Logger.LogInfoF("userId=%s", userId)
-	getUserProjectsResponse, err := handler.ProjectServiceClient.GetUserProjects(context.Background(), &project_service_pb.GetUserProjectsRequest{UserId: userId})
+	getUserProjectsResponse, err := handler.ProjectServiceClient.GetUserProjects(r.Context(), &project_service_pb.GetUserProjectsRequest{UserId: userId})
 	if err != nil {
 		status, _ := status.FromError(err)
 		messaging.WriteError(w, utils.GrpcCodeToHttpStatusCode(status.Code()), status.Message())
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return
 	}
+	span.SetAttributes(attribute.Int("user_projects_count", len(getUserProjectsResponse.Projects)))
 
 	if getUserProjectsResponse.Projects == nil {
 		messaging.WriteSuccess(w, "Projects Fetched Successfully", []*project_service_pb.Project{})

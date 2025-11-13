@@ -56,14 +56,14 @@ func (repository *UserRepository) CreateUsersTable() (sql.Result, error) {
 	return repository.Database.NewCreateTable().Model((*User)(nil)).IfNotExists().Exec(context.Background())
 }
 
-func (repository *UserRepository) GetUserByEmail(email string) (*User, error) {
+func (repository *UserRepository) GetUserByEmail(ctx context.Context, email string) (*User, error) {
 	user := User{}
 
 	err := repository.Database.
 		NewSelect().
 		Model(&user).
 		Where("email = ?", email).
-		Scan(context.Background())
+		Scan(ctx)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -76,14 +76,14 @@ func (repository *UserRepository) GetUserByEmail(email string) (*User, error) {
 	return &user, nil
 }
 
-func (repository *UserRepository) CreateUser(createUserParams CreateUserParams) (*User, error) {
+func (repository *UserRepository) CreateUser(ctx context.Context, createUserParams CreateUserParams) (*User, error) {
 	user := User{
 		Username: createUserParams.Username,
 		Email:    createUserParams.Email,
 		Password: createUserParams.Password,
 	}
 
-	_, err := repository.Database.NewInsert().Model(&user).Exec(context.Background())
+	_, err := repository.Database.NewInsert().Model(&user).Exec(ctx)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
@@ -104,14 +104,14 @@ func (repository *UserRepository) CreateUser(createUserParams CreateUserParams) 
 	return &user, nil
 }
 
-func (repository *UserRepository) GetUserById(id string) (*User, error) {
+func (repository *UserRepository) GetUserById(ctx context.Context, id string) (*User, error) {
 	user := User{}
 
 	err := repository.Database.
 		NewSelect().
 		Model(&user).
 		Where("id = ?", id).
-		Scan(context.Background())
+		Scan(ctx)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -124,7 +124,7 @@ func (repository *UserRepository) GetUserById(id string) (*User, error) {
 	return &user, nil
 }
 
-func (repository *UserRepository) UpdateUserGithub(userId string, updateUserGithubParams UpdateUserGithubParams) (*User, error) {
+func (repository *UserRepository) UpdateUserGithub(ctx context.Context, userId string, updateUserGithubParams UpdateUserGithubParams) (*User, error) {
 	user := User{
 		GithubAppInstalled:          updateUserGithubParams.GithubAppInstalled,
 		GithubAccessToken:           updateUserGithubParams.GithubAccessToken,
@@ -139,7 +139,7 @@ func (repository *UserRepository) UpdateUserGithub(userId string, updateUserGith
 		Column("github_app_installed", "github_access_token", "github_refresh_token", "github_access_token_expires_at", "github_refresh_token_expires_at").
 		Where("id = ?", userId).
 		Returning("*").
-		Exec(context.Background())
+		Exec(ctx)
 
 	if err != nil {
 		return nil, err

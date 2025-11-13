@@ -51,13 +51,13 @@ func (repository *DeploymentRepository) CreateDeploymentsTable() (sql.Result, er
 	return repository.Database.NewCreateTable().Model((*Deployment)(nil)).IfNotExists().Exec(context.Background())
 }
 
-func (repository *DeploymentRepository) CreateDeployment(buildId, appId string, createDeploymentParams CreateDeploymentParams) (*Deployment, error) {
+func (repository *DeploymentRepository) CreateDeployment(ctx context.Context, buildId, appId string, createDeploymentParams CreateDeploymentParams) (*Deployment, error) {
 	deployment := Deployment{
 		BuildId: buildId,
 		AppId:   appId,
 		Status:  createDeploymentParams.Status,
 	}
-	_, err := repository.Database.NewInsert().Model(&deployment).Exec(context.Background())
+	_, err := repository.Database.NewInsert().Model(&deployment).Exec(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -65,14 +65,14 @@ func (repository *DeploymentRepository) CreateDeployment(buildId, appId string, 
 	return &deployment, nil
 }
 
-func (repository *DeploymentRepository) GetDeployments(appId string) ([]Deployment, error) {
+func (repository *DeploymentRepository) GetDeployments(ctx context.Context, appId string) ([]Deployment, error) {
 	deployments := []Deployment{}
 	err := repository.Database.
 		NewSelect().
 		Model(&deployments).
 		Where("app_id = ?", appId).
 		Order("created_at DESC").
-		Scan(context.Background())
+		Scan(ctx)
 
 	if err != nil {
 		return []Deployment{}, err
@@ -85,12 +85,12 @@ func (repository *DeploymentRepository) GetDeployments(appId string) ([]Deployme
 	return deployments, nil
 }
 
-func (repository *DeploymentRepository) DeleteDeployments(appId string) error {
+func (repository *DeploymentRepository) DeleteDeployments(ctx context.Context, appId string) error {
 	result, err := repository.Database.
 		NewDelete().
 		Model(&Deployment{AppId: appId}).
 		Where("app_id = ?", appId).
-		Exec(context.Background())
+		Exec(ctx)
 
 	rowsAffected, _ := result.RowsAffected()
 	if rowsAffected == 0 {
@@ -100,7 +100,7 @@ func (repository *DeploymentRepository) DeleteDeployments(appId string) error {
 	return err
 }
 
-func (repository *DeploymentRepository) UpdateDeploymentById(deploymentId string, updateDeploymentParams UpdateDeploymentParams) (*Deployment, error) {
+func (repository *DeploymentRepository) UpdateDeploymentById(ctx context.Context, deploymentId string, updateDeploymentParams UpdateDeploymentParams) (*Deployment, error) {
 	deployment := Deployment{
 		Status: updateDeploymentParams.Status,
 	}
@@ -111,7 +111,7 @@ func (repository *DeploymentRepository) UpdateDeploymentById(deploymentId string
 		Column("status").
 		Where("id = ?", deploymentId).
 		Returning("*").
-		Exec(context.Background())
+		Exec(ctx)
 
 	if err != nil {
 		return nil, err

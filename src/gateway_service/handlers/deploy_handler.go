@@ -1,10 +1,11 @@
 package handlers
 
 import (
-	"context"
 	"net/http"
 
 	"apps-hosting.com/messaging"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 
 	"apps-hosting.com/logging"
 
@@ -27,17 +28,23 @@ func NewDeployHandler(deployServiceClient deploy_service_pb.DeployServiceClient,
 }
 
 func (handler *DeployHandler) GetDeploymentsHandler(w http.ResponseWriter, r *http.Request) {
+	span := trace.SpanFromContext(r.Context())
 	params := mux.Vars(r)
-	appId := params["app_id"]
 
-	getDeploymentsResponse, err := handler.DeployServiceClient.GetDeployments(context.Background(), &deploy_service_pb.GetDeploymentsRequest{
+	appId := params["app_id"]
+	span.SetAttributes(attribute.String("app_id", appId))
+
+	getDeploymentsResponse, err := handler.DeployServiceClient.GetDeployments(r.Context(), &deploy_service_pb.GetDeploymentsRequest{
 		AppId: appId,
 	})
 	if err != nil {
 		status, _ := status.FromError(err)
 		messaging.WriteError(w, http.StatusInternalServerError, status.Message())
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return
 	}
+
+	span.SetAttributes(attribute.Int("app_deployments_count", len(getDeploymentsResponse.Deployments)))
 
 	if getDeploymentsResponse.Deployments == nil {
 		messaging.WriteSuccess(w, "Deployments Fetched Successfully", []*deploy_service_pb.Deployment{})

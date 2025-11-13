@@ -9,6 +9,8 @@ import (
 	"deploy/utils"
 
 	"apps-hosting.com/messaging"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 
 	"apps-hosting.com/logging"
 
@@ -43,23 +45,42 @@ func NewNatsHandler(
 }
 
 func (handler *NatsHandler) HandleBuildCompletedEvent(message messaging.Message[messaging.BuildCompletedData]) {
+	ctx := message.Context
+	span := trace.SpanFromContext(ctx)
+
+	span.SetAttributes(
+		attribute.String("app_id", message.Data.AppId),
+		attribute.String("app_name", message.Data.AppName),
+		attribute.String("build_id", message.Data.BuildId),
+		attribute.String("domain_name", message.Data.DomainName),
+		attribute.String("image_url", message.Data.ImageURL),
+		attribute.Int("duration", message.Data.Duration),
+	)
+
 	handler.Logger.LogInfo("HandleBuildCompletedEvent")
 
 	// 1. Create Deployment
-	deployment, err := handler.DeploymentRepository.CreateDeployment(message.Data.BuildId, message.Data.AppId, repositories.CreateDeploymentParams{
+	deployment, err := handler.DeploymentRepository.CreateDeployment(ctx, message.Data.BuildId, message.Data.AppId, repositories.CreateDeploymentParams{
 		Status: repositories.DeploymentStatusPending,
 	})
 
 	if err != nil {
 		handler.Logger.LogError(err.Error())
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return
 	}
+
+	span.SetAttributes(
+		attribute.String("deployment_id", deployment.Id),
+		attribute.String("deployment_created_at", deployment.CreatedAt.String()),
+	)
 
 	// Initialize Kubernetes client using utils
 	// config, err := kubernetes.GetKubernetesConfigFromEnv()
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		handler.Logger.LogError(err.Error())
+		span.SetAttributes(attribute.String("error", err.Error()))
 	}
 
 	kubernetesClient := kubernetes.NewKubernetesClient(config)
@@ -70,13 +91,21 @@ func (handler *NatsHandler) HandleBuildCompletedEvent(message messaging.Message[
 	})
 	if err != nil {
 		handler.Logger.LogError(err.Error())
+		span.SetAttributes(attribute.String("error", err.Error()))
 	}
+
+	span.SetAttributes(
+		attribute.String("environment_variable_id", getEnvironmentVariablesResponse.EnvironmentVariable.Id),
+		attribute.String("environment_variable_value", getEnvironmentVariablesResponse.EnvironmentVariable.Value),
+		attribute.String("environment_variable_created_at", getEnvironmentVariablesResponse.EnvironmentVariable.CreateAt),
+	)
 
 	envVars := []v1Core.EnvVar{}
 	if getEnvironmentVariablesResponse != nil {
 		envVars, err = utils.ConvertJSONToEnvVars(getEnvironmentVariablesResponse.EnvironmentVariable.Value)
 		if err != nil {
 			handler.Logger.LogError(err.Error())
+			span.SetAttributes(attribute.String("error", err.Error()))
 		}
 	}
 
@@ -88,6 +117,7 @@ func (handler *NatsHandler) HandleBuildCompletedEvent(message messaging.Message[
 	err = kubernetesClient.DeployImage(NameSpace, message.Data.ImageURL, deploymentObject)
 	if err != nil {
 		handler.Logger.LogErrorF("Failed to deploy image: %v\n", err)
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return
 	}
 
@@ -96,6 +126,7 @@ func (handler *NatsHandler) HandleBuildCompletedEvent(message messaging.Message[
 	_, err = kubernetesClient.CreateServiceForDeployment(NameSpace, serviceObject)
 	if err != nil {
 		handler.Logger.LogErrorF("Failed to create kubernetes service: %v\n", err)
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return
 	}
 
@@ -104,24 +135,34 @@ func (handler *NatsHandler) HandleBuildCompletedEvent(message messaging.Message[
 	err = kubernetesClient.CreateIngress(NameSpace, ingressObject.Name, ingressObject)
 	if err != nil {
 		handler.Logger.LogErrorF("Failed to create kubernetes ingress: %v\n", err)
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return
 	}
 
 	// Update Deployment
-	handler.DeploymentRepository.UpdateDeploymentById(deployment.Id, repositories.UpdateDeploymentParams{
+	handler.DeploymentRepository.UpdateDeploymentById(ctx, deployment.Id, repositories.UpdateDeploymentParams{
 		Status: repositories.DeploymentStatusSuccessed,
 	})
 
-	messaging.PublishMessage(handler.JetStream, messaging.NewMessage(messaging.DeployCompleted, messaging.DeployCompletedData{
+	messaging.PublishMessage(ctx, handler.JetStream, messaging.NewMessage(messaging.DeployCompleted, messaging.DeployCompletedData{
 		AppName:  message.Data.AppName,
 		DeployId: deployment.Id,
 	}))
 }
 
 func (handler *NatsHandler) HandleAppDeletedEvent(message messaging.Message[messaging.AppDeletedData]) {
-	err := handler.DeploymentRepository.DeleteDeployments(message.Data.AppId)
+	ctx := message.Context
+	span := trace.SpanFromContext(ctx)
+
+	span.SetAttributes(
+		attribute.String("app_id", message.Data.AppId),
+		attribute.String("app_name", message.Data.AppName),
+	)
+
+	err := handler.DeploymentRepository.DeleteDeployments(ctx, message.Data.AppId)
 	if err != nil {
 		handler.Logger.LogError(err.Error())
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return
 	}
 
@@ -130,25 +171,28 @@ func (handler *NatsHandler) HandleAppDeletedEvent(message messaging.Message[mess
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		handler.Logger.LogError(err.Error())
+		span.SetAttributes(attribute.String("error", err.Error()))
 	}
 
 	kubernetesClient := kubernetes.NewKubernetesClient(config)
-
 	err = kubernetesClient.DeleteDeployment(NameSpace, message.Data.AppName)
 	if err != nil {
 		handler.Logger.LogErrorF("Failed to delete kubernetes deployment: %v\n", err)
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return
 	}
 
 	err = kubernetesClient.DeleteServiceForDeployment(NameSpace, message.Data.AppName)
 	if err != nil {
 		handler.Logger.LogErrorF("Failed to delete kubernetes service: %v\n", err)
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return
 	}
 
 	err = kubernetesClient.DeleteIngress(NameSpace, message.Data.AppName)
 	if err != nil {
 		handler.Logger.LogErrorF("Failed to delete kubernetes ingress: %v\n", err)
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return
 	}
 }

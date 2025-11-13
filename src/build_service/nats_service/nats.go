@@ -23,6 +23,17 @@ func NewNatsClient(jetStream nats.JetStream, natsHandler NatsHandler, logger log
 }
 
 func (natsService *NatsClient) SubscribeToEvents() {
-	messaging.SubscribeToEvent("build-service-app-created", natsService.JetStream, messaging.AppCreated, natsService.NatsHandler.HandleAppCreatedEvent)
-	messaging.SubscribeToEvent("build-service-app-deleted", natsService.JetStream, messaging.AppDeleted, natsService.NatsHandler.HandleAppDeletedEvent)
+	messaging.SubscribeToEvent(
+		"build-service-app-created",
+		natsService.JetStream,
+		messaging.AppCreated,
+		natsService.NatsHandler.HandleAppCreatedEvent,
+	)
+
+	messaging.SubscribeToEvent(
+		"build-service-app-deleted",
+		natsService.JetStream,
+		messaging.AppDeleted,
+		natsService.NatsHandler.HandleAppDeletedEvent,
+	)
 }

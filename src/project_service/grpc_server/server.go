@@ -6,6 +6,8 @@ import (
 	"project/repositories"
 
 	"apps-hosting.com/logging"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -33,17 +35,28 @@ func (server *GRPCProjectServiceServer) Health(ctx context.Context, _ *project_s
 }
 
 func (server *GRPCProjectServiceServer) CreateProject(ctx context.Context, createProjectRequest *project_service_pb.CreateProjectRequest) (*project_service_pb.CreateProjectResponse, error) {
-	project, err := server.ProjectRepository.CreateProject(createProjectRequest.UserId, repositories.CreateProjectParams{
+	span := trace.SpanFromContext(ctx)
+
+	span.SetAttributes(
+		attribute.String("user_id", createProjectRequest.UserId),
+		attribute.String("project_name", createProjectRequest.Name),
+	)
+
+	project, err := server.ProjectRepository.CreateProject(ctx, createProjectRequest.UserId, repositories.CreateProjectParams{
 		Name: createProjectRequest.Name,
 	})
 
 	if err == repositories.ErrProjectNameInUse {
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return nil, status.Error(codes.AlreadyExists, err.Error())
 	}
 
 	if err != nil {
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return nil, status.Error(codes.Internal, err.Error())
 	}
+
+	span.SetAttributes(attribute.String("project_id", project.Id))
 
 	return &project_service_pb.CreateProjectResponse{
 		Project: &project_service_pb.Project{
@@ -56,15 +69,26 @@ func (server *GRPCProjectServiceServer) CreateProject(ctx context.Context, creat
 }
 
 func (server *GRPCProjectServiceServer) GetUserProjectById(ctx context.Context, getUserProjectByIdRequest *project_service_pb.GetUserProjectByIdRequest) (*project_service_pb.GetUserProjectByIdResponse, error) {
-	project, err := server.ProjectRepository.GetProjectById(getUserProjectByIdRequest.UserId, getUserProjectByIdRequest.ProjectId)
+	span := trace.SpanFromContext(ctx)
+
+	span.SetAttributes(
+		attribute.String("user_id", getUserProjectByIdRequest.UserId),
+		attribute.String("project_id", getUserProjectByIdRequest.ProjectId),
+	)
+
+	project, err := server.ProjectRepository.GetProjectById(ctx, getUserProjectByIdRequest.UserId, getUserProjectByIdRequest.ProjectId)
 
 	if err == repositories.ErrProjectNotFound {
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return nil, status.Error(codes.NotFound, err.Error())
 	}
 
 	if err != nil {
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return nil, status.Error(codes.Internal, err.Error())
 	}
+
+	span.SetAttributes(attribute.String("project_name", project.Name))
 
 	return &project_service_pb.GetUserProjectByIdResponse{
 		Project: &project_service_pb.Project{
@@ -77,14 +101,19 @@ func (server *GRPCProjectServiceServer) GetUserProjectById(ctx context.Context, 
 }
 
 func (server *GRPCProjectServiceServer) GetUserProjects(ctx context.Context, getUserProjectsRequest *project_service_pb.GetUserProjectsRequest) (*project_service_pb.GetUserProjectsResponse, error) {
-	projects, err := server.ProjectRepository.GetProjects(getUserProjectsRequest.UserId)
+	span := trace.SpanFromContext(ctx)
 
+	span.SetAttributes(attribute.String("user_id", getUserProjectsRequest.UserId))
+
+	projects, err := server.ProjectRepository.GetProjects(ctx, getUserProjectsRequest.UserId)
 	if err != nil {
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	// TODO: create a util function
 	_projects := []*project_service_pb.Project{}
+	projects_ids := []string{}
 	for _, project := range projects {
 		_project := project_service_pb.Project{
 			Id:        project.Id,
@@ -93,7 +122,13 @@ func (server *GRPCProjectServiceServer) GetUserProjects(ctx context.Context, get
 			CreatedAt: project.CreatedAt.String(),
 		}
 		_projects = append(_projects, &_project)
+		projects_ids = append(projects_ids, _project.Id)
 	}
+
+	span.SetAttributes(
+		attribute.StringSlice("projects_ids", projects_ids),
+		attribute.Int("projects_count", len(_projects)),
+	)
 
 	return &project_service_pb.GetUserProjectsResponse{
 		Projects: _projects,
@@ -101,13 +136,22 @@ func (server *GRPCProjectServiceServer) GetUserProjects(ctx context.Context, get
 }
 
 func (server *GRPCProjectServiceServer) DeleteUserProject(ctx context.Context, deleteUserProjectRequest *project_service_pb.DeleteUserProjectRequest) (*project_service_pb.DeleteUserProjectResponse, error) {
-	err := server.ProjectRepository.DeleteProjectById(deleteUserProjectRequest.UserId, deleteUserProjectRequest.ProjectId)
+	span := trace.SpanFromContext(ctx)
+
+	span.SetAttributes(
+		attribute.String("user_id", deleteUserProjectRequest.UserId),
+		attribute.String("project_id", deleteUserProjectRequest.ProjectId),
+	)
+
+	err := server.ProjectRepository.DeleteProjectById(ctx, deleteUserProjectRequest.UserId, deleteUserProjectRequest.ProjectId)
 
 	if err == repositories.ErrProjectNotFound {
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return nil, status.Error(codes.NotFound, err.Error())
 	}
 
 	if err != nil {
+		span.SetAttributes(attribute.String("error", err.Error()))
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 

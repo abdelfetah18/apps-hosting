@@ -56,7 +56,7 @@ func (repository *BuildRepository) CreateBuildsTable() (sql.Result, error) {
 	return repository.Database.NewCreateTable().Model((*Build)(nil)).IfNotExists().Exec(context.Background())
 }
 
-func (repository *BuildRepository) CreateBuild(appId string, createBuildParams CreateBuildParams) (*Build, error) {
+func (repository *BuildRepository) CreateBuild(ctx context.Context, appId string, createBuildParams CreateBuildParams) (*Build, error) {
 	build := Build{
 		AppId:      appId,
 		Status:     createBuildParams.Status,
@@ -66,7 +66,7 @@ func (repository *BuildRepository) CreateBuild(appId string, createBuildParams C
 	_, err := repository.Database.
 		NewInsert().
 		Model(&build).
-		Exec(context.Background())
+		Exec(ctx)
 
 	if err != nil {
 		return nil, err
@@ -75,7 +75,7 @@ func (repository *BuildRepository) CreateBuild(appId string, createBuildParams C
 	return &build, nil
 }
 
-func (repository *BuildRepository) UpdateBuildById(appId, buildId string, updateBuildParams UpdateBuildParams) (*Build, error) {
+func (repository *BuildRepository) UpdateBuildById(ctx context.Context, appId, buildId string, updateBuildParams UpdateBuildParams) (*Build, error) {
 	build := Build{
 		Status:     updateBuildParams.Status,
 		ImageURL:   updateBuildParams.ImageURL,
@@ -88,7 +88,7 @@ func (repository *BuildRepository) UpdateBuildById(appId, buildId string, update
 		Column("status", "image_url", "commit_hash").
 		Where("id = ? and app_id = ?", buildId, appId).
 		Returning("*").
-		Exec(context.Background())
+		Exec(ctx)
 
 	if err != nil {
 		return nil, err
@@ -102,13 +102,13 @@ func (repository *BuildRepository) UpdateBuildById(appId, buildId string, update
 	return &build, nil
 }
 
-func (repository *BuildRepository) GetBuilds(appId string) ([]Build, error) {
+func (repository *BuildRepository) GetBuilds(ctx context.Context, appId string) ([]Build, error) {
 	builds := []Build{}
 	err := repository.Database.NewSelect().
 		Model(&builds).
 		Where("app_id = ?", appId).
 		Order("created_at DESC").
-		Scan(context.Background())
+		Scan(ctx)
 
 	if err != nil {
 		return []Build{}, err
@@ -121,12 +121,12 @@ func (repository *BuildRepository) GetBuilds(appId string) ([]Build, error) {
 	return builds, nil
 }
 
-func (repository *BuildRepository) DeleteBuilds(appId string) error {
+func (repository *BuildRepository) DeleteBuilds(ctx context.Context, appId string) error {
 	result, err := repository.Database.
 		NewDelete().
 		Model(&Build{AppId: appId}).
 		Where("app_id = ?", appId).
-		Exec(context.Background())
+		Exec(ctx)
 
 	rowsAffected, _ := result.RowsAffected()
 	if rowsAffected == 0 {

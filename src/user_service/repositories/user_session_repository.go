@@ -42,7 +42,7 @@ func (userSessionRepository *UserSessionRepository) CreateUserSessionsTable() (s
 		Exec(context.Background())
 }
 
-func (userSessionRepository *UserSessionRepository) CreateUserSession(userId string, createUserSessionParams CreateUserSessionParams) (*UserSession, error) {
+func (userSessionRepository *UserSessionRepository) CreateUserSession(ctx context.Context, userId string, createUserSessionParams CreateUserSessionParams) (*UserSession, error) {
 	userSession := UserSession{
 		AccessToken: createUserSessionParams.AccessToken,
 		UserId:      userId,
@@ -51,7 +51,7 @@ func (userSessionRepository *UserSessionRepository) CreateUserSession(userId str
 	_, err := userSessionRepository.Database.
 		NewInsert().
 		Model(&userSession).
-		Exec(context.Background())
+		Exec(ctx)
 
 	if err != nil {
 		return nil, err
@@ -60,14 +60,14 @@ func (userSessionRepository *UserSessionRepository) CreateUserSession(userId str
 	return &userSession, nil
 }
 
-func (userSessionRepository *UserSessionRepository) GetUserSessionByAccessToken(accessToken string) (*UserSession, error) {
+func (userSessionRepository *UserSessionRepository) GetUserSessionByAccessToken(ctx context.Context, accessToken string) (*UserSession, error) {
 	userSession := new(UserSession)
 
 	err := userSessionRepository.Database.
 		NewSelect().
 		Model(userSession).
 		Where("access_token = ?", accessToken).
-		Scan(context.Background())
+		Scan(ctx)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

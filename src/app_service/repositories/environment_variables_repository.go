@@ -45,13 +45,13 @@ func (repository *EnvironmentVariablesRepository) CreateEnvironmentVariablesTabl
 	return repository.Database.NewCreateTable().Model((*EnvironmentVariable)(nil)).IfNotExists().Exec(context.Background())
 }
 
-func (repository *EnvironmentVariablesRepository) GetEnvironmentVariable(appId string) (*EnvironmentVariable, error) {
+func (repository *EnvironmentVariablesRepository) GetEnvironmentVariable(ctx context.Context, appId string) (*EnvironmentVariable, error) {
 	environmentVariable := EnvironmentVariable{}
 	err := repository.Database.
 		NewSelect().
 		Model(&environmentVariable).
 		Where("app_id = ?", appId).
-		Scan(context.Background())
+		Scan(ctx)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -63,7 +63,7 @@ func (repository *EnvironmentVariablesRepository) GetEnvironmentVariable(appId s
 	return &environmentVariable, nil
 }
 
-func (repository *EnvironmentVariablesRepository) CreateEnvironmentVariables(appId string, createEnvironmentVariableParams CreateEnvironmentVariableParams) (*EnvironmentVariable, error) {
+func (repository *EnvironmentVariablesRepository) CreateEnvironmentVariables(ctx context.Context, appId string, createEnvironmentVariableParams CreateEnvironmentVariableParams) (*EnvironmentVariable, error) {
 	environmentVariable := EnvironmentVariable{
 		AppId: appId,
 		Value: createEnvironmentVariableParams.Value,
@@ -72,7 +72,7 @@ func (repository *EnvironmentVariablesRepository) CreateEnvironmentVariables(app
 	_, err := repository.Database.
 		NewInsert().
 		Model(&environmentVariable).
-		Exec(context.Background())
+		Exec(ctx)
 
 	if err != nil {
 		return nil, err
@@ -81,7 +81,7 @@ func (repository *EnvironmentVariablesRepository) CreateEnvironmentVariables(app
 	return &environmentVariable, nil
 }
 
-func (repository *EnvironmentVariablesRepository) UpdateEnvironmentVariables(appId string, updateEnvironmentVariableParams UpdateEnvironmentVariableParams) (*EnvironmentVariable, error) {
+func (repository *EnvironmentVariablesRepository) UpdateEnvironmentVariables(ctx context.Context, appId string, updateEnvironmentVariableParams UpdateEnvironmentVariableParams) (*EnvironmentVariable, error) {
 	environmentVariable := EnvironmentVariable{
 		Value: updateEnvironmentVariableParams.Value,
 	}
@@ -92,7 +92,7 @@ func (repository *EnvironmentVariablesRepository) UpdateEnvironmentVariables(app
 		Column("value").
 		Where("app_id = ?", appId).
 		Returning("*").
-		Exec(context.Background())
+		Exec(ctx)
 
 	if err != nil {
 		return nil, err
