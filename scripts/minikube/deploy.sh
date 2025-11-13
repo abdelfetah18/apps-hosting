@@ -106,6 +106,10 @@ install_nats() {
 
 install_nats
 
+# Wait for NATS to be ready
+echo "[*] Waiting for NATS to be ready..."
+kubectl wait --for=condition=ready pod/nats-0 -n default --timeout=120s
+
 # 4. Deploy Services
 echo "[*] Deploying all services using helm"
 helm install apps-hosting ./helm-chart
