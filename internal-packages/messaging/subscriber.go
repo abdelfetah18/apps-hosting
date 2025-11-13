@@ -1,11 +1,15 @@
 package messaging
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/nats-io/nats.go"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
 )
 
 func SubscribeToEvent[T EventData](serviceName string, jetStream nats.JetStream, event AppEvent, handler EventHandler[T]) {
@@ -16,6 +20,24 @@ func SubscribeToEvent[T EventData](serviceName string, jetStream nats.JetStream,
 			fmt.Println(err.Error())
 			return
 		}
+
+		carrier := propagation.HeaderCarrier{}
+		for k, vs := range msg.Header {
+			for _, v := range vs {
+				carrier.Set(k, v)
+			}
+		}
+
+		log.Println("carrier:", carrier)
+
+		ctx := otel.GetTextMapPropagator().Extract(context.Background(), carrier)
+
+		tracer := otel.Tracer("apps-hosting.com/messaging")
+		ctx, span := tracer.Start(ctx, event)
+		defer span.End()
+
+		message.Context = ctx
+
 		handler(message)
 	},
 		nats.Durable(serviceName),

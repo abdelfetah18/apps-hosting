@@ -1,6 +1,7 @@
 package messaging
 
 import (
+	"context"
 	"time"
 
 	"github.com/google/uuid"
@@ -31,10 +32,11 @@ const (
 )
 
 type Message[T EventData] struct {
-	Id        string   `json:"id"`
-	Event     AppEvent `json:"event"`
-	Timestamp int64    `json:"timestamp"`
-	Data      T        `json:"data"`
+	Id        string          `json:"id"`
+	Event     AppEvent        `json:"event"`
+	Timestamp int64           `json:"timestamp"`
+	Data      T               `json:"data"`
+	Context   context.Context `json:"-"`
 }
 
 type AppCreatedData struct {
