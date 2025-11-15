@@ -50,12 +50,13 @@ func NewNatsHandler(
 }
 
 func (handler *NatsHandler) HandleAppCreatedEvent(ctx context.Context, message *events_pb.Message) {
+	handler.Logger.LogInfo("Handle 'app.created' event")
 	span := trace.SpanFromContext(ctx)
 
 	data := message.Data.GetAppCreatedData()
 	if data == nil {
-		handler.Logger.LogError("Invalid app created message")
-		span.SetAttributes(attribute.String("error", "Invalid app created message"))
+		handler.Logger.LogError("Invalid app.created event message")
+		span.SetAttributes(attribute.String("error", "Invalid app.created event message"))
 		return
 	}
 
@@ -70,13 +71,9 @@ func (handler *NatsHandler) HandleAppCreatedEvent(ctx context.Context, message *
 		attribute.String("start_cmd", data.StartCmd),
 	)
 
-	handler.Logger.LogInfo("HandleAppCreatedEvent")
-
-	userAppLogger := logging.NewUserAppLogger(data.AppId, data.UserId, logging.StageBuild)
-
 	handleBuildFailure := func(buildId string, err error) {
+		handler.Logger.LogError(err.Error())
 		span.SetAttributes(attribute.String("error", err.Error()))
-
 		handler.EventBus.Publish(ctx, events_pb.EventName_BUILD_FAILED, &events_pb.EventData{
 			Value: &events_pb.EventData_BuildFailedData{
 				BuildFailedData: &events_pb.BuildFailedData{
@@ -94,8 +91,10 @@ func (handler *NatsHandler) HandleAppCreatedEvent(ctx context.Context, message *
 			repositories.UpdateBuildParams{Status: repositories.BuildStatusFailed})
 	}
 
+	userAppLogger := logging.NewUserAppLogger(data.AppId, data.UserId, logging.StageBuild)
+
 	// 1. Create Build Entity
-	handler.Logger.LogInfo("Create Build model")
+	handler.Logger.LogInfo("Creating build entity...")
 	build, err := handler.BuildRepository.CreateBuild(ctx, data.AppId, repositories.CreateBuildParams{Status: repositories.BuildStatusPending})
 	if err != nil {
 		handler.Logger.LogError(err.Error())
@@ -104,7 +103,7 @@ func (handler *NatsHandler) HandleAppCreatedEvent(ctx context.Context, message *
 	}
 
 	// 2. Clone Github Repository
-	handler.Logger.LogInfo(fmt.Sprintf("CloneRepo: repoURL=%s", data.RepoUrl))
+	handler.Logger.LogInfo(fmt.Sprintf("Cloning github repository '%s'...", data.RepoUrl))
 	gitRepo, err := handler.GitRepoManager.Clone(data.RepoUrl, userAppLogger)
 	if err != nil {
 		userAppLogger.LogError(err.Error())
@@ -113,7 +112,7 @@ func (handler *NatsHandler) HandleAppCreatedEvent(ctx context.Context, message *
 	}
 
 	// 3. Copy Docker Image
-	handler.Logger.LogInfo(fmt.Sprintf("CopyDockerfile: repoPath=%s, runtime=%s\n", gitRepo.Path, data.Runtime))
+	handler.Logger.LogInfo(fmt.Sprintf("Copy Dockerfile for the target runtime '%s' to repository path '%s'...", data.Runtime, gitRepo.Path))
 	_, err = handler.RuntimeBuilder.CopyDockerfile(gitRepo.Path, data.Runtime)
 	if err != nil {
 		userAppLogger.LogError(err.Error())
@@ -122,6 +121,7 @@ func (handler *NatsHandler) HandleAppCreatedEvent(ctx context.Context, message *
 	}
 
 	// 4. Create Tar Archive
+	handler.Logger.LogInfo("Compressing the repository path to a tar archive...")
 	err = utils.CompressTarGZ(gitRepo.Path, gitRepo.Id+".tar.gz")
 	if err != nil {
 		handler.Logger.LogError("Failed to create tar archive")
@@ -130,18 +130,18 @@ func (handler *NatsHandler) HandleAppCreatedEvent(ctx context.Context, message *
 	}
 
 	// 5. Upload Tar Archive to Minio Storage
+	handler.Logger.LogInfo("Uploading the tar archive to minio storage...")
 	minioStorage := storage.NewMinioStorage(false)
 	err = minioStorage.PutFile(gitRepo.Id+".tar.gz", gitRepo.Id+".tar.gz")
 	if err != nil {
-		handler.Logger.LogError("Failed to upload tar archive to minio bucket")
+		handler.Logger.LogError("Failed to upload tar archive to minio storage")
 		handleBuildFailure(build.Id, err)
 		return
 	}
 
 	// 6. Build & Push Docker image
 	imageURL := registryURL + utils.ToImageName(data.AppName)
-	handler.Logger.LogInfoF("RunKanikoBuild: repoPath=%s, imageURL=%s\n", gitRepo.Id+".tar.gz", imageURL)
-	handler.Logger.LogInfoF("URL=http://build-service:8081/repos/%s", gitRepo.Id+".tar.gz")
+	handler.Logger.LogInfoF("Running kaniko build job for image '%s'...", imageURL)
 	err = handler.KanikoBuilder.RunKanikoBuild(gitRepo.Id+".tar.gz", data.AppId, data.AppName, imageURL)
 	if err != nil {
 		handler.Logger.LogError(err.Error())
@@ -150,13 +150,14 @@ func (handler *NatsHandler) HandleAppCreatedEvent(ctx context.Context, message *
 	}
 
 	// 7. Update build status
+	handler.Logger.LogInfo("Updating build entity status to success...")
 	build, err = handler.BuildRepository.UpdateBuildById(ctx, data.AppId, build.Id, repositories.UpdateBuildParams{
 		Status:     repositories.BuildStatusSuccessed,
 		ImageURL:   imageURL,
 		CommitHash: gitRepo.LastCommitHash,
 	})
 	if err != nil {
-		handler.Logger.LogError("Failed to update build status")
+		handler.Logger.LogError("Failed to update build status.")
 		span.SetAttributes(attribute.String("error", err.Error()))
 		return
 	}
@@ -168,6 +169,7 @@ func (handler *NatsHandler) HandleAppCreatedEvent(ctx context.Context, message *
 		attribute.String("build_created_at", build.CreatedAt.String()),
 	)
 
+	handler.Logger.LogInfo("Publishing 'build.completed' event...")
 	err = handler.EventBus.Publish(ctx, events_pb.EventName_BUILD_COMPLETED, &events_pb.EventData{
 		Value: &events_pb.EventData_BuildCompletedData{
 			BuildCompletedData: &events_pb.BuildCompletedData{
@@ -187,6 +189,7 @@ func (handler *NatsHandler) HandleAppCreatedEvent(ctx context.Context, message *
 }
 
 func (handler *NatsHandler) HandleAppDeletedEvent(ctx context.Context, message *events_pb.Message) {
+	handler.Logger.LogInfo("Handle 'app.deleted' event")
 	span := trace.SpanFromContext(ctx)
 
 	data := message.Data.GetAppDeletedData()
@@ -201,7 +204,7 @@ func (handler *NatsHandler) HandleAppDeletedEvent(ctx context.Context, message *
 		attribute.String("app_name", data.AppName),
 	)
 
-	handler.Logger.LogInfo("HandleAppDeletedEvent")
+	handler.Logger.LogInfoF("Deleting all builds entities related to app '%s'", data.AppId)
 	err := handler.BuildRepository.DeleteBuilds(ctx, data.AppId)
 	if err != nil {
 		handler.Logger.LogError(err.Error())
@@ -209,6 +212,7 @@ func (handler *NatsHandler) HandleAppDeletedEvent(ctx context.Context, message *
 		return
 	}
 
+	handler.Logger.LogInfoF("Deleting all builds jobs related to app '%s'", data.AppName)
 	err = handler.KanikoBuilder.DeleteJobs(data.AppName)
 	if err != nil {
 		handler.Logger.LogError(err.Error())
