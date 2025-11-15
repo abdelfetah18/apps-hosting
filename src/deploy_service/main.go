@@ -13,8 +13,8 @@ import (
 
 	"apps-hosting.com/logging"
 	"apps-hosting.com/messaging"
+	"apps-hosting.com/messaging/proto/events_pb"
 
-	"github.com/nats-io/nats.go"
 	"google.golang.org/grpc"
 
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
@@ -76,32 +76,22 @@ func main() {
 	}
 
 	natsURL := os.Getenv("NATS_URL")
-	natsConnection, err := nats.Connect(natsURL)
-	if err != nil {
-		logger.LogError(err.Error())
-	}
-
-	jetStream, err := natsConnection.JetStream()
-	if err != nil {
-		panic(err)
-	}
-
-	_, err = jetStream.AddStream(&nats.StreamConfig{
-		Name: "DEPLOY_EVENTS",
-		Subjects: []string{
-			messaging.DeployCompleted,
-			messaging.DeployFailed,
+	eventBus, err := messaging.NewEventBus(
+		natsURL,
+		events_pb.StreamName_DEPLOY_STREAM,
+		[]events_pb.EventName{
+			events_pb.EventName_DEPLOY_COMPLETED,
+			events_pb.EventName_DEPLOY_FAILED,
 		},
-	})
+	)
 	if err != nil {
 		panic(err)
 	}
 
-	natsHandler := nats_service.NewNatsHandler(jetStream, *grpcClients, deploymentRepository, logger)
+	natsHandler := nats_service.NewNatsHandler(*eventBus, *grpcClients, deploymentRepository, logger)
 
-	natsClient := nats_service.NewNatsClient(jetStream, natsHandler)
-
-	natsClient.SubscribeToEvents()
+	eventBus.Subscribe("event-service", events_pb.EventName_BUILD_COMPLETED, natsHandler.HandleBuildCompletedEvent)
+	eventBus.Subscribe("event-service", events_pb.EventName_APP_DELETED, natsHandler.HandleAppDeletedEvent)
 
 	grpcServer := grpc.NewServer(grpc.StatsHandler(otelgrpc.NewServerHandler()))
 	grpcDeployServiceServer := grpc_server.NewGRPCDeployServiceServer(deploymentRepository)

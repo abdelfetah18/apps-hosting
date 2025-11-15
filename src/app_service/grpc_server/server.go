@@ -1,7 +1,6 @@
 package grpc_server
 
 import (
-	"app/nats"
 	"app/proto/app_service_pb"
 	"app/repositories"
 	"app/utils"
@@ -10,6 +9,7 @@ import (
 	"slices"
 
 	"apps-hosting.com/messaging"
+	"apps-hosting.com/messaging/proto/events_pb"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
@@ -25,20 +25,20 @@ type GRPCAppServiceServer struct {
 
 	AppRepository                  repositories.AppRepository
 	EnvironmentVariablesRepository repositories.EnvironmentVariablesRepository
-	NatsService                    nats.NatsService
+	EventBus                       messaging.EventBus
 	Logger                         logging.ServiceLogger
 }
 
 func NewGRPCAppServiceServer(
 	appRepository repositories.AppRepository,
 	environmentVariablesRepository repositories.EnvironmentVariablesRepository,
-	natsService nats.NatsService,
+	eventBus messaging.EventBus,
 	logger logging.ServiceLogger,
 ) *GRPCAppServiceServer {
 	return &GRPCAppServiceServer{
 		AppRepository:                  appRepository,
 		EnvironmentVariablesRepository: environmentVariablesRepository,
-		NatsService:                    natsService,
+		EventBus:                       eventBus,
 		Logger:                         logger,
 	}
 }
@@ -133,19 +133,20 @@ func (server *GRPCAppServiceServer) CreateApp(ctx context.Context, createAppRequ
 	)
 
 	server.Logger.LogInfo("Send AppCreated Event")
-	_, err = messaging.PublishMessage(ctx, server.NatsService.JetStream,
-		messaging.NewMessage(
-			messaging.AppCreated,
-			messaging.AppCreatedData{
+	err = server.EventBus.Publish(ctx, events_pb.EventName_APP_CREATED, &events_pb.EventData{
+		Value: &events_pb.EventData_AppCreatedData{
+			AppCreatedData: &events_pb.AppCreatedEventData{
 				AppId:      createdApp.Id,
 				AppName:    createdApp.Name,
 				Runtime:    createdApp.Runtime,
-				RepoURL:    createdApp.RepoURL,
-				StartCMD:   createdApp.StartCMD,
-				BuildCMD:   createdApp.BuildCMD,
+				RepoUrl:    createdApp.RepoURL,
+				StartCmd:   createdApp.StartCMD,
+				BuildCmd:   createdApp.BuildCMD,
 				UserId:     createdApp.ProjectId,
 				DomainName: createdApp.DomainName,
-			}))
+			},
+		},
+	})
 	if err != nil {
 		// FIXME: Handle this case
 		server.Logger.LogError(err.Error())
@@ -357,17 +358,17 @@ func (server *GRPCAppServiceServer) DeleteApp(ctx context.Context, deleteAppRequ
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	_, err = messaging.PublishMessage(ctx, server.NatsService.JetStream,
-		messaging.NewMessage(
-			messaging.AppDeleted,
-			messaging.AppDeletedData{
+	err = server.EventBus.Publish(ctx, events_pb.EventName_APP_DELETED, &events_pb.EventData{
+		Value: &events_pb.EventData_AppDeletedData{
+			AppDeletedData: &events_pb.AppDeletedEventData{
 				AppId:   deleteAppRequest.AppId,
-				AppName: app.Name, // FIXME: should only pass id
-			}))
+				AppName: app.Name,
+			},
+		},
+	})
 	if err != nil {
 		// FIXME: handle this case
 		server.Logger.LogError(err.Error())
-
 		span.SetAttributes(attribute.String("error", err.Error()))
 	}
 

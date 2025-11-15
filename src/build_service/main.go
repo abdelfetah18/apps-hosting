@@ -7,6 +7,7 @@ import (
 
 	"apps-hosting.com/logging"
 	"apps-hosting.com/messaging"
+	"apps-hosting.com/messaging/proto/events_pb"
 
 	"build/database"
 	gitclient "build/git_client"
@@ -17,7 +18,6 @@ import (
 	"build/repositories"
 	"build/runtime"
 
-	"github.com/nats-io/nats.go"
 	"google.golang.org/grpc"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
@@ -88,23 +88,14 @@ func main() {
 	}
 
 	natsURL := os.Getenv("NATS_URL")
-	natsConnection, err := nats.Connect(natsURL)
-	if err != nil {
-		panic(err)
-	}
-
-	jetStream, err := natsConnection.JetStream()
-	if err != nil {
-		panic(err)
-	}
-
-	_, err = jetStream.AddStream(&nats.StreamConfig{
-		Name: "BUILD_EVENTS",
-		Subjects: []string{
-			messaging.BuildCompleted,
-			messaging.BuildFailed,
+	eventBus, err := messaging.NewEventBus(
+		natsURL,
+		events_pb.StreamName_BUILD_STREAM,
+		[]events_pb.EventName{
+			events_pb.EventName_BUILD_COMPLETED,
+			events_pb.EventName_BUILD_FAILED,
 		},
-	})
+	)
 	if err != nil {
 		panic(err)
 	}
@@ -112,11 +103,10 @@ func main() {
 	kanikoBuilder := kaniko.NewKanikoBuilder(clientset, logger)
 	gitRepoManager := gitclient.NewGitRepoManager()
 	runtimeBuilder := runtime.NewRuntimeBuilder(logger)
-	natsHandler := nats_service.NewNatsHandler(jetStream, kanikoBuilder, gitRepoManager, runtimeBuilder, buildRepository, logger)
+	natsHandler := nats_service.NewNatsHandler(*eventBus, kanikoBuilder, gitRepoManager, runtimeBuilder, buildRepository, logger)
 
-	natsService := nats_service.NewNatsClient(jetStream, natsHandler, logger)
-
-	natsService.SubscribeToEvents()
+	eventBus.Subscribe("build-service-app-created", events_pb.EventName_APP_CREATED, natsHandler.HandleAppCreatedEvent)
+	eventBus.Subscribe("build-service-app-deleted", events_pb.EventName_APP_DELETED, natsHandler.HandleAppDeletedEvent)
 
 	grpcServer := grpc.NewServer(grpc.StatsHandler(otelgrpc.NewServerHandler()))
 	grpcBuildServiceServer := grpc_server.NewGRPCBuildServiceServer(buildRepository)

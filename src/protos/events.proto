@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+package events;
+
+option go_package = "proto/events_pb;events_pb";
+
+enum StreamName {
+  APP_STREAM = 0;
+  BUILD_STREAM = 1;
+  DEPLOY_STREAM = 2;
+}
+
+enum EventName {
+  APP_CREATED = 0;
+  APP_DELETED = 1;
+  BUILD_COMPLETED = 2;
+  BUILD_FAILED = 3;
+  DEPLOY_COMPLETED = 4;
+  DEPLOY_FAILED = 5;
+}
+
+message AppCreatedEventData {
+  string app_id = 1;
+  string user_id = 2;
+  string repo_url = 3;
+  string app_name = 4;
+  string runtime = 5;
+  string start_cmd = 6;
+  string build_cmd = 7;
+  string domain_name = 8;
+}
+
+message AppDeletedEventData {
+  string app_id = 1;
+  string app_name = 2;
+}
+
+message BuildCompletedData {
+  string app_id = 1;
+  string build_id = 2;
+  string app_name = 3;
+  string image_url = 4;
+  string domain_name = 5;
+}
+
+message BuildFailedData {
+  string app_id = 1;
+  string build_id = 2;
+  string app_name = 3;
+  string reason = 4;
+}
+
+message DeployCompletedData {
+  string deploy_id = 1;
+  string app_name = 2;
+}
+
+message DeployFailedData {
+  string app_id = 1;
+  string build_id = 2;
+  string deployment_id = 3;
+  string app_name = 4;
+  string reason = 5;
+}
+
+message EventData {
+  oneof value {
+    AppCreatedEventData app_created_data = 1;
+    AppDeletedEventData app_deleted_data = 2;
+    BuildCompletedData build_completed_data = 3;
+    BuildFailedData build_failed_data = 4;
+    DeployCompletedData deploy_completed_data = 5;
+    DeployFailedData deploy_failed_data = 6;
+  }
+}
+
+message Message {
+  string id = 1;
+  EventName event_name = 2;
+  EventData data = 3;
+  int64 timestamp = 4;
+}

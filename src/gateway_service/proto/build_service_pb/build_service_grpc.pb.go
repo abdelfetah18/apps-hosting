@@ -92,7 +92,7 @@ type UnsafeBuildServiceServer interface {
 }
 
 func RegisterBuildServiceServer(s grpc.ServiceRegistrar, srv BuildServiceServer) {
-	// If the following call pancis, it indicates UnimplementedBuildServiceServer was
+	// If the following call panics, it indicates UnimplementedBuildServiceServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.

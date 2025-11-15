@@ -1,7 +1,7 @@
 apps-hosting.com/logging v1.0.0 h1:m6cBHc+UfSUv6fRIHzv1+zKdz83UMapj5NfmDW88SHQ=
 apps-hosting.com/logging v1.0.0/go.mod h1:kTvy5UfzRgH0S/6ecNhgn2EXqu+aE50SVlfb/KHp3wI=
-apps-hosting.com/messaging v1.0.0 h1:De9h5zenDwjKfCDlFyOaLczr8Ur+u2QxwACu6XV7G7U=
-apps-hosting.com/messaging v1.0.0/go.mod h1:9zBA2P2yqRdQ/EuCf7a/QFW/V92nPwNN5fxvAbDFnb8=
+apps-hosting.com/messaging v0.0.1 h1:iiOHyEXrWZ4PjddZx+/KPvNt5TzttzLzhvlWdRDuBew=
+apps-hosting.com/messaging v0.0.1/go.mod h1:/FRwKRsl/tDDzgzE1m/2IVfLDvo/oBRD42OIxs4ovCI=
 github.com/cenkalti/backoff/v5 v5.0.3 h1:ZN+IMa753KfX5hd8vVaMixjnqRZ3y8CuJKRKj1xcsSM=
 github.com/cenkalti/backoff/v5 v5.0.3/go.mod h1:rkhZdG3JZukswDf7f0cwqPNk4K0sa+F97BxZthm/crw=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
@@ -233,6 +233,8 @@ google.golang.org/protobuf v1.36.6 h1:z1NpPI8ku2WgiWnf+t9wTPsn6eP1L7ksHUlkfLvd9x
 google.golang.org/protobuf v1.36.6/go.mod h1:jduwjTPXsFjZGTmRluh+L6NjiWu7pchiJ2/5YcXBHnY=
 google.golang.org/protobuf v1.36.8 h1:xHScyCOEuuwZEc6UtSOvPbAT4zRh0xcNRYekJwfqyMc=
 google.golang.org/protobuf v1.36.8/go.mod h1:fuxRtAxBytpl4zzqUh6/eyUujkJdNiuEkXntxiD/uRU=
+google.golang.org/protobuf v1.36.10 h1:AYd7cD/uASjIL6Q9LiTjz8JLcrh/88q5UObnmY3aOOE=
+google.golang.org/protobuf v1.36.10/go.mod h1:HTf+CrKn2C3g5S8VImy6tdcUvCska2kB7j23XfzDpco=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c/go.mod h1:JHkPIbrfpd72SG/EVd6muEfDQjcINNoR0C8j2r3qZ4Q=
 gopkg.in/evanphx/json-patch.v4 v4.12.0 h1:n6jtcsulIzXPJaxegRbvFNNrZDjbij7ny3gmSPG+6V4=

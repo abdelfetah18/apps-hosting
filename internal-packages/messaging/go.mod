@@ -21,4 +21,5 @@ require (
 	github.com/confluentinc/confluent-kafka-go/v2 v2.8.0 // indirect
 	github.com/nats-io/nats.go v1.42.0
 	go.opentelemetry.io/otel v1.38.0
+	google.golang.org/protobuf v1.36.10
 )

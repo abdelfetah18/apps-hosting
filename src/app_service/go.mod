@@ -9,6 +9,7 @@ require (
 )
 
 require (
+	apps-hosting.com/messaging v0.0.1 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
@@ -46,7 +47,6 @@ require (
 
 require (
 	apps-hosting.com/logging v1.0.0
-	apps-hosting.com/messaging v1.0.0
 	github.com/jackc/pgx/v5 v5.7.5
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/nats-io/nats.go v1.43.0
@@ -60,5 +60,5 @@ require (
 	golang.org/x/sys v0.35.0 // indirect
 	golang.org/x/text v0.28.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250825161204-c5933d9347a5 // indirect
-	google.golang.org/protobuf v1.36.8 // indirect
+	google.golang.org/protobuf v1.36.10 // indirect
 )

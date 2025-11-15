@@ -3,7 +3,6 @@ package main
 import (
 	"app/database"
 	"app/grpc_server"
-	"app/nats"
 	"app/proto/app_service_pb"
 	"app/repositories"
 	"context"
@@ -11,6 +10,8 @@ import (
 	"os"
 
 	"apps-hosting.com/logging"
+	"apps-hosting.com/messaging"
+	"apps-hosting.com/messaging/proto/events_pb"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
@@ -73,15 +74,22 @@ func main() {
 		panic(err)
 	}
 
-	natsService, err := nats.NewNatsService(logger)
+	natsURL := os.Getenv("NATS_URL")
+	eventBus, err := messaging.NewEventBus(
+		natsURL,
+		events_pb.StreamName_APP_STREAM,
+		[]events_pb.EventName{
+			events_pb.EventName_APP_CREATED,
+			events_pb.EventName_APP_DELETED,
+		},
+	)
+
 	if err != nil {
 		panic(err)
 	}
 
-	natsService.SubscribeToEvents()
-
 	grpcServer := grpc.NewServer(grpc.StatsHandler(otelgrpc.NewServerHandler()))
-	grpcAppServiceServer := grpc_server.NewGRPCAppServiceServer(appRepository, environmentVariablesRepository, *natsService, logger)
+	grpcAppServiceServer := grpc_server.NewGRPCAppServiceServer(appRepository, environmentVariablesRepository, *eventBus, logger)
 	app_service_pb.RegisterAppServiceServer(grpcServer, grpcAppServiceServer)
 
 	PORT := os.Getenv("PORT")
