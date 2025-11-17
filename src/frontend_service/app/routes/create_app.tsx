@@ -2,7 +2,7 @@ import { createApp, createEnvironmentVariables } from "~/services/app_service";
 import type { Route } from "./+types/create_app";
 import { Link, redirect, useFetcher, useOutletContext } from "react-router";
 import { RUNTIMES } from "~/consts";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Iconify from "~/components/Iconify";
 import Spinner from "~/components/spinner";
 import { getUserGithubRepositories } from "~/services/user_service";
@@ -20,6 +20,11 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
         repo_url: formData.get("repo_url")?.toString() || "",
         start_cmd: formData.get("start_cmd")?.toString() || "",
         build_cmd: formData.get("build_cmd")?.toString() || "",
+        git_repository: {
+            clone_url: formData.get("repo_url")?.toString() || "",
+            is_private: (formData.get("git_repo_is_private")?.toString() || "") == "private",
+            provider: (formData.get("git_repo_provider")?.toString() as GitProvider) || "github",
+        }
 
     };
 
@@ -113,20 +118,17 @@ export default function CreateApp({ params, loaderData }: Route.ComponentProps) 
         setEnvVars(envVars.filter((_, i) => i !== index));
     };
 
-    const connectGithub = () => {
-        const targetWindow = window.open("https://github.com/login/oauth/authorize?client_id=Iv23liELWALmvVE9pf4P&redirect_uri=http://localhost:5173/callbacks/github", "popupWindow", "width=600,height=400")
-        targetWindow?.addEventListener("close", () => {
-            alert("Hi");
-            location.reload();
-        });
+    const configureGithub = () => {
+        window.open(new URL("https://github.com/apps/apps-hosting/installations/new"));
     }
 
-    const configureGithub = () => {
-        const targetWindow = window.open("https://github.com/apps/apps-hosting/installations/new", "popupWindow", "width=600,height=400")
-        window.onmessage = () => {
-            window.location.reload();
+    useEffect(() => {
+        window.onmessage = (event: MessageEvent) => {
+            if (event.data == "github-callback-done") {
+                window.location.reload();
+            }
         }
-    }
+    }, []);
 
     return (
         <div className="w-2/3 flex flex-col gap-8 p-8 border border-gray-300 rounded-lg my-8">
@@ -179,33 +181,47 @@ export default function CreateApp({ params, loaderData }: Route.ComponentProps) 
                         <div className="h-fit flex-grow flex flex-col gap-2">
                             <div className="w-full flex flex-col gap-2">
                                 <div className="w-full flex items-center gap-2">
+                                    <input name="git_repo_is_private" hidden />
+                                    <input name="git_repo_provider" value={"github"} hidden />
                                     <input
                                         name="repo_url"
                                         type="text"
                                         placeholder="Repo URL"
-                                        className={`w-full border rounded-lg px-4 py-2 text-sm ${fetcher.data?.repo_url ? "border-red-300" : "border-gray-300"}`}
+                                        className={`flex-grow border rounded-lg px-4 py-2 text-sm ${fetcher.data?.repo_url ? "border-red-300" : "border-gray-300"}`}
                                     />
                                     {
                                         userSession.user.github_app_installed ? (
                                             <div onClick={configureGithub} className="bg-black text-white text-sm font-semibold px-4 py-2 rounded-lg cursor-pointer active:scale-105 duration-300 select-none">Configure</div>
                                         ) : (
-                                            <div onClick={connectGithub} className="bg-black text-white text-sm font-semibold px-4 py-2 rounded-lg cursor-pointer active:scale-105 duration-300 select-none">Connect</div>
+                                            <div onClick={configureGithub} className="flex items-center justify-center gap-2 bg-black text-white text-sm font-semibold px-4 py-2 rounded-lg cursor-pointer active:scale-105 duration-300 select-none">
+                                                <Iconify icon="mdi:github" size={16} />
+                                                <div>Connect to Github</div>
+                                            </div>
                                         )
                                     }
                                 </div>
-                                <div className="w-full h-60 overflow-auto top-full left-0 flex flex-col border border-gray-300 rounded-lg bg-white">
-                                    {
-                                        githubRepositories.filter(repo => repo.visibility == "private").map((repo, index) => {
-                                            return (
-                                                <div key={index} className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer flex items-center gap-2">
-                                                    <Iconify icon="mdi:github" size={16} />
-                                                    <div className="text-sm">{repo.name}</div>
-                                                    <div className="text-sm">{repo.visibility}</div>
-                                                </div>
-                                            )
-                                        })
-                                    }
-                                </div>
+                                {
+                                    userSession.user.github_app_installed && (
+                                        <div className="w-full h-60 overflow-auto top-full left-0 flex flex-col border border-gray-300 rounded-lg bg-white">
+                                            {
+                                                githubRepositories.map((repo, index) => {
+                                                    const selectRepo = () => {
+                                                        (document.querySelector("[name=repo_url]") as HTMLInputElement).value = repo.clone_url;
+                                                        (document.querySelector("[name=git_repo_is_private]") as HTMLInputElement).value = repo.visibility;
+                                                    }
+
+                                                    return (
+                                                        <div onClick={selectRepo} key={index} className="px-4 py-2 text-sm hover:bg-gray-100 cursor-pointer flex items-center gap-2">
+                                                            <Iconify icon="mdi:github" size={16} />
+                                                            <div className="text-sm">{repo.name}</div>
+                                                            <div className="text-sm">{repo.visibility}</div>
+                                                        </div>
+                                                    )
+                                                })
+                                            }
+                                        </div>
+                                    )
+                                }
                             </div>
                             <div className="text-red-600 text-xs">{fetcher.data?.repo_url}</div>
                         </div>
@@ -241,7 +257,6 @@ export default function CreateApp({ params, loaderData }: Route.ComponentProps) 
                         </div>
                     </div>
 
-                    {/* Environment Variables */}
                     {/* Environment Variables */}
                     <div className="flex">
                         <div className="w-1/3 text-black">Environment Variables</div>

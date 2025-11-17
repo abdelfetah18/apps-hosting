@@ -12,6 +12,7 @@ services=(
 
 skip_protos=(
   "events.proto"
+  "models.proto"
 )
 
 generate_protobuf_code() {
@@ -43,4 +44,5 @@ generate_protobuf_code() {
 generate_protobuf_code
 
 echo "[*] Generating events code..."
-protoc --go_out="internal-packages/messaging" "src/protos/events.proto"
+protoc --go_out="internal-packages/messaging" --go_opt="Msrc/protos/models.proto=proto/models_pb/;models_pb" "src/protos/models.proto"
+protoc -I src/protos --go_out="internal-packages/messaging" --go_opt="Mmodels.proto=apps-hosting.com/messaging/proto/models_pb;models_pb" "src/protos/events.proto"

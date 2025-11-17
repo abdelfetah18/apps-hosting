@@ -37,15 +37,25 @@ message EnvironmentVariables {
     string create_at = 3;
 }
 
+message GitRepository {
+    string id = 1;
+    string app_id = 2;
+    string provider = 3;
+    string clone_url = 4;
+    bool is_private = 5;
+    string created_at = 6;
+}
+
 message CreateAppRequest {
     string project_id = 1;
+    string user_id = 2;
 
-    string name = 2;
-    string runtime = 3;
-    string repo_url = 4;
-    string build_cmd = 5;
-    string start_cmd = 6;
-    optional string environment_variables = 7;
+    string name = 3;
+    string runtime = 4;
+    GitRepository git_repository = 5;
+    string build_cmd = 6;
+    string start_cmd = 7;
+    optional string environment_variables = 8;
 }
 message CreateAppResponse {
     App app = 1;

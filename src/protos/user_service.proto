@@ -10,6 +10,7 @@ service UserService {
     rpc SignUp(SignUpRequest) returns (SignUpResponse);
     rpc GetGithubRepositories(GetGithubRepositoriesRequest) returns (GetGithubRepositoriesResponse);
     rpc ExchangeGitHubCodeForToken(ExchangeGitHubCodeForTokenRequest) returns  (ExchangeGitHubCodeForTokenResponse);
+    rpc GetGithubUserAccessToken(GetGithubUserAccessTokenRequest) returns  (GetGithubUserAccessTokenRespone);
     rpc Health(HealthRequest) returns (HealthResponse);
 }
 
@@ -29,8 +30,9 @@ message GithubRepository {
     string description = 3;
     string default_branch = 4;
     string git_url = 5;
-    string url = 6;
-    string visibility = 7;
+    string clone_url = 6;
+    string url = 7;
+    string visibility = 8;
 }
 
 message UserSession {
@@ -82,6 +84,12 @@ message ExchangeGitHubCodeForTokenResponse{
     int64 refresh_token_expires_in = 6;
 }
 
+message GetGithubUserAccessTokenRequest {
+    string user_id = 1;
+}
+message GetGithubUserAccessTokenRespone {
+    string github_user_access_token = 1;
+}
 
 message HealthRequest {};
 message HealthResponse {

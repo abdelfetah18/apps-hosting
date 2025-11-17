@@ -58,11 +58,12 @@ func main() {
 
 	logger.LogInfo("App Service running")
 
-	logger.LogInfo("Connecting to the repository.Database.")
+	logger.LogInfo("Connecting to the app_service Database.")
 	database := database.NewDatabase()
 
 	appRepository := repositories.NewAppRepository(database, logger)
 	environmentVariablesRepository := repositories.NewEnvironmentVariablesRepository(database, logger)
+	gitRepositoryRepository := repositories.NewGitRepositoryRepository(database, logger)
 
 	_, err := appRepository.CreateAppsTable()
 	if err != nil {
@@ -70,6 +71,11 @@ func main() {
 	}
 
 	_, err = environmentVariablesRepository.CreateEnvironmentVariablesTable()
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = gitRepositoryRepository.CreateGitRepositoryRepositoryTable()
 	if err != nil {
 		panic(err)
 	}
@@ -89,7 +95,7 @@ func main() {
 	}
 
 	grpcServer := grpc.NewServer(grpc.StatsHandler(otelgrpc.NewServerHandler()))
-	grpcAppServiceServer := grpc_server.NewGRPCAppServiceServer(appRepository, environmentVariablesRepository, *eventBus, logger)
+	grpcAppServiceServer := grpc_server.NewGRPCAppServiceServer(appRepository, environmentVariablesRepository, gitRepositoryRepository, *eventBus, logger)
 	app_service_pb.RegisterAppServiceServer(grpcServer, grpcAppServiceServer)
 
 	PORT := os.Getenv("PORT")

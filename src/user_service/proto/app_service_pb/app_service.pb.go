@@ -189,22 +189,107 @@ func (x *EnvironmentVariables) GetCreateAt() string {
 	return ""
 }
 
+type GitRepository struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	AppId         string                 `protobuf:"bytes,2,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty"`
+	Provider      string                 `protobuf:"bytes,3,opt,name=provider,proto3" json:"provider,omitempty"`
+	CloneUrl      string                 `protobuf:"bytes,4,opt,name=clone_url,json=cloneUrl,proto3" json:"clone_url,omitempty"`
+	IsPrivate     bool                   `protobuf:"varint,5,opt,name=is_private,json=isPrivate,proto3" json:"is_private,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GitRepository) Reset() {
+	*x = GitRepository{}
+	mi := &file_src_protos_app_service_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GitRepository) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GitRepository) ProtoMessage() {}
+
+func (x *GitRepository) ProtoReflect() protoreflect.Message {
+	mi := &file_src_protos_app_service_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GitRepository.ProtoReflect.Descriptor instead.
+func (*GitRepository) Descriptor() ([]byte, []int) {
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *GitRepository) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *GitRepository) GetAppId() string {
+	if x != nil {
+		return x.AppId
+	}
+	return ""
+}
+
+func (x *GitRepository) GetProvider() string {
+	if x != nil {
+		return x.Provider
+	}
+	return ""
+}
+
+func (x *GitRepository) GetCloneUrl() string {
+	if x != nil {
+		return x.CloneUrl
+	}
+	return ""
+}
+
+func (x *GitRepository) GetIsPrivate() bool {
+	if x != nil {
+		return x.IsPrivate
+	}
+	return false
+}
+
+func (x *GitRepository) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
 type CreateAppRequest struct {
 	state                protoimpl.MessageState `protogen:"open.v1"`
 	ProjectId            string                 `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
-	Name                 string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Runtime              string                 `protobuf:"bytes,3,opt,name=runtime,proto3" json:"runtime,omitempty"`
-	RepoUrl              string                 `protobuf:"bytes,4,opt,name=repo_url,json=repoUrl,proto3" json:"repo_url,omitempty"`
-	BuildCmd             string                 `protobuf:"bytes,5,opt,name=build_cmd,json=buildCmd,proto3" json:"build_cmd,omitempty"`
-	StartCmd             string                 `protobuf:"bytes,6,opt,name=start_cmd,json=startCmd,proto3" json:"start_cmd,omitempty"`
-	EnvironmentVariables *string                `protobuf:"bytes,7,opt,name=environment_variables,json=environmentVariables,proto3,oneof" json:"environment_variables,omitempty"`
+	UserId               string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Name                 string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	Runtime              string                 `protobuf:"bytes,4,opt,name=runtime,proto3" json:"runtime,omitempty"`
+	GitRepository        *GitRepository         `protobuf:"bytes,5,opt,name=git_repository,json=gitRepository,proto3" json:"git_repository,omitempty"`
+	BuildCmd             string                 `protobuf:"bytes,6,opt,name=build_cmd,json=buildCmd,proto3" json:"build_cmd,omitempty"`
+	StartCmd             string                 `protobuf:"bytes,7,opt,name=start_cmd,json=startCmd,proto3" json:"start_cmd,omitempty"`
+	EnvironmentVariables *string                `protobuf:"bytes,8,opt,name=environment_variables,json=environmentVariables,proto3,oneof" json:"environment_variables,omitempty"`
 	unknownFields        protoimpl.UnknownFields
 	sizeCache            protoimpl.SizeCache
 }
 
 func (x *CreateAppRequest) Reset() {
 	*x = CreateAppRequest{}
-	mi := &file_src_protos_app_service_proto_msgTypes[2]
+	mi := &file_src_protos_app_service_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -216,7 +301,7 @@ func (x *CreateAppRequest) String() string {
 func (*CreateAppRequest) ProtoMessage() {}
 
 func (x *CreateAppRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_app_service_proto_msgTypes[2]
+	mi := &file_src_protos_app_service_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -229,12 +314,19 @@ func (x *CreateAppRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateAppRequest.ProtoReflect.Descriptor instead.
 func (*CreateAppRequest) Descriptor() ([]byte, []int) {
-	return file_src_protos_app_service_proto_rawDescGZIP(), []int{2}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *CreateAppRequest) GetProjectId() string {
 	if x != nil {
 		return x.ProjectId
+	}
+	return ""
+}
+
+func (x *CreateAppRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
 	}
 	return ""
 }
@@ -253,11 +345,11 @@ func (x *CreateAppRequest) GetRuntime() string {
 	return ""
 }
 
-func (x *CreateAppRequest) GetRepoUrl() string {
+func (x *CreateAppRequest) GetGitRepository() *GitRepository {
 	if x != nil {
-		return x.RepoUrl
+		return x.GitRepository
 	}
-	return ""
+	return nil
 }
 
 func (x *CreateAppRequest) GetBuildCmd() string {
@@ -290,7 +382,7 @@ type CreateAppResponse struct {
 
 func (x *CreateAppResponse) Reset() {
 	*x = CreateAppResponse{}
-	mi := &file_src_protos_app_service_proto_msgTypes[3]
+	mi := &file_src_protos_app_service_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -302,7 +394,7 @@ func (x *CreateAppResponse) String() string {
 func (*CreateAppResponse) ProtoMessage() {}
 
 func (x *CreateAppResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_app_service_proto_msgTypes[3]
+	mi := &file_src_protos_app_service_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -315,7 +407,7 @@ func (x *CreateAppResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateAppResponse.ProtoReflect.Descriptor instead.
 func (*CreateAppResponse) Descriptor() ([]byte, []int) {
-	return file_src_protos_app_service_proto_rawDescGZIP(), []int{3}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *CreateAppResponse) GetApp() *App {
@@ -335,7 +427,7 @@ type GetAppRequest struct {
 
 func (x *GetAppRequest) Reset() {
 	*x = GetAppRequest{}
-	mi := &file_src_protos_app_service_proto_msgTypes[4]
+	mi := &file_src_protos_app_service_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -347,7 +439,7 @@ func (x *GetAppRequest) String() string {
 func (*GetAppRequest) ProtoMessage() {}
 
 func (x *GetAppRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_app_service_proto_msgTypes[4]
+	mi := &file_src_protos_app_service_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -360,7 +452,7 @@ func (x *GetAppRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAppRequest.ProtoReflect.Descriptor instead.
 func (*GetAppRequest) Descriptor() ([]byte, []int) {
-	return file_src_protos_app_service_proto_rawDescGZIP(), []int{4}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GetAppRequest) GetAppId() string {
@@ -386,7 +478,7 @@ type GetAppResponse struct {
 
 func (x *GetAppResponse) Reset() {
 	*x = GetAppResponse{}
-	mi := &file_src_protos_app_service_proto_msgTypes[5]
+	mi := &file_src_protos_app_service_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -398,7 +490,7 @@ func (x *GetAppResponse) String() string {
 func (*GetAppResponse) ProtoMessage() {}
 
 func (x *GetAppResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_app_service_proto_msgTypes[5]
+	mi := &file_src_protos_app_service_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -411,7 +503,7 @@ func (x *GetAppResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAppResponse.ProtoReflect.Descriptor instead.
 func (*GetAppResponse) Descriptor() ([]byte, []int) {
-	return file_src_protos_app_service_proto_rawDescGZIP(), []int{5}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *GetAppResponse) GetApp() *App {
@@ -430,7 +522,7 @@ type GetAppsRequest struct {
 
 func (x *GetAppsRequest) Reset() {
 	*x = GetAppsRequest{}
-	mi := &file_src_protos_app_service_proto_msgTypes[6]
+	mi := &file_src_protos_app_service_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -442,7 +534,7 @@ func (x *GetAppsRequest) String() string {
 func (*GetAppsRequest) ProtoMessage() {}
 
 func (x *GetAppsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_app_service_proto_msgTypes[6]
+	mi := &file_src_protos_app_service_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -455,7 +547,7 @@ func (x *GetAppsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAppsRequest.ProtoReflect.Descriptor instead.
 func (*GetAppsRequest) Descriptor() ([]byte, []int) {
-	return file_src_protos_app_service_proto_rawDescGZIP(), []int{6}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *GetAppsRequest) GetProjectId() string {
@@ -474,7 +566,7 @@ type GetAppsResponse struct {
 
 func (x *GetAppsResponse) Reset() {
 	*x = GetAppsResponse{}
-	mi := &file_src_protos_app_service_proto_msgTypes[7]
+	mi := &file_src_protos_app_service_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -486,7 +578,7 @@ func (x *GetAppsResponse) String() string {
 func (*GetAppsResponse) ProtoMessage() {}
 
 func (x *GetAppsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_app_service_proto_msgTypes[7]
+	mi := &file_src_protos_app_service_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -499,7 +591,7 @@ func (x *GetAppsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAppsResponse.ProtoReflect.Descriptor instead.
 func (*GetAppsResponse) Descriptor() ([]byte, []int) {
-	return file_src_protos_app_service_proto_rawDescGZIP(), []int{7}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *GetAppsResponse) GetApps() []*App {
@@ -524,7 +616,7 @@ type UpdateAppRequest struct {
 
 func (x *UpdateAppRequest) Reset() {
 	*x = UpdateAppRequest{}
-	mi := &file_src_protos_app_service_proto_msgTypes[8]
+	mi := &file_src_protos_app_service_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -536,7 +628,7 @@ func (x *UpdateAppRequest) String() string {
 func (*UpdateAppRequest) ProtoMessage() {}
 
 func (x *UpdateAppRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_app_service_proto_msgTypes[8]
+	mi := &file_src_protos_app_service_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -549,7 +641,7 @@ func (x *UpdateAppRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateAppRequest.ProtoReflect.Descriptor instead.
 func (*UpdateAppRequest) Descriptor() ([]byte, []int) {
-	return file_src_protos_app_service_proto_rawDescGZIP(), []int{8}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *UpdateAppRequest) GetProjectId() string {
@@ -610,7 +702,7 @@ type UpdateAppResponse struct {
 
 func (x *UpdateAppResponse) Reset() {
 	*x = UpdateAppResponse{}
-	mi := &file_src_protos_app_service_proto_msgTypes[9]
+	mi := &file_src_protos_app_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -622,7 +714,7 @@ func (x *UpdateAppResponse) String() string {
 func (*UpdateAppResponse) ProtoMessage() {}
 
 func (x *UpdateAppResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_app_service_proto_msgTypes[9]
+	mi := &file_src_protos_app_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -635,7 +727,7 @@ func (x *UpdateAppResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateAppResponse.ProtoReflect.Descriptor instead.
 func (*UpdateAppResponse) Descriptor() ([]byte, []int) {
-	return file_src_protos_app_service_proto_rawDescGZIP(), []int{9}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *UpdateAppResponse) GetApp() *App {
@@ -655,7 +747,7 @@ type DeleteAppRequest struct {
 
 func (x *DeleteAppRequest) Reset() {
 	*x = DeleteAppRequest{}
-	mi := &file_src_protos_app_service_proto_msgTypes[10]
+	mi := &file_src_protos_app_service_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -667,7 +759,7 @@ func (x *DeleteAppRequest) String() string {
 func (*DeleteAppRequest) ProtoMessage() {}
 
 func (x *DeleteAppRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_app_service_proto_msgTypes[10]
+	mi := &file_src_protos_app_service_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -680,7 +772,7 @@ func (x *DeleteAppRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteAppRequest.ProtoReflect.Descriptor instead.
 func (*DeleteAppRequest) Descriptor() ([]byte, []int) {
-	return file_src_protos_app_service_proto_rawDescGZIP(), []int{10}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *DeleteAppRequest) GetProjectId() string {
@@ -705,7 +797,7 @@ type DeleteAppResponse struct {
 
 func (x *DeleteAppResponse) Reset() {
 	*x = DeleteAppResponse{}
-	mi := &file_src_protos_app_service_proto_msgTypes[11]
+	mi := &file_src_protos_app_service_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -717,7 +809,7 @@ func (x *DeleteAppResponse) String() string {
 func (*DeleteAppResponse) ProtoMessage() {}
 
 func (x *DeleteAppResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_app_service_proto_msgTypes[11]
+	mi := &file_src_protos_app_service_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -730,7 +822,7 @@ func (x *DeleteAppResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteAppResponse.ProtoReflect.Descriptor instead.
 func (*DeleteAppResponse) Descriptor() ([]byte, []int) {
-	return file_src_protos_app_service_proto_rawDescGZIP(), []int{11}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{12}
 }
 
 type GetEnvironmentVariablesRequest struct {
@@ -742,7 +834,7 @@ type GetEnvironmentVariablesRequest struct {
 
 func (x *GetEnvironmentVariablesRequest) Reset() {
 	*x = GetEnvironmentVariablesRequest{}
-	mi := &file_src_protos_app_service_proto_msgTypes[12]
+	mi := &file_src_protos_app_service_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -754,7 +846,7 @@ func (x *GetEnvironmentVariablesRequest) String() string {
 func (*GetEnvironmentVariablesRequest) ProtoMessage() {}
 
 func (x *GetEnvironmentVariablesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_app_service_proto_msgTypes[12]
+	mi := &file_src_protos_app_service_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -767,7 +859,7 @@ func (x *GetEnvironmentVariablesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetEnvironmentVariablesRequest.ProtoReflect.Descriptor instead.
 func (*GetEnvironmentVariablesRequest) Descriptor() ([]byte, []int) {
-	return file_src_protos_app_service_proto_rawDescGZIP(), []int{12}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GetEnvironmentVariablesRequest) GetAppId() string {
@@ -786,7 +878,7 @@ type GetEnvironmentVariablesResponse struct {
 
 func (x *GetEnvironmentVariablesResponse) Reset() {
 	*x = GetEnvironmentVariablesResponse{}
-	mi := &file_src_protos_app_service_proto_msgTypes[13]
+	mi := &file_src_protos_app_service_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -798,7 +890,7 @@ func (x *GetEnvironmentVariablesResponse) String() string {
 func (*GetEnvironmentVariablesResponse) ProtoMessage() {}
 
 func (x *GetEnvironmentVariablesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_app_service_proto_msgTypes[13]
+	mi := &file_src_protos_app_service_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -811,7 +903,7 @@ func (x *GetEnvironmentVariablesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetEnvironmentVariablesResponse.ProtoReflect.Descriptor instead.
 func (*GetEnvironmentVariablesResponse) Descriptor() ([]byte, []int) {
-	return file_src_protos_app_service_proto_rawDescGZIP(), []int{13}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *GetEnvironmentVariablesResponse) GetEnvironmentVariable() *EnvironmentVariables {
@@ -831,7 +923,7 @@ type CreateEnvironmentVariablesRequest struct {
 
 func (x *CreateEnvironmentVariablesRequest) Reset() {
 	*x = CreateEnvironmentVariablesRequest{}
-	mi := &file_src_protos_app_service_proto_msgTypes[14]
+	mi := &file_src_protos_app_service_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -843,7 +935,7 @@ func (x *CreateEnvironmentVariablesRequest) String() string {
 func (*CreateEnvironmentVariablesRequest) ProtoMessage() {}
 
 func (x *CreateEnvironmentVariablesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_app_service_proto_msgTypes[14]
+	mi := &file_src_protos_app_service_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -856,7 +948,7 @@ func (x *CreateEnvironmentVariablesRequest) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use CreateEnvironmentVariablesRequest.ProtoReflect.Descriptor instead.
 func (*CreateEnvironmentVariablesRequest) Descriptor() ([]byte, []int) {
-	return file_src_protos_app_service_proto_rawDescGZIP(), []int{14}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *CreateEnvironmentVariablesRequest) GetAppId() string {
@@ -882,7 +974,7 @@ type CreateEnvironmentVariablesResponse struct {
 
 func (x *CreateEnvironmentVariablesResponse) Reset() {
 	*x = CreateEnvironmentVariablesResponse{}
-	mi := &file_src_protos_app_service_proto_msgTypes[15]
+	mi := &file_src_protos_app_service_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -894,7 +986,7 @@ func (x *CreateEnvironmentVariablesResponse) String() string {
 func (*CreateEnvironmentVariablesResponse) ProtoMessage() {}
 
 func (x *CreateEnvironmentVariablesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_app_service_proto_msgTypes[15]
+	mi := &file_src_protos_app_service_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -907,7 +999,7 @@ func (x *CreateEnvironmentVariablesResponse) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use CreateEnvironmentVariablesResponse.ProtoReflect.Descriptor instead.
 func (*CreateEnvironmentVariablesResponse) Descriptor() ([]byte, []int) {
-	return file_src_protos_app_service_proto_rawDescGZIP(), []int{15}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *CreateEnvironmentVariablesResponse) GetEnvironmentVariable() *EnvironmentVariables {
@@ -927,7 +1019,7 @@ type UpdateEnvironmentVariablesRequest struct {
 
 func (x *UpdateEnvironmentVariablesRequest) Reset() {
 	*x = UpdateEnvironmentVariablesRequest{}
-	mi := &file_src_protos_app_service_proto_msgTypes[16]
+	mi := &file_src_protos_app_service_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -939,7 +1031,7 @@ func (x *UpdateEnvironmentVariablesRequest) String() string {
 func (*UpdateEnvironmentVariablesRequest) ProtoMessage() {}
 
 func (x *UpdateEnvironmentVariablesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_app_service_proto_msgTypes[16]
+	mi := &file_src_protos_app_service_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -952,7 +1044,7 @@ func (x *UpdateEnvironmentVariablesRequest) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use UpdateEnvironmentVariablesRequest.ProtoReflect.Descriptor instead.
 func (*UpdateEnvironmentVariablesRequest) Descriptor() ([]byte, []int) {
-	return file_src_protos_app_service_proto_rawDescGZIP(), []int{16}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *UpdateEnvironmentVariablesRequest) GetAppId() string {
@@ -978,7 +1070,7 @@ type UpdateEnvironmentVariablesResponse struct {
 
 func (x *UpdateEnvironmentVariablesResponse) Reset() {
 	*x = UpdateEnvironmentVariablesResponse{}
-	mi := &file_src_protos_app_service_proto_msgTypes[17]
+	mi := &file_src_protos_app_service_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -990,7 +1082,7 @@ func (x *UpdateEnvironmentVariablesResponse) String() string {
 func (*UpdateEnvironmentVariablesResponse) ProtoMessage() {}
 
 func (x *UpdateEnvironmentVariablesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_app_service_proto_msgTypes[17]
+	mi := &file_src_protos_app_service_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1003,7 +1095,7 @@ func (x *UpdateEnvironmentVariablesResponse) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use UpdateEnvironmentVariablesResponse.ProtoReflect.Descriptor instead.
 func (*UpdateEnvironmentVariablesResponse) Descriptor() ([]byte, []int) {
-	return file_src_protos_app_service_proto_rawDescGZIP(), []int{17}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *UpdateEnvironmentVariablesResponse) GetEnvironmentVariable() *EnvironmentVariables {
@@ -1022,7 +1114,7 @@ type DeleteEnvironmentVariablesRequest struct {
 
 func (x *DeleteEnvironmentVariablesRequest) Reset() {
 	*x = DeleteEnvironmentVariablesRequest{}
-	mi := &file_src_protos_app_service_proto_msgTypes[18]
+	mi := &file_src_protos_app_service_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1034,7 +1126,7 @@ func (x *DeleteEnvironmentVariablesRequest) String() string {
 func (*DeleteEnvironmentVariablesRequest) ProtoMessage() {}
 
 func (x *DeleteEnvironmentVariablesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_app_service_proto_msgTypes[18]
+	mi := &file_src_protos_app_service_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1047,7 +1139,7 @@ func (x *DeleteEnvironmentVariablesRequest) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use DeleteEnvironmentVariablesRequest.ProtoReflect.Descriptor instead.
 func (*DeleteEnvironmentVariablesRequest) Descriptor() ([]byte, []int) {
-	return file_src_protos_app_service_proto_rawDescGZIP(), []int{18}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *DeleteEnvironmentVariablesRequest) GetAppId() string {
@@ -1065,7 +1157,7 @@ type DeleteEnvironmentVariablesResponse struct {
 
 func (x *DeleteEnvironmentVariablesResponse) Reset() {
 	*x = DeleteEnvironmentVariablesResponse{}
-	mi := &file_src_protos_app_service_proto_msgTypes[19]
+	mi := &file_src_protos_app_service_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1077,7 +1169,7 @@ func (x *DeleteEnvironmentVariablesResponse) String() string {
 func (*DeleteEnvironmentVariablesResponse) ProtoMessage() {}
 
 func (x *DeleteEnvironmentVariablesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_app_service_proto_msgTypes[19]
+	mi := &file_src_protos_app_service_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1090,7 +1182,7 @@ func (x *DeleteEnvironmentVariablesResponse) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use DeleteEnvironmentVariablesResponse.ProtoReflect.Descriptor instead.
 func (*DeleteEnvironmentVariablesResponse) Descriptor() ([]byte, []int) {
-	return file_src_protos_app_service_proto_rawDescGZIP(), []int{19}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{20}
 }
 
 type HealthRequest struct {
@@ -1101,7 +1193,7 @@ type HealthRequest struct {
 
 func (x *HealthRequest) Reset() {
 	*x = HealthRequest{}
-	mi := &file_src_protos_app_service_proto_msgTypes[20]
+	mi := &file_src_protos_app_service_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1113,7 +1205,7 @@ func (x *HealthRequest) String() string {
 func (*HealthRequest) ProtoMessage() {}
 
 func (x *HealthRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_app_service_proto_msgTypes[20]
+	mi := &file_src_protos_app_service_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1126,7 +1218,7 @@ func (x *HealthRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthRequest.ProtoReflect.Descriptor instead.
 func (*HealthRequest) Descriptor() ([]byte, []int) {
-	return file_src_protos_app_service_proto_rawDescGZIP(), []int{20}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{21}
 }
 
 type HealthResponse struct {
@@ -1139,7 +1231,7 @@ type HealthResponse struct {
 
 func (x *HealthResponse) Reset() {
 	*x = HealthResponse{}
-	mi := &file_src_protos_app_service_proto_msgTypes[21]
+	mi := &file_src_protos_app_service_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1151,7 +1243,7 @@ func (x *HealthResponse) String() string {
 func (*HealthResponse) ProtoMessage() {}
 
 func (x *HealthResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_app_service_proto_msgTypes[21]
+	mi := &file_src_protos_app_service_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1164,7 +1256,7 @@ func (x *HealthResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthResponse.ProtoReflect.Descriptor instead.
 func (*HealthResponse) Descriptor() ([]byte, []int) {
-	return file_src_protos_app_service_proto_rawDescGZIP(), []int{21}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *HealthResponse) GetStatus() string {
@@ -1202,16 +1294,26 @@ const file_src_protos_app_service_proto_rawDesc = "" +
 	"\x14EnvironmentVariables\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value\x12\x1b\n" +
-	"\tcreate_at\x18\x03 \x01(\tR\bcreateAt\"\x88\x02\n" +
+	"\tcreate_at\x18\x03 \x01(\tR\bcreateAt\"\xad\x01\n" +
+	"\rGitRepository\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x15\n" +
+	"\x06app_id\x18\x02 \x01(\tR\x05appId\x12\x1a\n" +
+	"\bprovider\x18\x03 \x01(\tR\bprovider\x12\x1b\n" +
+	"\tclone_url\x18\x04 \x01(\tR\bcloneUrl\x12\x1d\n" +
+	"\n" +
+	"is_private\x18\x05 \x01(\bR\tisPrivate\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\x06 \x01(\tR\tcreatedAt\"\xc9\x02\n" +
 	"\x10CreateAppRequest\x12\x1d\n" +
 	"\n" +
-	"project_id\x18\x01 \x01(\tR\tprojectId\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\x12\x18\n" +
-	"\aruntime\x18\x03 \x01(\tR\aruntime\x12\x19\n" +
-	"\brepo_url\x18\x04 \x01(\tR\arepoUrl\x12\x1b\n" +
-	"\tbuild_cmd\x18\x05 \x01(\tR\bbuildCmd\x12\x1b\n" +
-	"\tstart_cmd\x18\x06 \x01(\tR\bstartCmd\x128\n" +
-	"\x15environment_variables\x18\a \x01(\tH\x00R\x14environmentVariables\x88\x01\x01B\x18\n" +
+	"project_id\x18\x01 \x01(\tR\tprojectId\x12\x17\n" +
+	"\auser_id\x18\x02 \x01(\tR\x06userId\x12\x12\n" +
+	"\x04name\x18\x03 \x01(\tR\x04name\x12\x18\n" +
+	"\aruntime\x18\x04 \x01(\tR\aruntime\x12A\n" +
+	"\x0egit_repository\x18\x05 \x01(\v2\x1a.app_service.GitRepositoryR\rgitRepository\x12\x1b\n" +
+	"\tbuild_cmd\x18\x06 \x01(\tR\bbuildCmd\x12\x1b\n" +
+	"\tstart_cmd\x18\a \x01(\tR\bstartCmd\x128\n" +
+	"\x15environment_variables\x18\b \x01(\tH\x00R\x14environmentVariables\x88\x01\x01B\x18\n" +
 	"\x16_environment_variables\"7\n" +
 	"\x11CreateAppResponse\x12\"\n" +
 	"\x03app\x18\x01 \x01(\v2\x10.app_service.AppR\x03app\"E\n" +
@@ -1296,64 +1398,66 @@ func file_src_protos_app_service_proto_rawDescGZIP() []byte {
 	return file_src_protos_app_service_proto_rawDescData
 }
 
-var file_src_protos_app_service_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
+var file_src_protos_app_service_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
 var file_src_protos_app_service_proto_goTypes = []any{
 	(*App)(nil),                                // 0: app_service.App
 	(*EnvironmentVariables)(nil),               // 1: app_service.EnvironmentVariables
-	(*CreateAppRequest)(nil),                   // 2: app_service.CreateAppRequest
-	(*CreateAppResponse)(nil),                  // 3: app_service.CreateAppResponse
-	(*GetAppRequest)(nil),                      // 4: app_service.GetAppRequest
-	(*GetAppResponse)(nil),                     // 5: app_service.GetAppResponse
-	(*GetAppsRequest)(nil),                     // 6: app_service.GetAppsRequest
-	(*GetAppsResponse)(nil),                    // 7: app_service.GetAppsResponse
-	(*UpdateAppRequest)(nil),                   // 8: app_service.UpdateAppRequest
-	(*UpdateAppResponse)(nil),                  // 9: app_service.UpdateAppResponse
-	(*DeleteAppRequest)(nil),                   // 10: app_service.DeleteAppRequest
-	(*DeleteAppResponse)(nil),                  // 11: app_service.DeleteAppResponse
-	(*GetEnvironmentVariablesRequest)(nil),     // 12: app_service.GetEnvironmentVariablesRequest
-	(*GetEnvironmentVariablesResponse)(nil),    // 13: app_service.GetEnvironmentVariablesResponse
-	(*CreateEnvironmentVariablesRequest)(nil),  // 14: app_service.CreateEnvironmentVariablesRequest
-	(*CreateEnvironmentVariablesResponse)(nil), // 15: app_service.CreateEnvironmentVariablesResponse
-	(*UpdateEnvironmentVariablesRequest)(nil),  // 16: app_service.UpdateEnvironmentVariablesRequest
-	(*UpdateEnvironmentVariablesResponse)(nil), // 17: app_service.UpdateEnvironmentVariablesResponse
-	(*DeleteEnvironmentVariablesRequest)(nil),  // 18: app_service.DeleteEnvironmentVariablesRequest
-	(*DeleteEnvironmentVariablesResponse)(nil), // 19: app_service.DeleteEnvironmentVariablesResponse
-	(*HealthRequest)(nil),                      // 20: app_service.HealthRequest
-	(*HealthResponse)(nil),                     // 21: app_service.HealthResponse
+	(*GitRepository)(nil),                      // 2: app_service.GitRepository
+	(*CreateAppRequest)(nil),                   // 3: app_service.CreateAppRequest
+	(*CreateAppResponse)(nil),                  // 4: app_service.CreateAppResponse
+	(*GetAppRequest)(nil),                      // 5: app_service.GetAppRequest
+	(*GetAppResponse)(nil),                     // 6: app_service.GetAppResponse
+	(*GetAppsRequest)(nil),                     // 7: app_service.GetAppsRequest
+	(*GetAppsResponse)(nil),                    // 8: app_service.GetAppsResponse
+	(*UpdateAppRequest)(nil),                   // 9: app_service.UpdateAppRequest
+	(*UpdateAppResponse)(nil),                  // 10: app_service.UpdateAppResponse
+	(*DeleteAppRequest)(nil),                   // 11: app_service.DeleteAppRequest
+	(*DeleteAppResponse)(nil),                  // 12: app_service.DeleteAppResponse
+	(*GetEnvironmentVariablesRequest)(nil),     // 13: app_service.GetEnvironmentVariablesRequest
+	(*GetEnvironmentVariablesResponse)(nil),    // 14: app_service.GetEnvironmentVariablesResponse
+	(*CreateEnvironmentVariablesRequest)(nil),  // 15: app_service.CreateEnvironmentVariablesRequest
+	(*CreateEnvironmentVariablesResponse)(nil), // 16: app_service.CreateEnvironmentVariablesResponse
+	(*UpdateEnvironmentVariablesRequest)(nil),  // 17: app_service.UpdateEnvironmentVariablesRequest
+	(*UpdateEnvironmentVariablesResponse)(nil), // 18: app_service.UpdateEnvironmentVariablesResponse
+	(*DeleteEnvironmentVariablesRequest)(nil),  // 19: app_service.DeleteEnvironmentVariablesRequest
+	(*DeleteEnvironmentVariablesResponse)(nil), // 20: app_service.DeleteEnvironmentVariablesResponse
+	(*HealthRequest)(nil),                      // 21: app_service.HealthRequest
+	(*HealthResponse)(nil),                     // 22: app_service.HealthResponse
 }
 var file_src_protos_app_service_proto_depIdxs = []int32{
-	0,  // 0: app_service.CreateAppResponse.app:type_name -> app_service.App
-	0,  // 1: app_service.GetAppResponse.app:type_name -> app_service.App
-	0,  // 2: app_service.GetAppsResponse.apps:type_name -> app_service.App
-	0,  // 3: app_service.UpdateAppResponse.app:type_name -> app_service.App
-	1,  // 4: app_service.GetEnvironmentVariablesResponse.environment_variable:type_name -> app_service.EnvironmentVariables
-	1,  // 5: app_service.CreateEnvironmentVariablesResponse.environment_variable:type_name -> app_service.EnvironmentVariables
-	1,  // 6: app_service.UpdateEnvironmentVariablesResponse.environment_variable:type_name -> app_service.EnvironmentVariables
-	20, // 7: app_service.AppService.Health:input_type -> app_service.HealthRequest
-	2,  // 8: app_service.AppService.CreateApp:input_type -> app_service.CreateAppRequest
-	4,  // 9: app_service.AppService.GetApp:input_type -> app_service.GetAppRequest
-	6,  // 10: app_service.AppService.GetApps:input_type -> app_service.GetAppsRequest
-	8,  // 11: app_service.AppService.UpdateApp:input_type -> app_service.UpdateAppRequest
-	10, // 12: app_service.AppService.DeleteApp:input_type -> app_service.DeleteAppRequest
-	12, // 13: app_service.AppService.GetEnvironmentVariables:input_type -> app_service.GetEnvironmentVariablesRequest
-	14, // 14: app_service.AppService.CreateEnvironmentVariables:input_type -> app_service.CreateEnvironmentVariablesRequest
-	16, // 15: app_service.AppService.UpdateEnvironmentVariables:input_type -> app_service.UpdateEnvironmentVariablesRequest
-	18, // 16: app_service.AppService.DeleteEnvironmentVariables:input_type -> app_service.DeleteEnvironmentVariablesRequest
-	21, // 17: app_service.AppService.Health:output_type -> app_service.HealthResponse
-	3,  // 18: app_service.AppService.CreateApp:output_type -> app_service.CreateAppResponse
-	5,  // 19: app_service.AppService.GetApp:output_type -> app_service.GetAppResponse
-	7,  // 20: app_service.AppService.GetApps:output_type -> app_service.GetAppsResponse
-	9,  // 21: app_service.AppService.UpdateApp:output_type -> app_service.UpdateAppResponse
-	11, // 22: app_service.AppService.DeleteApp:output_type -> app_service.DeleteAppResponse
-	13, // 23: app_service.AppService.GetEnvironmentVariables:output_type -> app_service.GetEnvironmentVariablesResponse
-	15, // 24: app_service.AppService.CreateEnvironmentVariables:output_type -> app_service.CreateEnvironmentVariablesResponse
-	17, // 25: app_service.AppService.UpdateEnvironmentVariables:output_type -> app_service.UpdateEnvironmentVariablesResponse
-	19, // 26: app_service.AppService.DeleteEnvironmentVariables:output_type -> app_service.DeleteEnvironmentVariablesResponse
-	17, // [17:27] is the sub-list for method output_type
-	7,  // [7:17] is the sub-list for method input_type
-	7,  // [7:7] is the sub-list for extension type_name
-	7,  // [7:7] is the sub-list for extension extendee
-	0,  // [0:7] is the sub-list for field type_name
+	2,  // 0: app_service.CreateAppRequest.git_repository:type_name -> app_service.GitRepository
+	0,  // 1: app_service.CreateAppResponse.app:type_name -> app_service.App
+	0,  // 2: app_service.GetAppResponse.app:type_name -> app_service.App
+	0,  // 3: app_service.GetAppsResponse.apps:type_name -> app_service.App
+	0,  // 4: app_service.UpdateAppResponse.app:type_name -> app_service.App
+	1,  // 5: app_service.GetEnvironmentVariablesResponse.environment_variable:type_name -> app_service.EnvironmentVariables
+	1,  // 6: app_service.CreateEnvironmentVariablesResponse.environment_variable:type_name -> app_service.EnvironmentVariables
+	1,  // 7: app_service.UpdateEnvironmentVariablesResponse.environment_variable:type_name -> app_service.EnvironmentVariables
+	21, // 8: app_service.AppService.Health:input_type -> app_service.HealthRequest
+	3,  // 9: app_service.AppService.CreateApp:input_type -> app_service.CreateAppRequest
+	5,  // 10: app_service.AppService.GetApp:input_type -> app_service.GetAppRequest
+	7,  // 11: app_service.AppService.GetApps:input_type -> app_service.GetAppsRequest
+	9,  // 12: app_service.AppService.UpdateApp:input_type -> app_service.UpdateAppRequest
+	11, // 13: app_service.AppService.DeleteApp:input_type -> app_service.DeleteAppRequest
+	13, // 14: app_service.AppService.GetEnvironmentVariables:input_type -> app_service.GetEnvironmentVariablesRequest
+	15, // 15: app_service.AppService.CreateEnvironmentVariables:input_type -> app_service.CreateEnvironmentVariablesRequest
+	17, // 16: app_service.AppService.UpdateEnvironmentVariables:input_type -> app_service.UpdateEnvironmentVariablesRequest
+	19, // 17: app_service.AppService.DeleteEnvironmentVariables:input_type -> app_service.DeleteEnvironmentVariablesRequest
+	22, // 18: app_service.AppService.Health:output_type -> app_service.HealthResponse
+	4,  // 19: app_service.AppService.CreateApp:output_type -> app_service.CreateAppResponse
+	6,  // 20: app_service.AppService.GetApp:output_type -> app_service.GetAppResponse
+	8,  // 21: app_service.AppService.GetApps:output_type -> app_service.GetAppsResponse
+	10, // 22: app_service.AppService.UpdateApp:output_type -> app_service.UpdateAppResponse
+	12, // 23: app_service.AppService.DeleteApp:output_type -> app_service.DeleteAppResponse
+	14, // 24: app_service.AppService.GetEnvironmentVariables:output_type -> app_service.GetEnvironmentVariablesResponse
+	16, // 25: app_service.AppService.CreateEnvironmentVariables:output_type -> app_service.CreateEnvironmentVariablesResponse
+	18, // 26: app_service.AppService.UpdateEnvironmentVariables:output_type -> app_service.UpdateEnvironmentVariablesResponse
+	20, // 27: app_service.AppService.DeleteEnvironmentVariables:output_type -> app_service.DeleteEnvironmentVariablesResponse
+	18, // [18:28] is the sub-list for method output_type
+	8,  // [8:18] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_src_protos_app_service_proto_init() }
@@ -1361,15 +1465,15 @@ func file_src_protos_app_service_proto_init() {
 	if File_src_protos_app_service_proto != nil {
 		return
 	}
-	file_src_protos_app_service_proto_msgTypes[2].OneofWrappers = []any{}
-	file_src_protos_app_service_proto_msgTypes[8].OneofWrappers = []any{}
+	file_src_protos_app_service_proto_msgTypes[3].OneofWrappers = []any{}
+	file_src_protos_app_service_proto_msgTypes[9].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_src_protos_app_service_proto_rawDesc), len(file_src_protos_app_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   22,
+			NumMessages:   23,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

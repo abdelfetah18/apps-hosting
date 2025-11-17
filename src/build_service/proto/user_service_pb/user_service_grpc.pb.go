@@ -24,6 +24,7 @@ const (
 	UserService_SignUp_FullMethodName                     = "/user_service.UserService/SignUp"
 	UserService_GetGithubRepositories_FullMethodName      = "/user_service.UserService/GetGithubRepositories"
 	UserService_ExchangeGitHubCodeForToken_FullMethodName = "/user_service.UserService/ExchangeGitHubCodeForToken"
+	UserService_GetGithubUserAccessToken_FullMethodName   = "/user_service.UserService/GetGithubUserAccessToken"
 	UserService_Health_FullMethodName                     = "/user_service.UserService/Health"
 )
 
@@ -36,6 +37,7 @@ type UserServiceClient interface {
 	SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc.CallOption) (*SignUpResponse, error)
 	GetGithubRepositories(ctx context.Context, in *GetGithubRepositoriesRequest, opts ...grpc.CallOption) (*GetGithubRepositoriesResponse, error)
 	ExchangeGitHubCodeForToken(ctx context.Context, in *ExchangeGitHubCodeForTokenRequest, opts ...grpc.CallOption) (*ExchangeGitHubCodeForTokenResponse, error)
+	GetGithubUserAccessToken(ctx context.Context, in *GetGithubUserAccessTokenRequest, opts ...grpc.CallOption) (*GetGithubUserAccessTokenRespone, error)
 	Health(ctx context.Context, in *HealthRequest, opts ...grpc.CallOption) (*HealthResponse, error)
 }
 
@@ -97,6 +99,16 @@ func (c *userServiceClient) ExchangeGitHubCodeForToken(ctx context.Context, in *
 	return out, nil
 }
 
+func (c *userServiceClient) GetGithubUserAccessToken(ctx context.Context, in *GetGithubUserAccessTokenRequest, opts ...grpc.CallOption) (*GetGithubUserAccessTokenRespone, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetGithubUserAccessTokenRespone)
+	err := c.cc.Invoke(ctx, UserService_GetGithubUserAccessToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) Health(ctx context.Context, in *HealthRequest, opts ...grpc.CallOption) (*HealthResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(HealthResponse)
@@ -116,6 +128,7 @@ type UserServiceServer interface {
 	SignUp(context.Context, *SignUpRequest) (*SignUpResponse, error)
 	GetGithubRepositories(context.Context, *GetGithubRepositoriesRequest) (*GetGithubRepositoriesResponse, error)
 	ExchangeGitHubCodeForToken(context.Context, *ExchangeGitHubCodeForTokenRequest) (*ExchangeGitHubCodeForTokenResponse, error)
+	GetGithubUserAccessToken(context.Context, *GetGithubUserAccessTokenRequest) (*GetGithubUserAccessTokenRespone, error)
 	Health(context.Context, *HealthRequest) (*HealthResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
@@ -141,6 +154,9 @@ func (UnimplementedUserServiceServer) GetGithubRepositories(context.Context, *Ge
 }
 func (UnimplementedUserServiceServer) ExchangeGitHubCodeForToken(context.Context, *ExchangeGitHubCodeForTokenRequest) (*ExchangeGitHubCodeForTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExchangeGitHubCodeForToken not implemented")
+}
+func (UnimplementedUserServiceServer) GetGithubUserAccessToken(context.Context, *GetGithubUserAccessTokenRequest) (*GetGithubUserAccessTokenRespone, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGithubUserAccessToken not implemented")
 }
 func (UnimplementedUserServiceServer) Health(context.Context, *HealthRequest) (*HealthResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Health not implemented")
@@ -256,6 +272,24 @@ func _UserService_ExchangeGitHubCodeForToken_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GetGithubUserAccessToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetGithubUserAccessTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetGithubUserAccessToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetGithubUserAccessToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetGithubUserAccessToken(ctx, req.(*GetGithubUserAccessTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_Health_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(HealthRequest)
 	if err := dec(in); err != nil {
@@ -300,6 +334,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ExchangeGitHubCodeForToken",
 			Handler:    _UserService_ExchangeGitHubCodeForToken_Handler,
+		},
+		{
+			MethodName: "GetGithubUserAccessToken",
+			Handler:    _UserService_GetGithubUserAccessToken_Handler,
 		},
 		{
 			MethodName: "Health",

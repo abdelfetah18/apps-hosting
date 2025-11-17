@@ -51,6 +51,15 @@ interface EnvironmentVariables {
     created_at: string;
 }
 
+type GitProvider = "github"
+interface GitRepository {
+    id: string;
+    clone_url: string;
+    provider: GitProvider;
+    is_private: boolean;
+    created_at: string;
+}
+
 type BuildStatus = "successed" | "failed" | "pending";
 interface Build {
     id: string;
@@ -76,6 +85,11 @@ interface CreateAppForm {
     repo_url: string;
     start_cmd: string;
     build_cmd: string;
+    git_repository: {
+        clone_url: string;
+        is_private: boolean;
+        provider: GitProvider;
+    };
 }
 
 interface Environment {
@@ -125,6 +139,7 @@ interface GithubRepository {
     description: string;
     default_branch: string;
     git_url: string;
+    clone_url: string;
     url: string;
     visibility: string;
 }

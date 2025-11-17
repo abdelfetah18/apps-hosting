@@ -11,6 +11,7 @@ import (
 
 	"build/database"
 	gitclient "build/git_client"
+	grpcclients "build/grpc_clients"
 	"build/grpc_server"
 	"build/kaniko"
 	"build/nats_service"
@@ -100,10 +101,16 @@ func main() {
 		panic(err)
 	}
 
+	grpcClients, err := grpcclients.NewGrpcClients()
+	if err != nil {
+		logger.LogError(err.Error())
+		return
+	}
+
 	kanikoBuilder := kaniko.NewKanikoBuilder(clientset, logger)
 	gitRepoManager := gitclient.NewGitRepoManager()
 	runtimeBuilder := runtime.NewRuntimeBuilder(logger)
-	natsHandler := nats_service.NewNatsHandler(*eventBus, kanikoBuilder, gitRepoManager, runtimeBuilder, buildRepository, logger)
+	natsHandler := nats_service.NewNatsHandler(*eventBus, kanikoBuilder, gitRepoManager, runtimeBuilder, buildRepository, grpcClients.UserServiceClient, logger)
 
 	eventBus.Subscribe("build-service-app-created", events_pb.EventName_APP_CREATED, natsHandler.HandleAppCreatedEvent)
 	eventBus.Subscribe("build-service-app-deleted", events_pb.EventName_APP_DELETED, natsHandler.HandleAppDeletedEvent)

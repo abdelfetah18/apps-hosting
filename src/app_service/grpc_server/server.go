@@ -10,6 +10,7 @@ import (
 
 	"apps-hosting.com/messaging"
 	"apps-hosting.com/messaging/proto/events_pb"
+	"apps-hosting.com/messaging/proto/models_pb"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
@@ -25,6 +26,7 @@ type GRPCAppServiceServer struct {
 
 	AppRepository                  repositories.AppRepository
 	EnvironmentVariablesRepository repositories.EnvironmentVariablesRepository
+	GitRepositoryRepository        repositories.GitRepositoryRepository
 	EventBus                       messaging.EventBus
 	Logger                         logging.ServiceLogger
 }
@@ -32,12 +34,14 @@ type GRPCAppServiceServer struct {
 func NewGRPCAppServiceServer(
 	appRepository repositories.AppRepository,
 	environmentVariablesRepository repositories.EnvironmentVariablesRepository,
+	gitRepositoryRepository repositories.GitRepositoryRepository,
 	eventBus messaging.EventBus,
 	logger logging.ServiceLogger,
 ) *GRPCAppServiceServer {
 	return &GRPCAppServiceServer{
 		AppRepository:                  appRepository,
 		EnvironmentVariablesRepository: environmentVariablesRepository,
+		GitRepositoryRepository:        gitRepositoryRepository,
 		EventBus:                       eventBus,
 		Logger:                         logger,
 	}
@@ -57,7 +61,9 @@ func (server *GRPCAppServiceServer) CreateApp(ctx context.Context, createAppRequ
 		attribute.String("project_id", createAppRequest.ProjectId),
 		attribute.String("app_name", createAppRequest.Name),
 		attribute.String("app_runtime", createAppRequest.Runtime),
-		attribute.String("app_repo_url", createAppRequest.RepoUrl),
+		attribute.String("git_repository_clone_url", createAppRequest.GitRepository.CloneUrl),
+		attribute.String("git_repository_provider", createAppRequest.GitRepository.Provider),
+		attribute.Bool("git_repository_is_private", createAppRequest.GitRepository.IsPrivate),
 		attribute.String("app_build_cmd", createAppRequest.BuildCmd),
 		attribute.String("app_start_cmd", createAppRequest.StartCmd),
 	)
@@ -74,7 +80,7 @@ func (server *GRPCAppServiceServer) CreateApp(ctx context.Context, createAppRequ
 		return nil, status.Error(codes.InvalidArgument, "Unsupported runtime")
 	}
 
-	repoURL, err := url.Parse(createAppRequest.RepoUrl)
+	repoURL, err := url.Parse(createAppRequest.GitRepository.CloneUrl)
 	if err != nil || repoURL.Hostname() != "github.com" {
 		return nil, status.Error(codes.InvalidArgument, "Invalid GitHub URL")
 	}
@@ -82,7 +88,7 @@ func (server *GRPCAppServiceServer) CreateApp(ctx context.Context, createAppRequ
 	createdApp, err := server.AppRepository.CreateApp(ctx, createAppRequest.ProjectId, repositories.CreateAppParams{
 		Name:       createAppRequest.Name,
 		Runtime:    createAppRequest.Runtime,
-		RepoURL:    createAppRequest.RepoUrl,
+		RepoURL:    createAppRequest.GitRepository.CloneUrl,
 		StartCMD:   createAppRequest.StartCmd,
 		BuildCMD:   createAppRequest.BuildCmd,
 		DomainName: utils.GetDomainName(createAppRequest.Name),
@@ -93,7 +99,7 @@ func (server *GRPCAppServiceServer) CreateApp(ctx context.Context, createAppRequ
 		createdApp, err = server.AppRepository.CreateApp(ctx, createAppRequest.ProjectId, repositories.CreateAppParams{
 			Name:       createAppRequest.Name,
 			Runtime:    createAppRequest.Runtime,
-			RepoURL:    createAppRequest.RepoUrl,
+			RepoURL:    createAppRequest.GitRepository.CloneUrl,
 			StartCMD:   createAppRequest.StartCmd,
 			BuildCMD:   createAppRequest.BuildCmd,
 			DomainName: utils.GetDomainName(appName),
@@ -113,8 +119,9 @@ func (server *GRPCAppServiceServer) CreateApp(ctx context.Context, createAppRequ
 
 	server.Logger.LogInfo("App created successfully")
 
+	environmentVariables := models_pb.EnvironmentVariable{}
 	if createAppRequest.EnvironmentVariables != nil {
-		_, err = server.EnvironmentVariablesRepository.CreateEnvironmentVariables(ctx, createdApp.Id, repositories.CreateEnvironmentVariableParams{
+		createdEnvironmentVariables, err := server.EnvironmentVariablesRepository.CreateEnvironmentVariables(ctx, createdApp.Id, repositories.CreateEnvironmentVariableParams{
 			Value: *createAppRequest.EnvironmentVariables,
 		})
 
@@ -122,6 +129,11 @@ func (server *GRPCAppServiceServer) CreateApp(ctx context.Context, createAppRequ
 			span.SetAttributes(attribute.String("error", err.Error()))
 			return nil, status.Error(codes.Internal, err.Error())
 		}
+
+		environmentVariables.Id = createdEnvironmentVariables.Id
+		environmentVariables.AppId = createdEnvironmentVariables.AppId
+		environmentVariables.Value = createdEnvironmentVariables.Value
+		environmentVariables.CreatedAt = createdEnvironmentVariables.CreatedAt.String()
 
 		server.Logger.LogInfo("Environment variables created successfully")
 	}
@@ -132,18 +144,48 @@ func (server *GRPCAppServiceServer) CreateApp(ctx context.Context, createAppRequ
 		attribute.String("app_created_at", createdApp.CreatedAt.String()),
 	)
 
+	createdGitRepository, err := server.GitRepositoryRepository.CreateGitRepository(ctx, createdApp.Id, repositories.CreateGitRepository{
+		Provider:  createAppRequest.GitRepository.Provider,
+		CloneURL:  createAppRequest.GitRepository.CloneUrl,
+		IsPrivate: createAppRequest.GitRepository.IsPrivate,
+	})
+
+	if err != nil {
+		server.Logger.LogError(err.Error())
+		span.SetAttributes(attribute.String("error", err.Error()))
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	// FIXME: Mapping should be done in the gateway-service
+	gitProvider := map[string]models_pb.GitProvider{
+		"github": models_pb.GitProvider_GITHUB,
+	}
+
 	server.Logger.LogInfo("Send AppCreated Event")
 	err = server.EventBus.Publish(ctx, events_pb.EventName_APP_CREATED, &events_pb.EventData{
 		Value: &events_pb.EventData_AppCreatedData{
 			AppCreatedData: &events_pb.AppCreatedEventData{
-				AppId:      createdApp.Id,
-				AppName:    createdApp.Name,
-				Runtime:    createdApp.Runtime,
-				RepoUrl:    createdApp.RepoURL,
-				StartCmd:   createdApp.StartCMD,
-				BuildCmd:   createdApp.BuildCMD,
-				UserId:     createdApp.ProjectId,
-				DomainName: createdApp.DomainName,
+				App: &models_pb.App{
+					Id:         createdApp.Id,
+					ProjectId:  createdApp.ProjectId,
+					Name:       createdApp.Name,
+					DomainName: createdApp.DomainName,
+					Runtime:    createdApp.Runtime,
+					RepoUrl:    createdApp.RepoURL,
+					BuildCmd:   createdApp.BuildCMD,
+					StartCmd:   createdApp.StartCMD,
+					CreatedAt:  createdApp.CreatedAt.String(),
+				},
+				EnvironmentVariable: &environmentVariables,
+				GitRepository: &models_pb.GitRepository{
+					Id:        createdGitRepository.Id,
+					AppId:     createdGitRepository.AppId,
+					CloneUrl:  createdGitRepository.CloneURL,
+					IsPrivate: createdGitRepository.IsPrivate,
+					Provider:  gitProvider[createdGitRepository.Provider],
+					CreatedAt: createdGitRepository.CreatedAt.String(),
+				},
+				UserId: createAppRequest.UserId,
 			},
 		},
 	})

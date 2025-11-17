@@ -70,9 +70,14 @@ func (handler *AppHandler) CreateAppHandler(w http.ResponseWriter, r *http.Reque
 
 	params := mux.Vars(r)
 	projectId := params["project_id"]
-	span.SetAttributes(attribute.String("project_id", projectId))
-	createAppRequest := app_service_pb.CreateAppRequest{}
+	userId := r.URL.Query().Get("user_id")
 
+	span.SetAttributes(
+		attribute.String("user_id", userId),
+		attribute.String("project_id", projectId),
+	)
+
+	createAppRequest := app_service_pb.CreateAppRequest{}
 	err := json.NewDecoder(r.Body).Decode(&createAppRequest)
 	if err != nil {
 		messaging.WriteError(w, http.StatusBadRequest, "failed at decoding json request")
@@ -82,9 +87,10 @@ func (handler *AppHandler) CreateAppHandler(w http.ResponseWriter, r *http.Reque
 
 	span.SetAttributes(attribute.String("app_name", createAppRequest.Name))
 	span.SetAttributes(attribute.String("app_runtime", createAppRequest.Runtime))
-	span.SetAttributes(attribute.String("app_repo_url", createAppRequest.RepoUrl))
+	span.SetAttributes(attribute.String("app_repo_url", createAppRequest.GitRepository.CloneUrl))
 
 	createAppRequest.ProjectId = projectId
+	createAppRequest.UserId = userId
 	createAppResponse, err := handler.AppServiceClient.CreateApp(r.Context(), &createAppRequest)
 	if err != nil {
 		status, _ := status.FromError(err)

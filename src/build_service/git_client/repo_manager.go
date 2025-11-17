@@ -7,6 +7,7 @@ import (
 	"apps-hosting.com/logging"
 
 	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/google/uuid"
 )
 
@@ -23,7 +24,7 @@ func NewGitRepoManager() GitRepoManager {
 	return GitRepoManager{}
 }
 
-func (gitRepoManager *GitRepoManager) Clone(repoURL string, userAppLogger logging.UserAppLogger) (*GitRepo, error) {
+func (gitRepoManager *GitRepoManager) Clone(repoURL string, isPrivateRepo bool, userAccessToken string, userAppLogger logging.UserAppLogger) (*GitRepo, error) {
 	repoId := uuid.New().String()
 	localPath := fmt.Sprintf("/shared/repos/%s", repoId)
 
@@ -31,10 +32,15 @@ func (gitRepoManager *GitRepoManager) Clone(repoURL string, userAppLogger loggin
 		return nil, err
 	}
 
+	var auth *http.TokenAuth = nil
+	if isPrivateRepo {
+		auth = &http.TokenAuth{Token: userAccessToken}
+	}
 	userAppLogger.LogInfo(fmt.Sprintf("Cloning %s into %s...", repoURL, localPath))
 	repo, err := git.PlainClone(localPath, false, &git.CloneOptions{
 		URL:      repoURL,
 		Progress: userAppLogger,
+		Auth:     auth,
 	})
 
 	if err != nil {

@@ -1,7 +1,7 @@
 apps-hosting.com/logging v1.0.0 h1:m6cBHc+UfSUv6fRIHzv1+zKdz83UMapj5NfmDW88SHQ=
 apps-hosting.com/logging v1.0.0/go.mod h1:kTvy5UfzRgH0S/6ecNhgn2EXqu+aE50SVlfb/KHp3wI=
-apps-hosting.com/messaging v0.0.1 h1:iiOHyEXrWZ4PjddZx+/KPvNt5TzttzLzhvlWdRDuBew=
-apps-hosting.com/messaging v0.0.1/go.mod h1:/FRwKRsl/tDDzgzE1m/2IVfLDvo/oBRD42OIxs4ovCI=
+apps-hosting.com/messaging v0.0.1 h1:F698rOegfJSQLjNlZdfzicNUxGLnWLpKiCV5koATE7Q=
+apps-hosting.com/messaging v0.0.1/go.mod h1:3/ZaHZ4YJkWSzP/X7wWWpPp73ouLTOkZehKdb+gedVM=
 github.com/cenkalti/backoff/v5 v5.0.3 h1:ZN+IMa753KfX5hd8vVaMixjnqRZ3y8CuJKRKj1xcsSM=
 github.com/cenkalti/backoff/v5 v5.0.3/go.mod h1:rkhZdG3JZukswDf7f0cwqPNk4K0sa+F97BxZthm/crw=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=

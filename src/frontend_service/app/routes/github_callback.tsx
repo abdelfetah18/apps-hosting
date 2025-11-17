@@ -12,19 +12,23 @@ export default function GithubCallback({ params }: Route.ComponentProps) {
     const next = async () => {
         const result = await userGithubCallback(code);
         if (result.isFailure()) {
-            alert(result.error);
+            console.error("error:", result.error);
         } else {
-            alert(result.value);
+            console.log("success:", result.value);
         }
     }
 
-    useEffect(() => {
-        if (setupAction != "update") {
-            next();
+    const githubCallbackHandler = async () => {
+        if (setupAction == "install") {
+            await next();
         }
 
-        window.opener.postMessage("ping");
+        window.opener.postMessage("github-callback-done");
         window.close();
+    }
+
+    useEffect(() => {
+        githubCallbackHandler();
     }, []);
 
     return (

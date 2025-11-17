@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package models;
+
+enum BuildStatus {
+  PENDING = 0;
+  FAILED = 1;
+  SUCCEEDED = 2;
+}
+
+enum DeploymentStatus {
+  DEP_PENDING = 0;
+  DEP_FAILED = 1;
+  DEP_SUCCEEDED = 2;
+}
+
+enum GitProvider {
+  GITHUB = 0;
+}
+
+message User {
+  string id = 1;
+  string username = 2;
+  string email = 4;
+  bool github_app_installed = 5;
+  string created_at = 10;
+}
+
+message UserSession {
+  string id = 1;
+  string user_id = 2;
+  string access_token = 3;
+  string created_at = 4;
+}
+
+message Project {
+  string id = 1;
+  string user_id = 2;
+  string name = 3;
+  string created_at = 4;
+}
+
+message App {
+  string id = 1;
+  string project_id = 2;
+  string name = 3;
+  string domain_name = 4;
+  string runtime = 5;
+  string repo_url = 6;
+  string build_cmd = 7;
+  string start_cmd = 8;
+  string created_at = 9;
+}
+
+message EnvironmentVariable {
+  string id = 1;
+  string app_id = 2;
+  string value = 3;
+  string created_at = 4;
+}
+
+message Build {
+  string id = 1;
+  string app_id = 2;
+  BuildStatus status = 3;
+  string image_url = 4;
+  string commit_hash = 5;
+  string created_at = 6;
+}
+
+message Deployment {
+  string id = 1;
+  string app_id = 2;
+  string build_id = 3;
+  DeploymentStatus status = 4;
+  string created_at = 5;
+}
+
+message GitRepository {
+  string id = 1;
+  string app_id = 2;
+  string clone_url = 3;
+  bool is_private = 4;
+  GitProvider provider = 5;
+  string created_at = 6;
+}

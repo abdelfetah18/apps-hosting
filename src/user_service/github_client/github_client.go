@@ -108,7 +108,11 @@ func (githubClient *GithubClient) Auth(code string) (*GithubOAuth, error) {
 }
 
 func (githubClient *GithubClient) GetUserRepositories() ([]*github.Repository, error) {
-	githubRepositories, _, err := githubClient.Client.Repositories.ListByAuthenticatedUser(context.Background(), nil)
+	githubRepositories, _, err := githubClient.Client.Repositories.ListByAuthenticatedUser(context.Background(), &github.RepositoryListByAuthenticatedUserOptions{
+		ListOptions: github.ListOptions{
+			PerPage: 100,
+		},
+	})
 	if err != nil {
 		githubClient.Logger.LogError(err.Error())
 		return nil, err

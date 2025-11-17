@@ -4,6 +4,8 @@ package events;
 
 option go_package = "proto/events_pb;events_pb";
 
+import "models.proto";
+
 enum StreamName {
   APP_STREAM = 0;
   BUILD_STREAM = 1;
@@ -20,14 +22,10 @@ enum EventName {
 }
 
 message AppCreatedEventData {
-  string app_id = 1;
-  string user_id = 2;
-  string repo_url = 3;
-  string app_name = 4;
-  string runtime = 5;
-  string start_cmd = 6;
-  string build_cmd = 7;
-  string domain_name = 8;
+  string user_id = 1;
+  models.App app = 2;
+  optional models.EnvironmentVariable environment_variable = 3;
+  models.GitRepository git_repository = 4;
 }
 
 message AppDeletedEventData {

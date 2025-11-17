@@ -293,6 +293,7 @@ func (server *GRPCUserServiceServer) GetGithubRepositories(ctx context.Context, 
 			GitUrl:        safeString(githubRepository.GitURL),
 			Url:           safeString(githubRepository.URL),
 			Visibility:    safeString(githubRepository.Visibility),
+			CloneUrl:      safeString(githubRepository.CloneURL),
 		}
 		_githubRepositories = append(_githubRepositories, &_githubRepository)
 		githubRepositoriesIds = append(githubRepositoriesIds, strconv.FormatInt(*githubRepository.ID, 10))
@@ -343,5 +344,22 @@ func (server *GRPCUserServiceServer) ExchangeGitHubCodeForToken(ctx context.Cont
 		RefreshToken:          githubOAuth.RefreshToken,
 		ExpiresIn:             githubOAuth.ExpiresIn,
 		RefreshTokenExpiresIn: githubOAuth.RefreshTokenExpiresIn,
+	}, nil
+}
+
+func (server *GRPCUserServiceServer) GetGithubUserAccessToken(ctx context.Context, getGithubUserAccessTokenRequest *user_service_pb.GetGithubUserAccessTokenRequest) (*user_service_pb.GetGithubUserAccessTokenRespone, error) {
+	span := trace.SpanFromContext(ctx)
+
+	span.SetAttributes(attribute.String("user_id", getGithubUserAccessTokenRequest.UserId))
+
+	user, err := server.UserRepository.GetUserById(ctx, getGithubUserAccessTokenRequest.UserId)
+	if err != nil {
+		server.Logger.LogError(err.Error())
+		span.SetAttributes(attribute.String("error", err.Error()))
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &user_service_pb.GetGithubUserAccessTokenRespone{
+		GithubUserAccessToken: user.GithubAccessToken,
 	}, nil
 }
