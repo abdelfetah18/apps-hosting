@@ -1,4 +1,4 @@
-package utils
+package builder
 
 import (
 	"archive/tar"
@@ -8,14 +8,6 @@ import (
 	"os"
 	"path/filepath"
 )
-
-func CreateDirectory(path string) error {
-	err := os.MkdirAll(path, os.ModePerm)
-	if err != nil {
-		return fmt.Errorf("failed to create directory %s: %w", path, err)
-	}
-	return nil
-}
 
 func CopyFile(src string, dst string) error {
 	srcFile, err := os.Open(src)

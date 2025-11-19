@@ -3,38 +3,22 @@ package repositories
 import (
 	"context"
 	"database/sql"
-	"time"
+
+	"apps-hosting.com/buildservice/internal/models"
 
 	"apps-hosting.com/logging"
 
 	"github.com/uptrace/bun"
 )
 
-type BuildStatus string
-
-const (
-	BuildStatusPending   BuildStatus = "pending"
-	BuildStatusSuccessed BuildStatus = "successed"
-	BuildStatusFailed    BuildStatus = "failed"
-)
-
-type Build struct {
-	Id         string      `bun:"id,pk,type:uuid,default:gen_random_uuid()" json:"id"`
-	AppId      string      `bun:"app_id" json:"app_id"`
-	Status     BuildStatus `bun:"status" json:"status"`
-	ImageURL   string      `bun:"image_url" json:"image_url"`
-	CommitHash string      `bun:"commit_hash" json:"commit_hash"`
-	CreatedAt  time.Time   `bun:"created_at,default:now()" json:"created_at"`
-}
-
 type CreateBuildParams struct {
-	Status     BuildStatus
+	Status     models.BuildStatus
 	ImageURL   string
 	CommitHash string
 }
 
 type UpdateBuildParams struct {
-	Status     BuildStatus
+	Status     models.BuildStatus
 	ImageURL   string
 	CommitHash string
 }
@@ -53,11 +37,11 @@ func NewBuildRepository(database *bun.DB, logger logging.ServiceLogger) BuildRep
 
 func (repository *BuildRepository) CreateBuildsTable() (sql.Result, error) {
 	repository.Logger.LogInfo("Creating builds table.")
-	return repository.Database.NewCreateTable().Model((*Build)(nil)).IfNotExists().Exec(context.Background())
+	return repository.Database.NewCreateTable().Model((*models.Build)(nil)).IfNotExists().Exec(context.Background())
 }
 
-func (repository *BuildRepository) CreateBuild(ctx context.Context, appId string, createBuildParams CreateBuildParams) (*Build, error) {
-	build := Build{
+func (repository *BuildRepository) CreateBuild(ctx context.Context, appId string, createBuildParams CreateBuildParams) (*models.Build, error) {
+	build := models.Build{
 		AppId:      appId,
 		Status:     createBuildParams.Status,
 		ImageURL:   createBuildParams.ImageURL,
@@ -75,8 +59,8 @@ func (repository *BuildRepository) CreateBuild(ctx context.Context, appId string
 	return &build, nil
 }
 
-func (repository *BuildRepository) UpdateBuildById(ctx context.Context, appId, buildId string, updateBuildParams UpdateBuildParams) (*Build, error) {
-	build := Build{
+func (repository *BuildRepository) UpdateBuildById(ctx context.Context, appId, buildId string, updateBuildParams UpdateBuildParams) (*models.Build, error) {
+	build := models.Build{
 		Status:     updateBuildParams.Status,
 		ImageURL:   updateBuildParams.ImageURL,
 		CommitHash: updateBuildParams.CommitHash,
@@ -102,8 +86,8 @@ func (repository *BuildRepository) UpdateBuildById(ctx context.Context, appId, b
 	return &build, nil
 }
 
-func (repository *BuildRepository) GetBuilds(ctx context.Context, appId string) ([]Build, error) {
-	builds := []Build{}
+func (repository *BuildRepository) GetBuilds(ctx context.Context, appId string) ([]models.Build, error) {
+	builds := []models.Build{}
 	err := repository.Database.NewSelect().
 		Model(&builds).
 		Where("app_id = ?", appId).
@@ -111,11 +95,11 @@ func (repository *BuildRepository) GetBuilds(ctx context.Context, appId string) 
 		Scan(ctx)
 
 	if err != nil {
-		return []Build{}, err
+		return []models.Build{}, err
 	}
 
 	if builds == nil {
-		return []Build{}, err
+		return []models.Build{}, err
 	}
 
 	return builds, nil
@@ -124,7 +108,7 @@ func (repository *BuildRepository) GetBuilds(ctx context.Context, appId string) 
 func (repository *BuildRepository) DeleteBuilds(ctx context.Context, appId string) error {
 	result, err := repository.Database.
 		NewDelete().
-		Model(&Build{AppId: appId}).
+		Model(&models.Build{AppId: appId}).
 		Where("app_id = ?", appId).
 		Exec(ctx)
 

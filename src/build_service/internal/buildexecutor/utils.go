@@ -1,8 +1,6 @@
-package utils
+package buildexecutor
 
-import (
-	"strings"
-)
+import "strings"
 
 func ToImageName(appName string) string {
 	return strings.ToLower(strings.ReplaceAll(appName, " ", "-"))

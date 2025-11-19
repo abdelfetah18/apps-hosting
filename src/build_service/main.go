@@ -2,72 +2,40 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"os"
 
+	"apps-hosting.com/buildservice/internal/buildexecutor"
+	"apps-hosting.com/buildservice/internal/core"
+	"apps-hosting.com/buildservice/internal/database"
+	"apps-hosting.com/buildservice/internal/eventshandlers"
+	"apps-hosting.com/buildservice/internal/repomanager"
+	"apps-hosting.com/buildservice/internal/repositories"
+	"apps-hosting.com/buildservice/internal/tracer"
+	"apps-hosting.com/buildservice/proto/build_service_pb"
+	"apps-hosting.com/buildservice/proto/user_service_pb"
 	"apps-hosting.com/logging"
 	"apps-hosting.com/messaging"
 	"apps-hosting.com/messaging/proto/events_pb"
-
-	"build/database"
-	gitclient "build/git_client"
-	grpcclients "build/grpc_clients"
-	"build/grpc_server"
-	"build/kaniko"
-	"build/nats_service"
-	"build/proto/build_service_pb"
-	"build/repositories"
-	"build/runtime"
-
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/backoff"
+	"google.golang.org/grpc/credentials/insecure"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
-
-	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
-	"go.opentelemetry.io/otel/propagation"
-	"go.opentelemetry.io/otel/sdk/resource"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
 )
 
-// setupTracer initializes OpenTelemetry tracing.
-func setupTracer(ctx context.Context) func(context.Context) error {
-	exporter, err := otlptracehttp.New(ctx)
-	if err != nil {
-		panic(err)
-	}
-
-	tp := sdktrace.NewTracerProvider(
-		sdktrace.WithBatcher(exporter),
-		sdktrace.WithResource(resource.NewWithAttributes(
-			semconv.SchemaURL,
-			semconv.ServiceName("build-service"),
-		)),
-	)
-	otel.SetTracerProvider(tp)
-
-	// Set up propagator.
-	prop := propagation.NewCompositeTextMapPropagator(
-		propagation.TraceContext{},
-		propagation.Baggage{},
-	)
-	otel.SetTextMapPropagator(prop)
-
-	return tp.Shutdown
-}
-
 func main() {
+	serviceName := os.Getenv("SERVICE_NAME")
+	logger := logging.NewServiceLogger(logging.ServiceBuild)
+	logger.LogInfoF("Service '%s' is starting", os.Getenv("SERVICE_NAME"))
+
 	ctx := context.Background()
-	shutdown := setupTracer(ctx)
+	shutdown := tracer.SetupTracer(ctx, serviceName)
 	defer shutdown(ctx)
 
-	logger := logging.NewServiceLogger(logging.ServiceBuild)
-
-	logger.LogInfo("Build Service running")
-
-	logger.LogInfo("Connecting to the database.")
+	logger.LogInfo("Connecting to the database")
 	database := database.NewDatabase()
 
 	config, err := rest.InClusterConfig()
@@ -101,28 +69,43 @@ func main() {
 		panic(err)
 	}
 
-	grpcClients, err := grpcclients.NewGrpcClients()
+	_userServiceClient, err := grpc.NewClient(
+		os.Getenv("USER_SERVICE"),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithConnectParams(grpc.ConnectParams{
+			Backoff: backoff.DefaultConfig,
+		}),
+		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
+	)
 	if err != nil {
 		logger.LogError(err.Error())
 		return
 	}
 
-	kanikoBuilder := kaniko.NewKanikoBuilder(clientset, logger)
-	gitRepoManager := gitclient.NewGitRepoManager()
-	runtimeBuilder := runtime.NewRuntimeBuilder(logger)
-	natsHandler := nats_service.NewNatsHandler(*eventBus, kanikoBuilder, gitRepoManager, runtimeBuilder, buildRepository, grpcClients.UserServiceClient, logger)
+	userServiceClient := user_service_pb.NewUserServiceClient(_userServiceClient)
 
-	eventBus.Subscribe("build-service-app-created", events_pb.EventName_APP_CREATED, natsHandler.HandleAppCreatedEvent)
-	eventBus.Subscribe("build-service-app-deleted", events_pb.EventName_APP_DELETED, natsHandler.HandleAppDeletedEvent)
+	kanikoExecutor := buildexecutor.NewKanikoExecutor(clientset, logger)
+	gitRepoManager := repomanager.NewGitRepoManager()
+
+	eventsHandlers := eventshandlers.NewEventsHandlers(
+		*eventBus,
+		&kanikoExecutor,
+		gitRepoManager,
+		buildRepository,
+		userServiceClient,
+		logger,
+	)
+
+	eventBus.Subscribe(fmt.Sprintf("%s-%s", serviceName, "app-created"), events_pb.EventName_APP_CREATED, eventsHandlers.HandleAppCreatedEvent)
+	eventBus.Subscribe(fmt.Sprintf("%s-%s", serviceName, "app-deleted"), events_pb.EventName_APP_DELETED, eventsHandlers.HandleAppDeletedEvent)
 
 	grpcServer := grpc.NewServer(grpc.StatsHandler(otelgrpc.NewServerHandler()))
-	grpcBuildServiceServer := grpc_server.NewGRPCBuildServiceServer(buildRepository)
-	build_service_pb.RegisterBuildServiceServer(grpcServer, grpcBuildServiceServer)
+	buildServiceServer := core.NewBuildServiceServer(buildRepository)
+	build_service_pb.RegisterBuildServiceServer(grpcServer, buildServiceServer)
 
-	// Start server
 	PORT := os.Getenv("PORT")
 	if PORT == "" {
-		PORT = "8083"
+		PORT = "8080"
 	}
 
 	lis, err := net.Listen("tcp", ":"+PORT)
@@ -130,7 +113,7 @@ func main() {
 		logger.LogErrorF("failed to listen: %v", err)
 	}
 
-	logger.LogErrorF("gRPC server listening at %v", lis.Addr())
+	logger.LogErrorF("GRPC server is listening at %v", lis.Addr())
 	if err := grpcServer.Serve(lis); err != nil {
 		logger.LogErrorF("failed to serve: %v", err)
 		return
