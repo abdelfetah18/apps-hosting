@@ -1,9 +1,10 @@
-package grpc_server
+package core
 
 import (
 	"context"
-	"deploy/proto/deploy_service_pb"
-	"deploy/repositories"
+
+	"apps-hosting.com/deployservice/internal/repositories"
+	"apps-hosting.com/deployservice/proto/deploy_service_pb"
 
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
@@ -14,12 +15,12 @@ import (
 type GRPCDeployServiceServer struct {
 	deploy_service_pb.UnimplementedDeployServiceServer
 
-	DeploymentRepository repositories.DeploymentRepository
+	deploymentRepository repositories.DeploymentRepository
 }
 
 func NewGRPCDeployServiceServer(deploymentRepository repositories.DeploymentRepository) *GRPCDeployServiceServer {
 	return &GRPCDeployServiceServer{
-		DeploymentRepository: deploymentRepository,
+		deploymentRepository: deploymentRepository,
 	}
 }
 
@@ -37,26 +38,14 @@ func (server *GRPCDeployServiceServer) GetDeployments(ctx context.Context, getDe
 		attribute.String("app_id", getDeploymentsRequest.AppId),
 	)
 
-	deployments, err := server.DeploymentRepository.GetDeployments(ctx, getDeploymentsRequest.AppId)
+	deployments, err := server.deploymentRepository.GetDeployments(ctx, getDeploymentsRequest.AppId)
 	if err != nil {
 		span.SetAttributes(attribute.String("error", err.Error()))
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	// TODO: create a util function
-	var _deployments []*deploy_service_pb.Deployment
-	deployments_ids := []string{}
-	for _, deployment := range deployments {
-		_deployment := deploy_service_pb.Deployment{
-			Id:        deployment.Id,
-			BuildId:   deployment.BuildId,
-			AppId:     deployment.AppId,
-			Status:    string(deployment.Status),
-			CreatedAt: deployment.CreatedAt.String(),
-		}
-		_deployments = append(_deployments, &_deployment)
-		deployments_ids = append(deployments_ids, deployment.Id)
-	}
+	_deployments := DeploymentListToProto(deployments)
+	deployments_ids := ExtractDeploymentIDs(deployments)
 
 	span.SetAttributes(
 		attribute.StringSlice("deployments_ids", deployments_ids),

@@ -3,35 +3,19 @@ package repositories
 import (
 	"context"
 	"database/sql"
-	"time"
 
+	"apps-hosting.com/deployservice/internal/models"
 	"apps-hosting.com/logging"
 
 	"github.com/uptrace/bun"
 )
 
-type DeploymentStatus string
-
-const (
-	DeploymentStatusPending   DeploymentStatus = "pending"
-	DeploymentStatusSuccessed DeploymentStatus = "successed"
-	DeploymentStatusFailed    DeploymentStatus = "failed"
-)
-
-type Deployment struct {
-	Id        string           `bun:"id,pk,type:uuid,default:gen_random_uuid()" json:"id"`
-	BuildId   string           `bun:"build_id" json:"build_id"`
-	AppId     string           `bun:"app_id" json:"app_id"`
-	Status    DeploymentStatus `bun:"status" json:"status"`
-	CreatedAt time.Time        `bun:"created_at,default:now()" json:"created_at"`
-}
-
 type CreateDeploymentParams struct {
-	Status DeploymentStatus
+	Status models.DeploymentStatus
 }
 
 type UpdateDeploymentParams struct {
-	Status DeploymentStatus
+	Status models.DeploymentStatus
 }
 
 type DeploymentRepository struct {
@@ -48,11 +32,11 @@ func NewDeploymentRepository(database *bun.DB, logger logging.ServiceLogger) Dep
 
 func (repository *DeploymentRepository) CreateDeploymentsTable() (sql.Result, error) {
 	repository.Logger.LogInfo("Creating deployments table.")
-	return repository.Database.NewCreateTable().Model((*Deployment)(nil)).IfNotExists().Exec(context.Background())
+	return repository.Database.NewCreateTable().Model((*models.Deployment)(nil)).IfNotExists().Exec(context.Background())
 }
 
-func (repository *DeploymentRepository) CreateDeployment(ctx context.Context, buildId, appId string, createDeploymentParams CreateDeploymentParams) (*Deployment, error) {
-	deployment := Deployment{
+func (repository *DeploymentRepository) CreateDeployment(ctx context.Context, buildId, appId string, createDeploymentParams CreateDeploymentParams) (*models.Deployment, error) {
+	deployment := models.Deployment{
 		BuildId: buildId,
 		AppId:   appId,
 		Status:  createDeploymentParams.Status,
@@ -65,8 +49,8 @@ func (repository *DeploymentRepository) CreateDeployment(ctx context.Context, bu
 	return &deployment, nil
 }
 
-func (repository *DeploymentRepository) GetDeployments(ctx context.Context, appId string) ([]Deployment, error) {
-	deployments := []Deployment{}
+func (repository *DeploymentRepository) GetDeployments(ctx context.Context, appId string) ([]models.Deployment, error) {
+	deployments := []models.Deployment{}
 	err := repository.Database.
 		NewSelect().
 		Model(&deployments).
@@ -75,11 +59,11 @@ func (repository *DeploymentRepository) GetDeployments(ctx context.Context, appI
 		Scan(ctx)
 
 	if err != nil {
-		return []Deployment{}, err
+		return []models.Deployment{}, err
 	}
 
 	if deployments == nil {
-		return []Deployment{}, err
+		return []models.Deployment{}, err
 	}
 
 	return deployments, nil
@@ -88,7 +72,7 @@ func (repository *DeploymentRepository) GetDeployments(ctx context.Context, appI
 func (repository *DeploymentRepository) DeleteDeployments(ctx context.Context, appId string) error {
 	result, err := repository.Database.
 		NewDelete().
-		Model(&Deployment{AppId: appId}).
+		Model(&models.Deployment{AppId: appId}).
 		Where("app_id = ?", appId).
 		Exec(ctx)
 
@@ -100,8 +84,8 @@ func (repository *DeploymentRepository) DeleteDeployments(ctx context.Context, a
 	return err
 }
 
-func (repository *DeploymentRepository) UpdateDeploymentById(ctx context.Context, deploymentId string, updateDeploymentParams UpdateDeploymentParams) (*Deployment, error) {
-	deployment := Deployment{
+func (repository *DeploymentRepository) UpdateDeploymentById(ctx context.Context, deploymentId string, updateDeploymentParams UpdateDeploymentParams) (*models.Deployment, error) {
+	deployment := models.Deployment{
 		Status: updateDeploymentParams.Status,
 	}
 

@@ -2,59 +2,32 @@ package main
 
 import (
 	"context"
-	"deploy/database"
-	grpcclients "deploy/grpc_clients"
-	"deploy/grpc_server"
-	"deploy/nats_service"
-	"deploy/proto/deploy_service_pb"
-	"deploy/repositories"
+	"fmt"
 	"net"
 	"os"
 
+	"apps-hosting.com/deployservice/internal/core"
+	"apps-hosting.com/deployservice/internal/database"
+	"apps-hosting.com/deployservice/internal/eventshandlers"
+	"apps-hosting.com/deployservice/internal/repositories"
+	"apps-hosting.com/deployservice/internal/tracer"
+	"apps-hosting.com/deployservice/proto/app_service_pb"
+	"apps-hosting.com/deployservice/proto/deploy_service_pb"
 	"apps-hosting.com/logging"
 	"apps-hosting.com/messaging"
 	"apps-hosting.com/messaging/proto/events_pb"
 
-	"google.golang.org/grpc"
-
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
-	"go.opentelemetry.io/otel/propagation"
-	"go.opentelemetry.io/otel/sdk/resource"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/backoff"
+	"google.golang.org/grpc/credentials/insecure"
 )
-
-// setupTracer initializes OpenTelemetry tracing.
-func setupTracer(ctx context.Context) func(context.Context) error {
-	exporter, err := otlptracehttp.New(ctx)
-	if err != nil {
-		panic(err)
-	}
-
-	tp := sdktrace.NewTracerProvider(
-		sdktrace.WithBatcher(exporter),
-		sdktrace.WithResource(resource.NewWithAttributes(
-			semconv.SchemaURL,
-			semconv.ServiceName("deploy-service"),
-		)),
-	)
-	otel.SetTracerProvider(tp)
-
-	// Set up propagator.
-	prop := propagation.NewCompositeTextMapPropagator(
-		propagation.TraceContext{},
-		propagation.Baggage{},
-	)
-	otel.SetTextMapPropagator(prop)
-
-	return tp.Shutdown
-}
 
 func main() {
 	ctx := context.Background()
-	shutdown := setupTracer(ctx)
+	serviceName := os.Getenv("SERVICE_NAME")
+
+	shutdown := tracer.SetupTracer(ctx, serviceName)
 	defer shutdown(ctx)
 
 	logger := logging.NewServiceLogger(logging.ServiceDeploy)
@@ -70,10 +43,16 @@ func main() {
 		panic(err)
 	}
 
-	grpcClients, err := grpcclients.NewGrpcClients()
+	_appServiceClient, err := grpc.NewClient(
+		os.Getenv("APP_SERVICE"),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithConnectParams(grpc.ConnectParams{
+			Backoff: backoff.DefaultConfig,
+		}))
 	if err != nil {
 		panic(err)
 	}
+	appServiceClient := app_service_pb.NewAppServiceClient(_appServiceClient)
 
 	natsURL := os.Getenv("NATS_URL")
 	eventBus, err := messaging.NewEventBus(
@@ -88,19 +67,18 @@ func main() {
 		panic(err)
 	}
 
-	natsHandler := nats_service.NewNatsHandler(*eventBus, *grpcClients, deploymentRepository, logger)
+	eventsHandlers := eventshandlers.NewEventsHandlers(*eventBus, appServiceClient, deploymentRepository, logger)
 
-	eventBus.Subscribe("event-service", events_pb.EventName_BUILD_COMPLETED, natsHandler.HandleBuildCompletedEvent)
-	eventBus.Subscribe("event-service", events_pb.EventName_APP_DELETED, natsHandler.HandleAppDeletedEvent)
+	eventBus.Subscribe(fmt.Sprintf("%s-%s", serviceName, "build-completed"), events_pb.EventName_BUILD_COMPLETED, eventsHandlers.HandleBuildCompletedEvent)
+	eventBus.Subscribe(fmt.Sprintf("%s-%s", serviceName, "app-deleted"), events_pb.EventName_APP_DELETED, eventsHandlers.HandleAppDeletedEvent)
 
 	grpcServer := grpc.NewServer(grpc.StatsHandler(otelgrpc.NewServerHandler()))
-	grpcDeployServiceServer := grpc_server.NewGRPCDeployServiceServer(deploymentRepository)
+	grpcDeployServiceServer := core.NewGRPCDeployServiceServer(deploymentRepository)
 	deploy_service_pb.RegisterDeployServiceServer(grpcServer, grpcDeployServiceServer)
 
-	// Start server
 	PORT := os.Getenv("PORT")
 	if PORT == "" {
-		PORT = "8084"
+		PORT = "8080"
 	}
 
 	lis, err := net.Listen("tcp", ":"+PORT)
@@ -108,7 +86,7 @@ func main() {
 		logger.LogErrorF("failed to listen: %v", err)
 	}
 
-	logger.LogErrorF("gRPC server listening at %v", lis.Addr())
+	logger.LogErrorF("GRPC server listening at %v", lis.Addr())
 	if err := grpcServer.Serve(lis); err != nil {
 		logger.LogErrorF("failed to serve: %v", err)
 		return

@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 	"os"
 
 	"github.com/jackc/pgx/v5"
@@ -21,6 +22,6 @@ func NewDatabase() *bun.DB {
 	sqldb := sql.OpenDB(stdlib.GetConnector(*config))
 
 	db := bun.NewDB(sqldb, pgdialect.New())
-	db.AddQueryHook(bunotel.NewQueryHook(bunotel.WithDBName("deploy_service_database")))
+	db.AddQueryHook(bunotel.NewQueryHook(bunotel.WithDBName(fmt.Sprintf("%s_database", os.Getenv("SERVICE_NAME")))))
 	return db
 }
