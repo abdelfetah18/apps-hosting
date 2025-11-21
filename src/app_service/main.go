@@ -2,10 +2,12 @@ package main
 
 import (
 	"app/database"
+	"app/eventshandlers"
 	"app/grpc_server"
 	"app/proto/app_service_pb"
 	"app/repositories"
 	"context"
+	"fmt"
 	"net"
 	"os"
 
@@ -50,6 +52,8 @@ func setupTracer(ctx context.Context) func(context.Context) error {
 }
 
 func main() {
+	serviceName := os.Getenv("SERVICE_NAME")
+
 	ctx := context.Background()
 	shutdown := setupTracer(ctx)
 	defer shutdown(ctx)
@@ -93,6 +97,16 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	eventsHandlers := eventshandlers.NewEventsHandlers(
+		*eventBus,
+		appRepository,
+		environmentVariablesRepository,
+		gitRepositoryRepository,
+		logger,
+	)
+
+	eventBus.Subscribe(fmt.Sprintf("%s-%s", serviceName, "project-deleted"), events_pb.EventName_PROJECT_DELETED, eventsHandlers.HandleProjectDeletedEvent)
 
 	grpcServer := grpc.NewServer(grpc.StatsHandler(otelgrpc.NewServerHandler()))
 	grpcAppServiceServer := grpc_server.NewGRPCAppServiceServer(appRepository, environmentVariablesRepository, gitRepositoryRepository, *eventBus, logger)

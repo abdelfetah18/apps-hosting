@@ -10,8 +10,8 @@ import (
 	"project/repositories"
 
 	"apps-hosting.com/logging"
-
-	"google.golang.org/grpc"
+	"apps-hosting.com/messaging"
+	"apps-hosting.com/messaging/proto/events_pb"
 
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/otel"
@@ -20,6 +20,7 @@ import (
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
+	"google.golang.org/grpc"
 )
 
 // setupTracer initializes OpenTelemetry tracing.
@@ -63,8 +64,20 @@ func main() {
 		panic(err)
 	}
 
+	natsURL := os.Getenv("NATS_URL")
+	eventBus, err := messaging.NewEventBus(
+		natsURL,
+		events_pb.StreamName_PROJECT_STREAM,
+		[]events_pb.EventName{
+			events_pb.EventName_PROJECT_DELETED,
+		},
+	)
+	if err != nil {
+		panic(err)
+	}
+
 	grpcServer := grpc.NewServer(grpc.StatsHandler(otelgrpc.NewServerHandler()))
-	grpcProjectServiceServer := grpc_server.NewGRPCProjectServiceServer(&projectRepository, logger)
+	grpcProjectServiceServer := grpc_server.NewGRPCProjectServiceServer(&projectRepository, eventBus, logger)
 	project_service_pb.RegisterProjectServiceServer(grpcServer, grpcProjectServiceServer)
 
 	PORT := os.Getenv("PORT")

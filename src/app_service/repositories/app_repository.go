@@ -196,3 +196,12 @@ func (repository *AppRepository) DeleteAppById(ctx context.Context, projectId st
 
 	return err
 }
+
+func (repository *AppRepository) DeleteAppsByProjectId(ctx context.Context, projectId string) error {
+	_, err := repository.Database.
+		NewDelete().
+		Model(&App{ProjectId: projectId}).
+		Where("project_id = ?", projectId).
+		Exec(ctx)
+	return err
+}

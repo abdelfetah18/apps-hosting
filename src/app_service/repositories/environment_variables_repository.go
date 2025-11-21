@@ -105,3 +105,21 @@ func (repository *EnvironmentVariablesRepository) UpdateEnvironmentVariables(ctx
 
 	return &environmentVariable, nil
 }
+
+func (repository *EnvironmentVariablesRepository) DeleteEnvironmentVariableByAppId(ctx context.Context, appId string) error {
+	_, err := repository.Database.
+		NewDelete().
+		Model(&EnvironmentVariable{AppId: appId}).
+		Where("app_id = ?", appId).
+		Exec(ctx)
+	return err
+}
+
+func (repository *EnvironmentVariablesRepository) DeleteEnvironmentVariablesByAppIds(ctx context.Context, appIds []string) error {
+	_, err := repository.Database.
+		NewDelete().
+		Model((*EnvironmentVariable)(nil)).
+		Where("app_id IN (?)", bun.In(appIds)).
+		Exec(ctx)
+	return err
+}

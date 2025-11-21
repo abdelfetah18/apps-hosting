@@ -10,6 +10,7 @@ enum StreamName {
   APP_STREAM = 0;
   BUILD_STREAM = 1;
   DEPLOY_STREAM = 2;
+  PROJECT_STREAM = 3;
 }
 
 enum EventName {
@@ -19,6 +20,7 @@ enum EventName {
   BUILD_FAILED = 3;
   DEPLOY_COMPLETED = 4;
   DEPLOY_FAILED = 5;
+  PROJECT_DELETED = 6;
 }
 
 message AppCreatedEventData {
@@ -61,6 +63,10 @@ message DeployFailedData {
   string reason = 5;
 }
 
+message ProjectDeletedEventData {
+  string project_id = 1;
+}
+
 message EventData {
   oneof value {
     AppCreatedEventData app_created_data = 1;
@@ -69,6 +75,7 @@ message EventData {
     BuildFailedData build_failed_data = 4;
     DeployCompletedData deploy_completed_data = 5;
     DeployFailedData deploy_failed_data = 6;
+    ProjectDeletedEventData project_deleted_data = 7;
   }
 }
 

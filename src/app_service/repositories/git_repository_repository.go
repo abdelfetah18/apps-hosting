@@ -121,3 +121,21 @@ func (repository *GitRepositoryRepository) UpdateGitRepository(ctx context.Conte
 
 	return &gitRepository, nil
 }
+
+func (repository *GitRepositoryRepository) DeleteGitRepositoryByAppId(ctx context.Context, appId string) error {
+	_, err := repository.Database.
+		NewDelete().
+		Model(&GitRepository{AppId: appId}).
+		Where("app_id = ?", appId).
+		Exec(ctx)
+	return err
+}
+
+func (repository *GitRepositoryRepository) DeleteGitRepositoriessByAppIds(ctx context.Context, appIds []string) error {
+	_, err := repository.Database.
+		NewDelete().
+		Model((*GitRepository)(nil)).
+		Where("app_id IN (?)", bun.In(appIds)).
+		Exec(ctx)
+	return err
+}

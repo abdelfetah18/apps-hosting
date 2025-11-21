@@ -1,6 +1,6 @@
 apps-hosting.com/logging v1.0.0 h1:m6cBHc+UfSUv6fRIHzv1+zKdz83UMapj5NfmDW88SHQ=
 apps-hosting.com/logging v1.0.0/go.mod h1:kTvy5UfzRgH0S/6ecNhgn2EXqu+aE50SVlfb/KHp3wI=
-apps-hosting.com/messaging v0.0.1 h1:F698rOegfJSQLjNlZdfzicNUxGLnWLpKiCV5koATE7Q=
+apps-hosting.com/messaging v0.0.1 h1:3ROAAdk14xtMQp6LnUqbA/9if0/UNCQ36Hxy0I73GuU=
 apps-hosting.com/messaging v0.0.1/go.mod h1:3/ZaHZ4YJkWSzP/X7wWWpPp73ouLTOkZehKdb+gedVM=
 dario.cat/mergo v1.0.0 h1:AGCNq9Evsj31mOgNPcLyXc+4PNABt905YmuqPYYpBWk=
 dario.cat/mergo v1.0.0/go.mod h1:uNxQE+84aUszobStD9th8a29P2fMDhsBdgRYvZOxGmk=

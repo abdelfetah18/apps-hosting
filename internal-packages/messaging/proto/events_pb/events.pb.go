@@ -25,9 +25,10 @@ const (
 type StreamName int32
 
 const (
-	StreamName_APP_STREAM    StreamName = 0
-	StreamName_BUILD_STREAM  StreamName = 1
-	StreamName_DEPLOY_STREAM StreamName = 2
+	StreamName_APP_STREAM     StreamName = 0
+	StreamName_BUILD_STREAM   StreamName = 1
+	StreamName_DEPLOY_STREAM  StreamName = 2
+	StreamName_PROJECT_STREAM StreamName = 3
 )
 
 // Enum value maps for StreamName.
@@ -36,11 +37,13 @@ var (
 		0: "APP_STREAM",
 		1: "BUILD_STREAM",
 		2: "DEPLOY_STREAM",
+		3: "PROJECT_STREAM",
 	}
 	StreamName_value = map[string]int32{
-		"APP_STREAM":    0,
-		"BUILD_STREAM":  1,
-		"DEPLOY_STREAM": 2,
+		"APP_STREAM":     0,
+		"BUILD_STREAM":   1,
+		"DEPLOY_STREAM":  2,
+		"PROJECT_STREAM": 3,
 	}
 )
 
@@ -80,6 +83,7 @@ const (
 	EventName_BUILD_FAILED     EventName = 3
 	EventName_DEPLOY_COMPLETED EventName = 4
 	EventName_DEPLOY_FAILED    EventName = 5
+	EventName_PROJECT_DELETED  EventName = 6
 )
 
 // Enum value maps for EventName.
@@ -91,6 +95,7 @@ var (
 		3: "BUILD_FAILED",
 		4: "DEPLOY_COMPLETED",
 		5: "DEPLOY_FAILED",
+		6: "PROJECT_DELETED",
 	}
 	EventName_value = map[string]int32{
 		"APP_CREATED":      0,
@@ -99,6 +104,7 @@ var (
 		"BUILD_FAILED":     3,
 		"DEPLOY_COMPLETED": 4,
 		"DEPLOY_FAILED":    5,
+		"PROJECT_DELETED":  6,
 	}
 )
 
@@ -521,6 +527,50 @@ func (x *DeployFailedData) GetReason() string {
 	return ""
 }
 
+type ProjectDeletedEventData struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ProjectId     string                 `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ProjectDeletedEventData) Reset() {
+	*x = ProjectDeletedEventData{}
+	mi := &file_events_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProjectDeletedEventData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProjectDeletedEventData) ProtoMessage() {}
+
+func (x *ProjectDeletedEventData) ProtoReflect() protoreflect.Message {
+	mi := &file_events_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProjectDeletedEventData.ProtoReflect.Descriptor instead.
+func (*ProjectDeletedEventData) Descriptor() ([]byte, []int) {
+	return file_events_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *ProjectDeletedEventData) GetProjectId() string {
+	if x != nil {
+		return x.ProjectId
+	}
+	return ""
+}
+
 type EventData struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Value:
@@ -531,6 +581,7 @@ type EventData struct {
 	//	*EventData_BuildFailedData
 	//	*EventData_DeployCompletedData
 	//	*EventData_DeployFailedData
+	//	*EventData_ProjectDeletedData
 	Value         isEventData_Value `protobuf_oneof:"value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -538,7 +589,7 @@ type EventData struct {
 
 func (x *EventData) Reset() {
 	*x = EventData{}
-	mi := &file_events_proto_msgTypes[6]
+	mi := &file_events_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -550,7 +601,7 @@ func (x *EventData) String() string {
 func (*EventData) ProtoMessage() {}
 
 func (x *EventData) ProtoReflect() protoreflect.Message {
-	mi := &file_events_proto_msgTypes[6]
+	mi := &file_events_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -563,7 +614,7 @@ func (x *EventData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EventData.ProtoReflect.Descriptor instead.
 func (*EventData) Descriptor() ([]byte, []int) {
-	return file_events_proto_rawDescGZIP(), []int{6}
+	return file_events_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *EventData) GetValue() isEventData_Value {
@@ -627,6 +678,15 @@ func (x *EventData) GetDeployFailedData() *DeployFailedData {
 	return nil
 }
 
+func (x *EventData) GetProjectDeletedData() *ProjectDeletedEventData {
+	if x != nil {
+		if x, ok := x.Value.(*EventData_ProjectDeletedData); ok {
+			return x.ProjectDeletedData
+		}
+	}
+	return nil
+}
+
 type isEventData_Value interface {
 	isEventData_Value()
 }
@@ -655,6 +715,10 @@ type EventData_DeployFailedData struct {
 	DeployFailedData *DeployFailedData `protobuf:"bytes,6,opt,name=deploy_failed_data,json=deployFailedData,proto3,oneof"`
 }
 
+type EventData_ProjectDeletedData struct {
+	ProjectDeletedData *ProjectDeletedEventData `protobuf:"bytes,7,opt,name=project_deleted_data,json=projectDeletedData,proto3,oneof"`
+}
+
 func (*EventData_AppCreatedData) isEventData_Value() {}
 
 func (*EventData_AppDeletedData) isEventData_Value() {}
@@ -666,6 +730,8 @@ func (*EventData_BuildFailedData) isEventData_Value() {}
 func (*EventData_DeployCompletedData) isEventData_Value() {}
 
 func (*EventData_DeployFailedData) isEventData_Value() {}
+
+func (*EventData_ProjectDeletedData) isEventData_Value() {}
 
 type Message struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -679,7 +745,7 @@ type Message struct {
 
 func (x *Message) Reset() {
 	*x = Message{}
-	mi := &file_events_proto_msgTypes[7]
+	mi := &file_events_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -691,7 +757,7 @@ func (x *Message) String() string {
 func (*Message) ProtoMessage() {}
 
 func (x *Message) ProtoReflect() protoreflect.Message {
-	mi := &file_events_proto_msgTypes[7]
+	mi := &file_events_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -704,7 +770,7 @@ func (x *Message) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Message.ProtoReflect.Descriptor instead.
 func (*Message) Descriptor() ([]byte, []int) {
-	return file_events_proto_rawDescGZIP(), []int{7}
+	return file_events_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *Message) GetId() string {
@@ -769,34 +835,40 @@ const file_events_proto_rawDesc = "" +
 	"\bbuild_id\x18\x02 \x01(\tR\abuildId\x12#\n" +
 	"\rdeployment_id\x18\x03 \x01(\tR\fdeploymentId\x12\x19\n" +
 	"\bapp_name\x18\x04 \x01(\tR\aappName\x12\x16\n" +
-	"\x06reason\x18\x05 \x01(\tR\x06reason\"\xda\x03\n" +
+	"\x06reason\x18\x05 \x01(\tR\x06reason\"8\n" +
+	"\x17ProjectDeletedEventData\x12\x1d\n" +
+	"\n" +
+	"project_id\x18\x01 \x01(\tR\tprojectId\"\xaf\x04\n" +
 	"\tEventData\x12G\n" +
 	"\x10app_created_data\x18\x01 \x01(\v2\x1b.events.AppCreatedEventDataH\x00R\x0eappCreatedData\x12G\n" +
 	"\x10app_deleted_data\x18\x02 \x01(\v2\x1b.events.AppDeletedEventDataH\x00R\x0eappDeletedData\x12N\n" +
 	"\x14build_completed_data\x18\x03 \x01(\v2\x1a.events.BuildCompletedDataH\x00R\x12buildCompletedData\x12E\n" +
 	"\x11build_failed_data\x18\x04 \x01(\v2\x17.events.BuildFailedDataH\x00R\x0fbuildFailedData\x12Q\n" +
 	"\x15deploy_completed_data\x18\x05 \x01(\v2\x1b.events.DeployCompletedDataH\x00R\x13deployCompletedData\x12H\n" +
-	"\x12deploy_failed_data\x18\x06 \x01(\v2\x18.events.DeployFailedDataH\x00R\x10deployFailedDataB\a\n" +
+	"\x12deploy_failed_data\x18\x06 \x01(\v2\x18.events.DeployFailedDataH\x00R\x10deployFailedData\x12S\n" +
+	"\x14project_deleted_data\x18\a \x01(\v2\x1f.events.ProjectDeletedEventDataH\x00R\x12projectDeletedDataB\a\n" +
 	"\x05value\"\x90\x01\n" +
 	"\aMessage\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x120\n" +
 	"\n" +
 	"event_name\x18\x02 \x01(\x0e2\x11.events.EventNameR\teventName\x12%\n" +
 	"\x04data\x18\x03 \x01(\v2\x11.events.EventDataR\x04data\x12\x1c\n" +
-	"\ttimestamp\x18\x04 \x01(\x03R\ttimestamp*A\n" +
+	"\ttimestamp\x18\x04 \x01(\x03R\ttimestamp*U\n" +
 	"\n" +
 	"StreamName\x12\x0e\n" +
 	"\n" +
 	"APP_STREAM\x10\x00\x12\x10\n" +
 	"\fBUILD_STREAM\x10\x01\x12\x11\n" +
-	"\rDEPLOY_STREAM\x10\x02*}\n" +
+	"\rDEPLOY_STREAM\x10\x02\x12\x12\n" +
+	"\x0ePROJECT_STREAM\x10\x03*\x92\x01\n" +
 	"\tEventName\x12\x0f\n" +
 	"\vAPP_CREATED\x10\x00\x12\x0f\n" +
 	"\vAPP_DELETED\x10\x01\x12\x13\n" +
 	"\x0fBUILD_COMPLETED\x10\x02\x12\x10\n" +
 	"\fBUILD_FAILED\x10\x03\x12\x14\n" +
 	"\x10DEPLOY_COMPLETED\x10\x04\x12\x11\n" +
-	"\rDEPLOY_FAILED\x10\x05B\x1bZ\x19proto/events_pb;events_pbb\x06proto3"
+	"\rDEPLOY_FAILED\x10\x05\x12\x13\n" +
+	"\x0fPROJECT_DELETED\x10\x06B\x1bZ\x19proto/events_pb;events_pbb\x06proto3"
 
 var (
 	file_events_proto_rawDescOnce sync.Once
@@ -811,7 +883,7 @@ func file_events_proto_rawDescGZIP() []byte {
 }
 
 var file_events_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_events_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_events_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_events_proto_goTypes = []any{
 	(StreamName)(0),                       // 0: events.StreamName
 	(EventName)(0),                        // 1: events.EventName
@@ -821,29 +893,31 @@ var file_events_proto_goTypes = []any{
 	(*BuildFailedData)(nil),               // 5: events.BuildFailedData
 	(*DeployCompletedData)(nil),           // 6: events.DeployCompletedData
 	(*DeployFailedData)(nil),              // 7: events.DeployFailedData
-	(*EventData)(nil),                     // 8: events.EventData
-	(*Message)(nil),                       // 9: events.Message
-	(*models_pb.App)(nil),                 // 10: models.App
-	(*models_pb.EnvironmentVariable)(nil), // 11: models.EnvironmentVariable
-	(*models_pb.GitRepository)(nil),       // 12: models.GitRepository
+	(*ProjectDeletedEventData)(nil),       // 8: events.ProjectDeletedEventData
+	(*EventData)(nil),                     // 9: events.EventData
+	(*Message)(nil),                       // 10: events.Message
+	(*models_pb.App)(nil),                 // 11: models.App
+	(*models_pb.EnvironmentVariable)(nil), // 12: models.EnvironmentVariable
+	(*models_pb.GitRepository)(nil),       // 13: models.GitRepository
 }
 var file_events_proto_depIdxs = []int32{
-	10, // 0: events.AppCreatedEventData.app:type_name -> models.App
-	11, // 1: events.AppCreatedEventData.environment_variable:type_name -> models.EnvironmentVariable
-	12, // 2: events.AppCreatedEventData.git_repository:type_name -> models.GitRepository
+	11, // 0: events.AppCreatedEventData.app:type_name -> models.App
+	12, // 1: events.AppCreatedEventData.environment_variable:type_name -> models.EnvironmentVariable
+	13, // 2: events.AppCreatedEventData.git_repository:type_name -> models.GitRepository
 	2,  // 3: events.EventData.app_created_data:type_name -> events.AppCreatedEventData
 	3,  // 4: events.EventData.app_deleted_data:type_name -> events.AppDeletedEventData
 	4,  // 5: events.EventData.build_completed_data:type_name -> events.BuildCompletedData
 	5,  // 6: events.EventData.build_failed_data:type_name -> events.BuildFailedData
 	6,  // 7: events.EventData.deploy_completed_data:type_name -> events.DeployCompletedData
 	7,  // 8: events.EventData.deploy_failed_data:type_name -> events.DeployFailedData
-	1,  // 9: events.Message.event_name:type_name -> events.EventName
-	8,  // 10: events.Message.data:type_name -> events.EventData
-	11, // [11:11] is the sub-list for method output_type
-	11, // [11:11] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	8,  // 9: events.EventData.project_deleted_data:type_name -> events.ProjectDeletedEventData
+	1,  // 10: events.Message.event_name:type_name -> events.EventName
+	9,  // 11: events.Message.data:type_name -> events.EventData
+	12, // [12:12] is the sub-list for method output_type
+	12, // [12:12] is the sub-list for method input_type
+	12, // [12:12] is the sub-list for extension type_name
+	12, // [12:12] is the sub-list for extension extendee
+	0,  // [0:12] is the sub-list for field type_name
 }
 
 func init() { file_events_proto_init() }
@@ -852,13 +926,14 @@ func file_events_proto_init() {
 		return
 	}
 	file_events_proto_msgTypes[0].OneofWrappers = []any{}
-	file_events_proto_msgTypes[6].OneofWrappers = []any{
+	file_events_proto_msgTypes[7].OneofWrappers = []any{
 		(*EventData_AppCreatedData)(nil),
 		(*EventData_AppDeletedData)(nil),
 		(*EventData_BuildCompletedData)(nil),
 		(*EventData_BuildFailedData)(nil),
 		(*EventData_DeployCompletedData)(nil),
 		(*EventData_DeployFailedData)(nil),
+		(*EventData_ProjectDeletedData)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -866,7 +941,7 @@ func file_events_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_events_proto_rawDesc), len(file_events_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   8,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

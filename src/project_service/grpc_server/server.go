@@ -6,6 +6,8 @@ import (
 	"project/repositories"
 
 	"apps-hosting.com/logging"
+	"apps-hosting.com/messaging"
+	"apps-hosting.com/messaging/proto/events_pb"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
@@ -17,12 +19,14 @@ type GRPCProjectServiceServer struct {
 	project_service_pb.UnimplementedProjectServiceServer
 
 	ProjectRepository repositories.ProjectRepositoryInterface
+	EventBus          *messaging.EventBus
 	Logger            logging.ServiceLogger
 }
 
-func NewGRPCProjectServiceServer(projectRepository repositories.ProjectRepositoryInterface, logger logging.ServiceLogger) *GRPCProjectServiceServer {
+func NewGRPCProjectServiceServer(projectRepository repositories.ProjectRepositoryInterface, eventBus *messaging.EventBus, logger logging.ServiceLogger) *GRPCProjectServiceServer {
 	return &GRPCProjectServiceServer{
 		ProjectRepository: projectRepository,
+		EventBus:          eventBus,
 		Logger:            logger,
 	}
 }
@@ -153,6 +157,18 @@ func (server *GRPCProjectServiceServer) DeleteUserProject(ctx context.Context, d
 	if err != nil {
 		span.SetAttributes(attribute.String("error", err.Error()))
 		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	err = server.EventBus.Publish(ctx, events_pb.EventName_PROJECT_DELETED, &events_pb.EventData{
+		Value: &events_pb.EventData_ProjectDeletedData{
+			ProjectDeletedData: &events_pb.ProjectDeletedEventData{
+				ProjectId: deleteUserProjectRequest.ProjectId,
+			},
+		},
+	})
+	if err != nil {
+		server.Logger.LogError(err.Error())
+		span.SetAttributes(attribute.String("error", err.Error()))
 	}
 
 	return &project_service_pb.DeleteUserProjectResponse{}, nil

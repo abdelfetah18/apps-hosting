@@ -1,8 +1,9 @@
-import { redirect, useFetcher } from "react-router";
+import { redirect, useFetcher, useNavigate } from "react-router";
 import type { Route } from "./+types/project_settings";
-import { getProjectById, updateProjectById } from "~/services/project_service";
+import { deleteProjectById, getProjectById, updateProjectById } from "~/services/project_service";
 import { useState } from "react";
 import Spinner from "~/components/spinner";
+import Iconify from "~/components/Iconify";
 
 export async function clientAction({ request, params }: Route.ClientActionArgs) {
     const formData = await request.formData();
@@ -45,7 +46,8 @@ export async function clientLoader({ params }: Route.LoaderArgs) {
 }
 
 export default function ProjectSettings({ params, loaderData }: Route.ComponentProps) {
-    let errorMessage = undefined;
+    const navigate = useNavigate();
+    const [isDeleteProjectLoading, setIsDeleteProjectLoading] = useState(false);
     const fetcher = useFetcher();
 
     const [name, setName] = useState(loaderData.project.name);
@@ -54,6 +56,17 @@ export default function ProjectSettings({ params, loaderData }: Route.ComponentP
     const resetNameInput = () => {
         setName(loaderData.project.name);
         (document.querySelector("input[name='name']") as HTMLInputElement).value = loaderData.project.name;
+    }
+
+    const deleteProjectHandler = async () => {
+        setIsDeleteProjectLoading(true);
+        const result = await deleteProjectById(params.project_id);
+        if (result.isFailure()) {
+            alert(result.error);
+        } else {
+            navigate("/");
+        }
+        setIsDeleteProjectLoading(false);
     }
 
     return (
@@ -111,8 +124,25 @@ export default function ProjectSettings({ params, loaderData }: Route.ComponentP
                             }
                         </div>
                     </fetcher.Form>
+                    <div className="flex items-start justify-between">
+                        {
+                            isDeleteProjectLoading ? (
+                                <button
+                                    type="button"
+                                    className="w-48 flex items-center justify-center cursor-pointer select-none py-2"
+                                >
+                                    <Spinner />
+                                </button>
+                            ) : (
+                                <div onClick={deleteProjectHandler} className="w-48 flex items-center justify-center gap-2 bg-red-500 py-2 px-4 rounded-lg text-white cursor-pointer select-none">
+                                    <Iconify icon="material-symbols:delete-outline" size={20} />
+                                    <div>Delete Project</div>
+                                </div>
+                            )
+                        }
+                    </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

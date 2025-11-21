@@ -389,6 +389,18 @@ func (server *GRPCAppServiceServer) DeleteApp(ctx context.Context, deleteAppRequ
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
+	err = server.EnvironmentVariablesRepository.DeleteEnvironmentVariableByAppId(ctx, deleteAppRequest.AppId)
+	if err != nil {
+		span.SetAttributes(attribute.String("error", err.Error()))
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	err = server.GitRepositoryRepository.DeleteGitRepositoryByAppId(ctx, deleteAppRequest.AppId)
+	if err != nil {
+		span.SetAttributes(attribute.String("error", err.Error()))
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
 	err = server.AppRepository.DeleteAppById(ctx, deleteAppRequest.ProjectId, deleteAppRequest.AppId)
 	if err == repositories.ErrAppNotFound {
 		span.SetAttributes(attribute.String("error", err.Error()))

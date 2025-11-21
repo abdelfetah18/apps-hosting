@@ -138,6 +138,10 @@ func getEventName(eventName events_pb.EventName) string {
 	case events_pb.EventName_DEPLOY_FAILED:
 		return "deploy.failed"
 
+	// Project Events
+	case events_pb.EventName_PROJECT_DELETED:
+		return "project.deleted"
+
 	default:
 		return "unknown"
 	}
