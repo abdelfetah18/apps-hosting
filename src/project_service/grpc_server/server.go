@@ -157,3 +157,31 @@ func (server *GRPCProjectServiceServer) DeleteUserProject(ctx context.Context, d
 
 	return &project_service_pb.DeleteUserProjectResponse{}, nil
 }
+
+func (server *GRPCProjectServiceServer) UpdateProject(ctx context.Context, updateProjectRequest *project_service_pb.UpdateProjectRequest) (*project_service_pb.UpdateProjectResponse, error) {
+	span := trace.SpanFromContext(ctx)
+
+	span.SetAttributes(
+		attribute.String("project.id", updateProjectRequest.ProjectId),
+	)
+
+	project, err := server.ProjectRepository.UpdateProjectById(ctx, updateProjectRequest.ProjectId, repositories.UpdateProjectParams{Name: updateProjectRequest.Name})
+	if err == repositories.ErrProjectNameInUse {
+		span.SetAttributes(attribute.String("error", err.Error()))
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	if err != nil {
+		span.SetAttributes(attribute.String("error", err.Error()))
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &project_service_pb.UpdateProjectResponse{
+		Project: &project_service_pb.Project{
+			Id:        project.Id,
+			Name:      project.Name,
+			UserId:    project.UserId,
+			CreatedAt: project.CreatedAt.String(),
+		},
+	}, nil
+}

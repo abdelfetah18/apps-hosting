@@ -63,3 +63,17 @@ export async function deleteProjectById(projectId: string): Promise<Result<strin
         return Result.failure(err.response?.data.message);
     }
 }
+
+export async function updateProjectById(projectId: string, updateProjectForm: UpdateProjectForm): Promise<Result<string, Project>> {
+    try {
+        const response = await axios.patch<HttpResponse<Project>>(`/projects/${projectId}/update`, updateProjectForm);
+        if (response.data.status == "error") {
+            return Result.failure(response.data.message!);
+        }
+        return Result.success(response.data.data!);
+    } catch (error) {
+        const err = error as AxiosError<any>;
+        console.error(err.response?.data.message);
+        return Result.failure(err.response?.data.message);
+    }
+}

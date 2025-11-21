@@ -8,6 +8,7 @@ service ProjectService {
     rpc Health(HealthRequest) returns (HealthResponse);
     
     rpc CreateProject(CreateProjectRequest) returns (CreateProjectResponse);
+    rpc UpdateProject(UpdateProjectRequest) returns (UpdateProjectResponse);
     rpc GetUserProjectById(GetUserProjectByIdRequest) returns (GetUserProjectByIdResponse);
     rpc GetUserProjects(GetUserProjectsRequest) returns (GetUserProjectsResponse);
     rpc DeleteUserProject(DeleteUserProjectRequest) returns (DeleteUserProjectResponse);
@@ -51,7 +52,13 @@ message DeleteUserProjectRequest {
 }
 message DeleteUserProjectResponse {}
 
-
+message UpdateProjectRequest {
+    string project_id = 1;
+    string name = 2;
+}
+message UpdateProjectResponse {
+    Project project = 1;
+}
 
 message HealthRequest {}
 message HealthResponse {

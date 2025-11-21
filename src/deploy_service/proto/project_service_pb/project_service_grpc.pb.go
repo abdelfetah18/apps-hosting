@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	ProjectService_Health_FullMethodName             = "/project_service.ProjectService/Health"
 	ProjectService_CreateProject_FullMethodName      = "/project_service.ProjectService/CreateProject"
+	ProjectService_UpdateProject_FullMethodName      = "/project_service.ProjectService/UpdateProject"
 	ProjectService_GetUserProjectById_FullMethodName = "/project_service.ProjectService/GetUserProjectById"
 	ProjectService_GetUserProjects_FullMethodName    = "/project_service.ProjectService/GetUserProjects"
 	ProjectService_DeleteUserProject_FullMethodName  = "/project_service.ProjectService/DeleteUserProject"
@@ -32,6 +33,7 @@ const (
 type ProjectServiceClient interface {
 	Health(ctx context.Context, in *HealthRequest, opts ...grpc.CallOption) (*HealthResponse, error)
 	CreateProject(ctx context.Context, in *CreateProjectRequest, opts ...grpc.CallOption) (*CreateProjectResponse, error)
+	UpdateProject(ctx context.Context, in *UpdateProjectRequest, opts ...grpc.CallOption) (*UpdateProjectResponse, error)
 	GetUserProjectById(ctx context.Context, in *GetUserProjectByIdRequest, opts ...grpc.CallOption) (*GetUserProjectByIdResponse, error)
 	GetUserProjects(ctx context.Context, in *GetUserProjectsRequest, opts ...grpc.CallOption) (*GetUserProjectsResponse, error)
 	DeleteUserProject(ctx context.Context, in *DeleteUserProjectRequest, opts ...grpc.CallOption) (*DeleteUserProjectResponse, error)
@@ -59,6 +61,16 @@ func (c *projectServiceClient) CreateProject(ctx context.Context, in *CreateProj
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CreateProjectResponse)
 	err := c.cc.Invoke(ctx, ProjectService_CreateProject_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *projectServiceClient) UpdateProject(ctx context.Context, in *UpdateProjectRequest, opts ...grpc.CallOption) (*UpdateProjectResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateProjectResponse)
+	err := c.cc.Invoke(ctx, ProjectService_UpdateProject_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -101,6 +113,7 @@ func (c *projectServiceClient) DeleteUserProject(ctx context.Context, in *Delete
 type ProjectServiceServer interface {
 	Health(context.Context, *HealthRequest) (*HealthResponse, error)
 	CreateProject(context.Context, *CreateProjectRequest) (*CreateProjectResponse, error)
+	UpdateProject(context.Context, *UpdateProjectRequest) (*UpdateProjectResponse, error)
 	GetUserProjectById(context.Context, *GetUserProjectByIdRequest) (*GetUserProjectByIdResponse, error)
 	GetUserProjects(context.Context, *GetUserProjectsRequest) (*GetUserProjectsResponse, error)
 	DeleteUserProject(context.Context, *DeleteUserProjectRequest) (*DeleteUserProjectResponse, error)
@@ -119,6 +132,9 @@ func (UnimplementedProjectServiceServer) Health(context.Context, *HealthRequest)
 }
 func (UnimplementedProjectServiceServer) CreateProject(context.Context, *CreateProjectRequest) (*CreateProjectResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateProject not implemented")
+}
+func (UnimplementedProjectServiceServer) UpdateProject(context.Context, *UpdateProjectRequest) (*UpdateProjectResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateProject not implemented")
 }
 func (UnimplementedProjectServiceServer) GetUserProjectById(context.Context, *GetUserProjectByIdRequest) (*GetUserProjectByIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserProjectById not implemented")
@@ -182,6 +198,24 @@ func _ProjectService_CreateProject_Handler(srv interface{}, ctx context.Context,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ProjectServiceServer).CreateProject(ctx, req.(*CreateProjectRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProjectService_UpdateProject_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateProjectRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProjectServiceServer).UpdateProject(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProjectService_UpdateProject_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProjectServiceServer).UpdateProject(ctx, req.(*UpdateProjectRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -254,6 +288,10 @@ var ProjectService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateProject",
 			Handler:    _ProjectService_CreateProject_Handler,
+		},
+		{
+			MethodName: "UpdateProject",
+			Handler:    _ProjectService_UpdateProject_Handler,
 		},
 		{
 			MethodName: "GetUserProjectById",

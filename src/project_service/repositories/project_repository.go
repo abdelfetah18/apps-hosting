@@ -18,6 +18,7 @@ type ProjectRepositoryInterface interface {
 	GetProjectById(ctx context.Context, userId, projectId string) (*Project, error)
 	GetProjects(ctx context.Context, userId string) ([]Project, error)
 	DeleteProjectById(ctx context.Context, userId, projectId string) error
+	UpdateProjectById(ctx context.Context, projectId string, updateProjectParams UpdateProjectParams) (*Project, error)
 }
 
 type Project struct {
@@ -28,6 +29,10 @@ type Project struct {
 }
 
 type CreateProjectParams struct {
+	Name string
+}
+
+type UpdateProjectParams struct {
 	Name string
 }
 
@@ -122,4 +127,39 @@ func (repository *ProjectRepository) DeleteProjectById(ctx context.Context, user
 	}
 
 	return err
+}
+
+func (repository *ProjectRepository) UpdateProjectById(ctx context.Context, projectId string, updateProjectParams UpdateProjectParams) (*Project, error) {
+	project := Project{
+		Name: updateProjectParams.Name,
+	}
+
+	result, err := repository.Database.
+		NewUpdate().
+		Model(&project).
+		Column("name").
+		Where("id = ?", projectId).
+		Returning("*").
+		Exec(ctx)
+
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case "23505":
+				if pgErr.ConstraintName == "projects_name_key" {
+					return nil, ErrProjectNameInUse
+				}
+			}
+		}
+
+		return nil, err
+	}
+
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		return nil, ErrProjectNotFound
+	}
+
+	return &project, nil
 }

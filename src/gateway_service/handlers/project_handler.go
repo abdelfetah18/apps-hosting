@@ -171,3 +171,35 @@ func (handler *ProjectHandler) GetUserProjectsHandler(w http.ResponseWriter, r *
 
 	messaging.WriteSuccess(w, "Projects Fetched Successfully", getUserProjectsResponse.Projects)
 }
+
+func (handler *ProjectHandler) UpdateProjectHandler(w http.ResponseWriter, r *http.Request) {
+	span := trace.SpanFromContext(r.Context())
+	params := mux.Vars(r)
+
+	projectId := params["project_id"]
+	userId := r.URL.Query().Get("user_id")
+
+	span.SetAttributes(
+		attribute.String("user.id", userId),
+		attribute.String("project.id", projectId),
+	)
+
+	updateProjectRequest := project_service_pb.UpdateProjectRequest{}
+	err := json.NewDecoder(r.Body).Decode(&updateProjectRequest)
+	if err != nil {
+		messaging.WriteError(w, http.StatusBadRequest, "failed at decoding json request")
+		span.SetAttributes(attribute.String("error", err.Error()))
+		return
+	}
+
+	updateProjectRequest.ProjectId = projectId
+	updateAppResponse, err := handler.ProjectServiceClient.UpdateProject(r.Context(), &updateProjectRequest)
+	if err != nil {
+		status, _ := status.FromError(err)
+		messaging.WriteError(w, utils.GrpcCodeToHttpStatusCode(status.Code()), status.Message())
+		span.SetAttributes(attribute.String("error", err.Error()))
+		return
+	}
+
+	messaging.WriteSuccess(w, "Project Updated Successfully", updateAppResponse.Project)
+}

@@ -101,6 +101,7 @@ func main() {
 
 	projectScoped.Handle("", otelhttp.NewHandler(http.HandlerFunc(projectHandler.GetUserProjectByIdHandler), "GetUserProjectByIdHandler")).Methods("GET")
 	projectScoped.Handle("/", otelhttp.NewHandler(http.HandlerFunc(projectHandler.GetUserProjectByIdHandler), "GetUserProjectByIdHandlerSlash")).Methods("GET")
+	projectScoped.Handle("/update", otelhttp.NewHandler(http.HandlerFunc(projectHandler.UpdateProjectHandler), "UpdateProjectHandler")).Methods("PATCH")
 	projectScoped.Handle("/delete", otelhttp.NewHandler(http.HandlerFunc(projectHandler.DeleteProjectHandler), "DeleteProjectHandler")).Methods("DELETE")
 	projectScoped.Handle("/apps", otelhttp.NewHandler(http.HandlerFunc(appHandler.GetAppsHandler), "GetAppsHandler")).Methods("GET")
 	projectScoped.Handle("/apps/create", otelhttp.NewHandler(http.HandlerFunc(appHandler.CreateAppHandler), "CreateAppHandler")).Methods("POST")

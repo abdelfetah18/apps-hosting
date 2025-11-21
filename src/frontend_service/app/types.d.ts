@@ -133,6 +133,10 @@ interface CreateProjectForm {
     name: string;
 }
 
+interface UpdateProjectForm {
+    name: string;
+}
+
 interface GithubRepository {
     id: string;
     name: string;

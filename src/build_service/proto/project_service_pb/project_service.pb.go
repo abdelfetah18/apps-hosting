@@ -457,6 +457,102 @@ func (*DeleteUserProjectResponse) Descriptor() ([]byte, []int) {
 	return file_src_protos_project_service_proto_rawDescGZIP(), []int{8}
 }
 
+type UpdateProjectRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ProjectId     string                 `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateProjectRequest) Reset() {
+	*x = UpdateProjectRequest{}
+	mi := &file_src_protos_project_service_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateProjectRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateProjectRequest) ProtoMessage() {}
+
+func (x *UpdateProjectRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_src_protos_project_service_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateProjectRequest.ProtoReflect.Descriptor instead.
+func (*UpdateProjectRequest) Descriptor() ([]byte, []int) {
+	return file_src_protos_project_service_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *UpdateProjectRequest) GetProjectId() string {
+	if x != nil {
+		return x.ProjectId
+	}
+	return ""
+}
+
+func (x *UpdateProjectRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+type UpdateProjectResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Project       *Project               `protobuf:"bytes,1,opt,name=project,proto3" json:"project,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateProjectResponse) Reset() {
+	*x = UpdateProjectResponse{}
+	mi := &file_src_protos_project_service_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateProjectResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateProjectResponse) ProtoMessage() {}
+
+func (x *UpdateProjectResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_src_protos_project_service_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateProjectResponse.ProtoReflect.Descriptor instead.
+func (*UpdateProjectResponse) Descriptor() ([]byte, []int) {
+	return file_src_protos_project_service_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *UpdateProjectResponse) GetProject() *Project {
+	if x != nil {
+		return x.Project
+	}
+	return nil
+}
+
 type HealthRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -465,7 +561,7 @@ type HealthRequest struct {
 
 func (x *HealthRequest) Reset() {
 	*x = HealthRequest{}
-	mi := &file_src_protos_project_service_proto_msgTypes[9]
+	mi := &file_src_protos_project_service_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -477,7 +573,7 @@ func (x *HealthRequest) String() string {
 func (*HealthRequest) ProtoMessage() {}
 
 func (x *HealthRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_project_service_proto_msgTypes[9]
+	mi := &file_src_protos_project_service_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -490,7 +586,7 @@ func (x *HealthRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthRequest.ProtoReflect.Descriptor instead.
 func (*HealthRequest) Descriptor() ([]byte, []int) {
-	return file_src_protos_project_service_proto_rawDescGZIP(), []int{9}
+	return file_src_protos_project_service_proto_rawDescGZIP(), []int{11}
 }
 
 type HealthResponse struct {
@@ -503,7 +599,7 @@ type HealthResponse struct {
 
 func (x *HealthResponse) Reset() {
 	*x = HealthResponse{}
-	mi := &file_src_protos_project_service_proto_msgTypes[10]
+	mi := &file_src_protos_project_service_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -515,7 +611,7 @@ func (x *HealthResponse) String() string {
 func (*HealthResponse) ProtoMessage() {}
 
 func (x *HealthResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_project_service_proto_msgTypes[10]
+	mi := &file_src_protos_project_service_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -528,7 +624,7 @@ func (x *HealthResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthResponse.ProtoReflect.Descriptor instead.
 func (*HealthResponse) Descriptor() ([]byte, []int) {
-	return file_src_protos_project_service_proto_rawDescGZIP(), []int{10}
+	return file_src_protos_project_service_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *HealthResponse) GetStatus() string {
@@ -575,14 +671,21 @@ const file_src_protos_project_service_proto_rawDesc = "" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tR\tprojectId\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\tR\x06userId\"\x1b\n" +
-	"\x19DeleteUserProjectResponse\"\x0f\n" +
+	"\x19DeleteUserProjectResponse\"I\n" +
+	"\x14UpdateProjectRequest\x12\x1d\n" +
+	"\n" +
+	"project_id\x18\x01 \x01(\tR\tprojectId\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\"K\n" +
+	"\x15UpdateProjectResponse\x122\n" +
+	"\aproject\x18\x01 \x01(\v2\x18.project_service.ProjectR\aproject\"\x0f\n" +
 	"\rHealthRequest\"B\n" +
 	"\x0eHealthResponse\x12\x16\n" +
 	"\x06status\x18\x01 \x01(\tR\x06status\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage2\xfc\x03\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage2\xdc\x04\n" +
 	"\x0eProjectService\x12I\n" +
 	"\x06Health\x12\x1e.project_service.HealthRequest\x1a\x1f.project_service.HealthResponse\x12^\n" +
-	"\rCreateProject\x12%.project_service.CreateProjectRequest\x1a&.project_service.CreateProjectResponse\x12m\n" +
+	"\rCreateProject\x12%.project_service.CreateProjectRequest\x1a&.project_service.CreateProjectResponse\x12^\n" +
+	"\rUpdateProject\x12%.project_service.UpdateProjectRequest\x1a&.project_service.UpdateProjectResponse\x12m\n" +
 	"\x12GetUserProjectById\x12*.project_service.GetUserProjectByIdRequest\x1a+.project_service.GetUserProjectByIdResponse\x12d\n" +
 	"\x0fGetUserProjects\x12'.project_service.GetUserProjectsRequest\x1a(.project_service.GetUserProjectsResponse\x12j\n" +
 	"\x11DeleteUserProject\x12).project_service.DeleteUserProjectRequest\x1a*.project_service.DeleteUserProjectResponseB-Z+proto/project_service_pb;project_service_pbb\x06proto3"
@@ -599,7 +702,7 @@ func file_src_protos_project_service_proto_rawDescGZIP() []byte {
 	return file_src_protos_project_service_proto_rawDescData
 }
 
-var file_src_protos_project_service_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_src_protos_project_service_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_src_protos_project_service_proto_goTypes = []any{
 	(*Project)(nil),                    // 0: project_service.Project
 	(*CreateProjectRequest)(nil),       // 1: project_service.CreateProjectRequest
@@ -610,28 +713,33 @@ var file_src_protos_project_service_proto_goTypes = []any{
 	(*GetUserProjectsResponse)(nil),    // 6: project_service.GetUserProjectsResponse
 	(*DeleteUserProjectRequest)(nil),   // 7: project_service.DeleteUserProjectRequest
 	(*DeleteUserProjectResponse)(nil),  // 8: project_service.DeleteUserProjectResponse
-	(*HealthRequest)(nil),              // 9: project_service.HealthRequest
-	(*HealthResponse)(nil),             // 10: project_service.HealthResponse
+	(*UpdateProjectRequest)(nil),       // 9: project_service.UpdateProjectRequest
+	(*UpdateProjectResponse)(nil),      // 10: project_service.UpdateProjectResponse
+	(*HealthRequest)(nil),              // 11: project_service.HealthRequest
+	(*HealthResponse)(nil),             // 12: project_service.HealthResponse
 }
 var file_src_protos_project_service_proto_depIdxs = []int32{
 	0,  // 0: project_service.CreateProjectResponse.project:type_name -> project_service.Project
 	0,  // 1: project_service.GetUserProjectByIdResponse.project:type_name -> project_service.Project
 	0,  // 2: project_service.GetUserProjectsResponse.projects:type_name -> project_service.Project
-	9,  // 3: project_service.ProjectService.Health:input_type -> project_service.HealthRequest
-	1,  // 4: project_service.ProjectService.CreateProject:input_type -> project_service.CreateProjectRequest
-	3,  // 5: project_service.ProjectService.GetUserProjectById:input_type -> project_service.GetUserProjectByIdRequest
-	5,  // 6: project_service.ProjectService.GetUserProjects:input_type -> project_service.GetUserProjectsRequest
-	7,  // 7: project_service.ProjectService.DeleteUserProject:input_type -> project_service.DeleteUserProjectRequest
-	10, // 8: project_service.ProjectService.Health:output_type -> project_service.HealthResponse
-	2,  // 9: project_service.ProjectService.CreateProject:output_type -> project_service.CreateProjectResponse
-	4,  // 10: project_service.ProjectService.GetUserProjectById:output_type -> project_service.GetUserProjectByIdResponse
-	6,  // 11: project_service.ProjectService.GetUserProjects:output_type -> project_service.GetUserProjectsResponse
-	8,  // 12: project_service.ProjectService.DeleteUserProject:output_type -> project_service.DeleteUserProjectResponse
-	8,  // [8:13] is the sub-list for method output_type
-	3,  // [3:8] is the sub-list for method input_type
-	3,  // [3:3] is the sub-list for extension type_name
-	3,  // [3:3] is the sub-list for extension extendee
-	0,  // [0:3] is the sub-list for field type_name
+	0,  // 3: project_service.UpdateProjectResponse.project:type_name -> project_service.Project
+	11, // 4: project_service.ProjectService.Health:input_type -> project_service.HealthRequest
+	1,  // 5: project_service.ProjectService.CreateProject:input_type -> project_service.CreateProjectRequest
+	9,  // 6: project_service.ProjectService.UpdateProject:input_type -> project_service.UpdateProjectRequest
+	3,  // 7: project_service.ProjectService.GetUserProjectById:input_type -> project_service.GetUserProjectByIdRequest
+	5,  // 8: project_service.ProjectService.GetUserProjects:input_type -> project_service.GetUserProjectsRequest
+	7,  // 9: project_service.ProjectService.DeleteUserProject:input_type -> project_service.DeleteUserProjectRequest
+	12, // 10: project_service.ProjectService.Health:output_type -> project_service.HealthResponse
+	2,  // 11: project_service.ProjectService.CreateProject:output_type -> project_service.CreateProjectResponse
+	10, // 12: project_service.ProjectService.UpdateProject:output_type -> project_service.UpdateProjectResponse
+	4,  // 13: project_service.ProjectService.GetUserProjectById:output_type -> project_service.GetUserProjectByIdResponse
+	6,  // 14: project_service.ProjectService.GetUserProjects:output_type -> project_service.GetUserProjectsResponse
+	8,  // 15: project_service.ProjectService.DeleteUserProject:output_type -> project_service.DeleteUserProjectResponse
+	10, // [10:16] is the sub-list for method output_type
+	4,  // [4:10] is the sub-list for method input_type
+	4,  // [4:4] is the sub-list for extension type_name
+	4,  // [4:4] is the sub-list for extension extendee
+	0,  // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_src_protos_project_service_proto_init() }
@@ -645,7 +753,7 @@ func file_src_protos_project_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_src_protos_project_service_proto_rawDesc), len(file_src_protos_project_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   11,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
