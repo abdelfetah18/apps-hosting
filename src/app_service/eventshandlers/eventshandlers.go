@@ -47,9 +47,7 @@ func (h *EventsHandlers) HandleProjectDeletedEvent(ctx context.Context, message 
 		return
 	}
 
-	span.SetAttributes(
-		attribute.String("project.id", data.ProjectId),
-	)
+	span.SetAttributes(attribute.String("project.id", data.ProjectId))
 
 	apps, err := h.appRepository.GetApps(ctx, data.ProjectId)
 	if err != nil {

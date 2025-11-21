@@ -13,7 +13,6 @@ import (
 	gorillaHandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
 	"go.opentelemetry.io/otel/propagation"
@@ -73,52 +72,47 @@ func main() {
 	router.Use(gatewayHandler.LoggingMiddleware)
 
 	// API Endpoints
-	router.Handle("/health", otelhttp.NewHandler(
-		http.HandlerFunc(gatewayHandler.HealthCheckHandler),
-		"HealthCheckHandler",
-	)).Methods("GET")
+	router.Handle("/health", http.HandlerFunc(gatewayHandler.HealthCheckHandler)).Methods("GET")
 
 	userRouter := router.PathPrefix("/user").Subrouter()
-	userRouter.Handle("/auth", otelhttp.NewHandler(http.HandlerFunc(userHandler.AuthHandler), "AuthHandler")).Methods("GET")
-	userRouter.Handle("/sign_in", otelhttp.NewHandler(http.HandlerFunc(userHandler.SignInHandler), "SignInHandler")).Methods("POST")
-	userRouter.Handle("/sign_up", otelhttp.NewHandler(http.HandlerFunc(userHandler.SignUpHandler), "SignUpHandler")).Methods("POST")
+	userRouter.Handle("/auth", http.HandlerFunc(userHandler.AuthHandler)).Methods("GET")
+	userRouter.Handle("/sign_in", http.HandlerFunc(userHandler.SignInHandler)).Methods("POST")
+	userRouter.Handle("/sign_up", http.HandlerFunc(userHandler.SignUpHandler)).Methods("POST")
 
 	userGithubRouter := userRouter.PathPrefix("/github").Subrouter()
 	userGithubRouter.Use(userHandler.AuthMiddleware)
-	userGithubRouter.Handle("/callback", otelhttp.NewHandler(http.HandlerFunc(userHandler.GithubCallbackHandler), "GithubCallbackHandler")).Methods("GET")
-	userGithubRouter.Handle("/repositories", otelhttp.NewHandler(http.HandlerFunc(userHandler.GetGithubRepositoriesHandler), "GetGithubRepositoriesHandler")).Methods("GET")
+	userGithubRouter.Handle("/callback", http.HandlerFunc(userHandler.GithubCallbackHandler)).Methods("GET")
+	userGithubRouter.Handle("/repositories", http.HandlerFunc(userHandler.GetGithubRepositoriesHandler)).Methods("GET")
 
-	router.Handle("/projects", userHandler.AuthMiddleware(
-		otelhttp.NewHandler(http.HandlerFunc(projectHandler.GetUserProjectsHandler), "GetUserProjectsHandler")),
-	).Methods("GET")
+	router.Handle("/projects", userHandler.AuthMiddleware(http.HandlerFunc(projectHandler.GetUserProjectsHandler))).Methods("GET")
 
 	projectRouter := router.PathPrefix("/projects").Subrouter()
 	projectRouter.Use(userHandler.AuthMiddleware)
-	projectRouter.Handle("/create", otelhttp.NewHandler(http.HandlerFunc(projectHandler.CreateProjectHandler), "CreateProjectHandler")).Methods("POST")
+	projectRouter.Handle("/create", http.HandlerFunc(projectHandler.CreateProjectHandler)).Methods("POST")
 
 	projectScoped := projectRouter.PathPrefix("/{project_id}").Subrouter()
 	projectScoped.Use(projectHandler.OwnershipMiddleware)
 
-	projectScoped.Handle("", otelhttp.NewHandler(http.HandlerFunc(projectHandler.GetUserProjectByIdHandler), "GetUserProjectByIdHandler")).Methods("GET")
-	projectScoped.Handle("/", otelhttp.NewHandler(http.HandlerFunc(projectHandler.GetUserProjectByIdHandler), "GetUserProjectByIdHandlerSlash")).Methods("GET")
-	projectScoped.Handle("/update", otelhttp.NewHandler(http.HandlerFunc(projectHandler.UpdateProjectHandler), "UpdateProjectHandler")).Methods("PATCH")
-	projectScoped.Handle("/delete", otelhttp.NewHandler(http.HandlerFunc(projectHandler.DeleteProjectHandler), "DeleteProjectHandler")).Methods("DELETE")
-	projectScoped.Handle("/apps", otelhttp.NewHandler(http.HandlerFunc(appHandler.GetAppsHandler), "GetAppsHandler")).Methods("GET")
-	projectScoped.Handle("/apps/create", otelhttp.NewHandler(http.HandlerFunc(appHandler.CreateAppHandler), "CreateAppHandler")).Methods("POST")
+	projectScoped.Handle("", http.HandlerFunc(projectHandler.GetUserProjectByIdHandler)).Methods("GET")
+	projectScoped.Handle("/", http.HandlerFunc(projectHandler.GetUserProjectByIdHandler)).Methods("GET")
+	projectScoped.Handle("/update", http.HandlerFunc(projectHandler.UpdateProjectHandler)).Methods("PATCH")
+	projectScoped.Handle("/delete", http.HandlerFunc(projectHandler.DeleteProjectHandler)).Methods("DELETE")
+	projectScoped.Handle("/apps", http.HandlerFunc(appHandler.GetAppsHandler)).Methods("GET")
+	projectScoped.Handle("/apps/create", http.HandlerFunc(appHandler.CreateAppHandler)).Methods("POST")
 
 	appScoped := projectScoped.PathPrefix("/apps/{app_id}").Subrouter()
 	appScoped.Use(appHandler.OwnershipMiddleware)
-	appScoped.Handle("", otelhttp.NewHandler(http.HandlerFunc(appHandler.GetAppHandler), "GetAppHandler")).Methods("GET")
-	appScoped.Handle("/", otelhttp.NewHandler(http.HandlerFunc(appHandler.GetAppHandler), "GetAppHandlerSlash")).Methods("GET")
-	appScoped.Handle("/update", otelhttp.NewHandler(http.HandlerFunc(appHandler.UpdateAppHandler), "UpdateAppHandler")).Methods("PATCH")
-	appScoped.Handle("/delete", otelhttp.NewHandler(http.HandlerFunc(appHandler.DeleteAppHandler), "DeleteAppHandler")).Methods("DELETE")
-	appScoped.Handle("/environment_variables", otelhttp.NewHandler(http.HandlerFunc(appHandler.GetEnvironmentVariablesHandler), "GetEnvironmentVariablesHandler")).Methods("GET")
-	appScoped.Handle("/environment_variables/create", otelhttp.NewHandler(http.HandlerFunc(appHandler.CreateEnvironmentVariablesHandler), "CreateEnvironmentVariablesHandler")).Methods("POST")
-	appScoped.Handle("/environment_variables/update", otelhttp.NewHandler(http.HandlerFunc(appHandler.UpdateEnvironmentVariablesHandler), "UpdateEnvironmentVariablesHandler")).Methods("PATCH")
-	appScoped.Handle("/environment_variables/delete", otelhttp.NewHandler(http.HandlerFunc(appHandler.DeleteEnvironmentVariablesHandler), "DeleteEnvironmentVariablesHandler")).Methods("DELETE")
-	appScoped.Handle("/builds", otelhttp.NewHandler(http.HandlerFunc(buildHandler.GetBuildsHandler), "GetBuildsHandler")).Methods("GET")
-	appScoped.Handle("/deployments", otelhttp.NewHandler(http.HandlerFunc(deployHandler.GetDeploymentsHandler), "GetDeploymentsHandler")).Methods("GET")
-	appScoped.Handle("/logs", otelhttp.NewHandler(http.HandlerFunc(logHandler.QueryLogsHandler), "QueryLogsHandler")).Methods("GET")
+	appScoped.Handle("", http.HandlerFunc(appHandler.GetAppHandler)).Methods("GET")
+	appScoped.Handle("/", http.HandlerFunc(appHandler.GetAppHandler)).Methods("GET")
+	appScoped.Handle("/update", http.HandlerFunc(appHandler.UpdateAppHandler)).Methods("PATCH")
+	appScoped.Handle("/delete", http.HandlerFunc(appHandler.DeleteAppHandler)).Methods("DELETE")
+	appScoped.Handle("/environment_variables", http.HandlerFunc(appHandler.GetEnvironmentVariablesHandler)).Methods("GET")
+	appScoped.Handle("/environment_variables/create", http.HandlerFunc(appHandler.CreateEnvironmentVariablesHandler)).Methods("POST")
+	appScoped.Handle("/environment_variables/update", http.HandlerFunc(appHandler.UpdateEnvironmentVariablesHandler)).Methods("PATCH")
+	appScoped.Handle("/environment_variables/delete", http.HandlerFunc(appHandler.DeleteEnvironmentVariablesHandler)).Methods("DELETE")
+	appScoped.Handle("/builds", http.HandlerFunc(buildHandler.GetBuildsHandler)).Methods("GET")
+	appScoped.Handle("/deployments", http.HandlerFunc(deployHandler.GetDeploymentsHandler)).Methods("GET")
+	appScoped.Handle("/logs", http.HandlerFunc(logHandler.QueryLogsHandler)).Methods("GET")
 
 	// Start server
 	PORT := os.Getenv("PORT")

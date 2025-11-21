@@ -81,9 +81,7 @@ func (h *EventsHandlers) HandleBuildCompletedEvent(ctx context.Context, message 
 		return
 	}
 
-	span.SetAttributes(
-		attribute.String("deployment.id", deployment.Id),
-	)
+	span.SetAttributes(attribute.String("deployment.id", deployment.Id))
 
 	// func GetKubernetesConfigFromEnv() (*rest.Config, error) {
 	// 	kubeconfig := filepath.Join(homedir.HomeDir(), ".kube", "config")
@@ -120,9 +118,7 @@ func (h *EventsHandlers) HandleBuildCompletedEvent(ctx context.Context, message 
 	}
 
 	if getEnvironmentVariablesResponse != nil {
-		span.SetAttributes(
-			attribute.String("environment_variable.id", getEnvironmentVariablesResponse.EnvironmentVariable.Id),
-		)
+		span.SetAttributes(attribute.String("environment_variable.id", getEnvironmentVariablesResponse.EnvironmentVariable.Id))
 	}
 
 	envVars := []v1Core.EnvVar{}
@@ -188,10 +184,7 @@ func (h *EventsHandlers) HandleAppDeletedEvent(ctx context.Context, message *eve
 		return
 	}
 
-	span.SetAttributes(
-		attribute.String("app_id", data.AppId),
-		attribute.String("app_name", data.AppName),
-	)
+	span.SetAttributes(attribute.String("app_id", data.AppId))
 
 	h.logger.LogInfoF("Deleting deployments related to app with id '%s'", data.AppId)
 	err := h.deploymentRepository.DeleteDeployments(ctx, data.AppId)

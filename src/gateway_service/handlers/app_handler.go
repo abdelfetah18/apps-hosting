@@ -38,8 +38,10 @@ func (handler *AppHandler) OwnershipMiddleware(next http.Handler) http.Handler {
 		projectId := params["project_id"]
 		appId := params["app_id"]
 
-		span.SetAttributes(attribute.String("project_id", projectId))
-		span.SetAttributes(attribute.String("app_id", appId))
+		span.SetAttributes(
+			attribute.String("project.id", projectId),
+			attribute.String("app.id", appId),
+		)
 
 		_, err := handler.AppServiceClient.GetApp(r.Context(), &app_service_pb.GetAppRequest{
 			AppId:     appId,
@@ -73,8 +75,8 @@ func (handler *AppHandler) CreateAppHandler(w http.ResponseWriter, r *http.Reque
 	userId := r.URL.Query().Get("user_id")
 
 	span.SetAttributes(
-		attribute.String("user_id", userId),
-		attribute.String("project_id", projectId),
+		attribute.String("user.id", userId),
+		attribute.String("project.id", projectId),
 	)
 
 	createAppRequest := app_service_pb.CreateAppRequest{}
@@ -84,10 +86,6 @@ func (handler *AppHandler) CreateAppHandler(w http.ResponseWriter, r *http.Reque
 		span.SetAttributes(attribute.String("error", err.Error()))
 		return
 	}
-
-	span.SetAttributes(attribute.String("app_name", createAppRequest.Name))
-	span.SetAttributes(attribute.String("app_runtime", createAppRequest.Runtime))
-	span.SetAttributes(attribute.String("app_repo_url", createAppRequest.GitRepository.CloneUrl))
 
 	createAppRequest.ProjectId = projectId
 	createAppRequest.UserId = userId
@@ -99,7 +97,7 @@ func (handler *AppHandler) CreateAppHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	span.SetAttributes(attribute.String("app_id", createAppResponse.App.Id))
+	span.SetAttributes(attribute.String("app.id", createAppResponse.App.Id))
 
 	messaging.WriteSuccess(w, "App Created Successfully", createAppResponse.App)
 }
@@ -111,8 +109,10 @@ func (handler *AppHandler) UpdateAppHandler(w http.ResponseWriter, r *http.Reque
 	appId := params["app_id"]
 	projectId := params["project_id"]
 
-	span.SetAttributes(attribute.String("project_id", projectId))
-	span.SetAttributes(attribute.String("app_id", appId))
+	span.SetAttributes(
+		attribute.String("project.id", projectId),
+		attribute.String("app.id", appId),
+	)
 
 	updateAppRequest := app_service_pb.UpdateAppRequest{}
 
@@ -121,26 +121,6 @@ func (handler *AppHandler) UpdateAppHandler(w http.ResponseWriter, r *http.Reque
 		messaging.WriteError(w, http.StatusBadRequest, err.Error())
 		span.SetAttributes(attribute.String("error", err.Error()))
 		return
-	}
-
-	if updateAppRequest.Name != nil {
-		span.SetAttributes(attribute.String("app_name", *updateAppRequest.Name))
-	}
-
-	if updateAppRequest.Runtime != nil {
-		span.SetAttributes(attribute.String("app_runtime", *updateAppRequest.Runtime))
-	}
-
-	if updateAppRequest.RepoUrl != nil {
-		span.SetAttributes(attribute.String("app_repo_url", *updateAppRequest.RepoUrl))
-	}
-
-	if updateAppRequest.BuildCmd != nil {
-		span.SetAttributes(attribute.String("app_build_cmd", *updateAppRequest.BuildCmd))
-	}
-
-	if updateAppRequest.StartCmd != nil {
-		span.SetAttributes(attribute.String("app_start_cmd", *updateAppRequest.StartCmd))
 	}
 
 	updateAppRequest.ProjectId = projectId
@@ -166,8 +146,10 @@ func (handler *AppHandler) DeleteAppHandler(w http.ResponseWriter, r *http.Reque
 	appId := params["app_id"]
 	projectId := params["project_id"]
 
-	span.SetAttributes(attribute.String("project_id", projectId))
-	span.SetAttributes(attribute.String("app_id", appId))
+	span.SetAttributes(
+		attribute.String("project.id", projectId),
+		attribute.String("app.id", appId),
+	)
 
 	_, err := handler.AppServiceClient.DeleteApp(r.Context(), &app_service_pb.DeleteAppRequest{
 		ProjectId: projectId,
@@ -190,8 +172,10 @@ func (handler *AppHandler) GetAppHandler(w http.ResponseWriter, r *http.Request)
 	appId := params["app_id"]
 	projectId := params["project_id"]
 
-	span.SetAttributes(attribute.String("project_id", projectId))
-	span.SetAttributes(attribute.String("app_id", appId))
+	span.SetAttributes(
+		attribute.String("project.id", projectId),
+		attribute.String("app.id", appId),
+	)
 
 	getAppResponse, err := handler.AppServiceClient.GetApp(r.Context(), &app_service_pb.GetAppRequest{
 		ProjectId: projectId,
@@ -204,13 +188,6 @@ func (handler *AppHandler) GetAppHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	span.SetAttributes(attribute.String("app_name", getAppResponse.App.Name))
-	span.SetAttributes(attribute.String("app_runtime", getAppResponse.App.Runtime))
-	span.SetAttributes(attribute.String("app_repo_url", getAppResponse.App.RepoUrl))
-	span.SetAttributes(attribute.String("app_domain_name", getAppResponse.App.DomainName))
-	span.SetAttributes(attribute.String("app_build_cmd", getAppResponse.App.BuildCmd))
-	span.SetAttributes(attribute.String("app_start_cmd", getAppResponse.App.StartCmd))
-
 	messaging.WriteSuccess(w, "App Fetched Successfully", getAppResponse.App)
 }
 
@@ -220,7 +197,7 @@ func (handler *AppHandler) GetAppsHandler(w http.ResponseWriter, r *http.Request
 	params := mux.Vars(r)
 	projectId := params["project_id"]
 
-	span.SetAttributes(attribute.String("project_id", projectId))
+	span.SetAttributes(attribute.String("project.id", projectId))
 
 	getAppsResponse, err := handler.AppServiceClient.GetApps(r.Context(), &app_service_pb.GetAppsRequest{ProjectId: projectId})
 	if err != nil {
@@ -230,7 +207,7 @@ func (handler *AppHandler) GetAppsHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	span.SetAttributes(attribute.Int("project_apps_count", len(getAppsResponse.Apps)))
+	span.SetAttributes(attribute.Int("apps.count", len(getAppsResponse.Apps)))
 
 	if getAppsResponse.Apps == nil {
 		messaging.WriteSuccess(w, "Apps Fetched Successfully", []*app_service_pb.App{})
@@ -245,7 +222,7 @@ func (handler *AppHandler) GetEnvironmentVariablesHandler(w http.ResponseWriter,
 	params := mux.Vars(r)
 
 	appId := params["app_id"]
-	span.SetAttributes(attribute.String("app_id", appId))
+	span.SetAttributes(attribute.String("app.id", appId))
 
 	getEnvironmentVariablesResponse, err := handler.AppServiceClient.GetEnvironmentVariables(r.Context(), &app_service_pb.GetEnvironmentVariablesRequest{
 		AppId: appId,
@@ -262,8 +239,7 @@ func (handler *AppHandler) GetEnvironmentVariablesHandler(w http.ResponseWriter,
 		return
 	}
 
-	span.SetAttributes(attribute.String("environment_variable_id", getEnvironmentVariablesResponse.EnvironmentVariable.Id))
-	span.SetAttributes(attribute.String("environment_variable_value", getEnvironmentVariablesResponse.EnvironmentVariable.Value))
+	span.SetAttributes(attribute.String("environment_variable.id", getEnvironmentVariablesResponse.EnvironmentVariable.Id))
 
 	messaging.WriteSuccess(w, "Environment Variables Fetched Successfully", getEnvironmentVariablesResponse.EnvironmentVariable)
 }
@@ -273,7 +249,7 @@ func (handler *AppHandler) CreateEnvironmentVariablesHandler(w http.ResponseWrit
 	params := mux.Vars(r)
 
 	appId := params["app_id"]
-	span.SetAttributes(attribute.String("app_id", appId))
+	span.SetAttributes(attribute.String("app.id", appId))
 
 	createEnvironmentVariablesRequest := app_service_pb.CreateEnvironmentVariablesRequest{}
 
@@ -283,8 +259,6 @@ func (handler *AppHandler) CreateEnvironmentVariablesHandler(w http.ResponseWrit
 		span.SetAttributes(attribute.String("error", err.Error()))
 		return
 	}
-
-	span.SetAttributes(attribute.String("environment_variable_value", createEnvironmentVariablesRequest.Value))
 
 	createEnvironmentVariablesRequest.AppId = appId
 	createEnvironmentVariablesResponse, err := handler.AppServiceClient.CreateEnvironmentVariables(r.Context(), &createEnvironmentVariablesRequest)
@@ -303,7 +277,7 @@ func (handler *AppHandler) UpdateEnvironmentVariablesHandler(w http.ResponseWrit
 	params := mux.Vars(r)
 
 	appId := params["app_id"]
-	span.SetAttributes(attribute.String("app_id", appId))
+	span.SetAttributes(attribute.String("app.id", appId))
 
 	updateEnvironmentVariablesRequest := app_service_pb.UpdateEnvironmentVariablesRequest{}
 
@@ -313,8 +287,6 @@ func (handler *AppHandler) UpdateEnvironmentVariablesHandler(w http.ResponseWrit
 		span.SetAttributes(attribute.String("error", err.Error()))
 		return
 	}
-
-	span.SetAttributes(attribute.String("environment_variable", updateEnvironmentVariablesRequest.Value))
 
 	updateEnvironmentVariablesRequest.AppId = appId
 	updateEnvironmentVariablesResponse, err := handler.AppServiceClient.UpdateEnvironmentVariables(r.Context(), &updateEnvironmentVariablesRequest)
@@ -333,7 +305,7 @@ func (handler *AppHandler) DeleteEnvironmentVariablesHandler(w http.ResponseWrit
 	params := mux.Vars(r)
 
 	appId := params["app_id"]
-	span.SetAttributes(attribute.String("app_id", appId))
+	span.SetAttributes(attribute.String("app.id", appId))
 
 	_, err := handler.AppServiceClient.DeleteEnvironmentVariables(r.Context(), &app_service_pb.DeleteEnvironmentVariablesRequest{
 		AppId: appId,

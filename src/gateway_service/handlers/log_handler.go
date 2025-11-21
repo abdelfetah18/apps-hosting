@@ -31,11 +31,13 @@ func (handler *LogHandler) QueryLogsHandler(w http.ResponseWriter, r *http.Reque
 	params := mux.Vars(r)
 
 	appId := params["app_id"]
-	span.SetAttributes(attribute.String("app_id", appId))
-
 	query := r.URL.Query()
 	userId := query.Get("user_id")
-	span.SetAttributes(attribute.String("user_id", userId))
+
+	span.SetAttributes(
+		attribute.String("app.id", appId),
+		attribute.String("user.id", userId),
+	)
 
 	QueryLogsResponse, err := handler.LogServiceClient.QueryLogs(r.Context(), &log_service_pb.QueryLogsRequest{
 		UserId: userId,

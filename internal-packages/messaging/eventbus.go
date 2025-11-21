@@ -68,7 +68,7 @@ func (e *EventBus) Subscribe(serviceName string, eventName events_pb.EventName, 
 
 		ctx := otel.GetTextMapPropagator().Extract(context.Background(), carrier)
 		tracer := otel.Tracer("apps-hosting.com/messaging")
-		ctx, span := tracer.Start(ctx, getEventName(eventName))
+		ctx, span := tracer.Start(ctx, fmt.Sprintf("handle %s", getEventName(eventName)))
 		defer span.End()
 
 		//	3. call the handler
@@ -84,7 +84,7 @@ func (e *EventBus) Subscribe(serviceName string, eventName events_pb.EventName, 
 func (e *EventBus) Publish(ctx context.Context, eventName events_pb.EventName, data *events_pb.EventData) error {
 	tracer := otel.Tracer("apps-hosting.com/messaging")
 
-	ctx, span := tracer.Start(ctx, getEventName(eventName))
+	ctx, span := tracer.Start(ctx, fmt.Sprintf("publish %s", getEventName(eventName)))
 	defer span.End()
 
 	message := events_pb.Message{

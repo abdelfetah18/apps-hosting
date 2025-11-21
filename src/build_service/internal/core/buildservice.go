@@ -34,7 +34,7 @@ func (s *BuildServiceServer) Health(ctx context.Context, _ *build_service_pb.Hea
 func (s *BuildServiceServer) GetBuilds(ctx context.Context, getBuildsRequest *build_service_pb.GetBuildsRequest) (*build_service_pb.GetBuildsResponse, error) {
 	span := trace.SpanFromContext(ctx)
 
-	span.SetAttributes(attribute.String("app_id", getBuildsRequest.AppId))
+	span.SetAttributes(attribute.String("app.id", getBuildsRequest.AppId))
 
 	builds, err := s.buildRepository.GetBuilds(ctx, getBuildsRequest.AppId)
 	if err != nil {
@@ -43,8 +43,8 @@ func (s *BuildServiceServer) GetBuilds(ctx context.Context, getBuildsRequest *bu
 	}
 
 	span.SetAttributes(
-		attribute.StringSlice("builds_ids", ExtractBuildIDs(builds)),
-		attribute.Int("builds_count", len(builds)),
+		attribute.StringSlice("builds.ids", ExtractBuildIDs(builds)),
+		attribute.Int("builds.count", len(builds)),
 	)
 
 	return &build_service_pb.GetBuildsResponse{

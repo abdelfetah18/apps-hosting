@@ -41,10 +41,7 @@ func (server *GRPCProjectServiceServer) Health(ctx context.Context, _ *project_s
 func (server *GRPCProjectServiceServer) CreateProject(ctx context.Context, createProjectRequest *project_service_pb.CreateProjectRequest) (*project_service_pb.CreateProjectResponse, error) {
 	span := trace.SpanFromContext(ctx)
 
-	span.SetAttributes(
-		attribute.String("user_id", createProjectRequest.UserId),
-		attribute.String("project_name", createProjectRequest.Name),
-	)
+	span.SetAttributes(attribute.String("user.id", createProjectRequest.UserId))
 
 	project, err := server.ProjectRepository.CreateProject(ctx, createProjectRequest.UserId, repositories.CreateProjectParams{
 		Name: createProjectRequest.Name,
@@ -60,7 +57,7 @@ func (server *GRPCProjectServiceServer) CreateProject(ctx context.Context, creat
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	span.SetAttributes(attribute.String("project_id", project.Id))
+	span.SetAttributes(attribute.String("project.id", project.Id))
 
 	return &project_service_pb.CreateProjectResponse{
 		Project: &project_service_pb.Project{
@@ -76,8 +73,8 @@ func (server *GRPCProjectServiceServer) GetUserProjectById(ctx context.Context, 
 	span := trace.SpanFromContext(ctx)
 
 	span.SetAttributes(
-		attribute.String("user_id", getUserProjectByIdRequest.UserId),
-		attribute.String("project_id", getUserProjectByIdRequest.ProjectId),
+		attribute.String("user.id", getUserProjectByIdRequest.UserId),
+		attribute.String("project.id", getUserProjectByIdRequest.ProjectId),
 	)
 
 	project, err := server.ProjectRepository.GetProjectById(ctx, getUserProjectByIdRequest.UserId, getUserProjectByIdRequest.ProjectId)
@@ -92,8 +89,6 @@ func (server *GRPCProjectServiceServer) GetUserProjectById(ctx context.Context, 
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	span.SetAttributes(attribute.String("project_name", project.Name))
-
 	return &project_service_pb.GetUserProjectByIdResponse{
 		Project: &project_service_pb.Project{
 			Id:        project.Id,
@@ -107,7 +102,7 @@ func (server *GRPCProjectServiceServer) GetUserProjectById(ctx context.Context, 
 func (server *GRPCProjectServiceServer) GetUserProjects(ctx context.Context, getUserProjectsRequest *project_service_pb.GetUserProjectsRequest) (*project_service_pb.GetUserProjectsResponse, error) {
 	span := trace.SpanFromContext(ctx)
 
-	span.SetAttributes(attribute.String("user_id", getUserProjectsRequest.UserId))
+	span.SetAttributes(attribute.String("user.id", getUserProjectsRequest.UserId))
 
 	projects, err := server.ProjectRepository.GetProjects(ctx, getUserProjectsRequest.UserId)
 	if err != nil {
@@ -130,8 +125,8 @@ func (server *GRPCProjectServiceServer) GetUserProjects(ctx context.Context, get
 	}
 
 	span.SetAttributes(
-		attribute.StringSlice("projects_ids", projects_ids),
-		attribute.Int("projects_count", len(_projects)),
+		attribute.StringSlice("projects.ids", projects_ids),
+		attribute.Int("projects.count", len(_projects)),
 	)
 
 	return &project_service_pb.GetUserProjectsResponse{
@@ -143,8 +138,8 @@ func (server *GRPCProjectServiceServer) DeleteUserProject(ctx context.Context, d
 	span := trace.SpanFromContext(ctx)
 
 	span.SetAttributes(
-		attribute.String("user_id", deleteUserProjectRequest.UserId),
-		attribute.String("project_id", deleteUserProjectRequest.ProjectId),
+		attribute.String("user.id", deleteUserProjectRequest.UserId),
+		attribute.String("project.id", deleteUserProjectRequest.ProjectId),
 	)
 
 	err := server.ProjectRepository.DeleteProjectById(ctx, deleteUserProjectRequest.UserId, deleteUserProjectRequest.ProjectId)

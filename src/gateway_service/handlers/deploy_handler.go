@@ -32,7 +32,7 @@ func (handler *DeployHandler) GetDeploymentsHandler(w http.ResponseWriter, r *ht
 	params := mux.Vars(r)
 
 	appId := params["app_id"]
-	span.SetAttributes(attribute.String("app_id", appId))
+	span.SetAttributes(attribute.String("app.id", appId))
 
 	getDeploymentsResponse, err := handler.DeployServiceClient.GetDeployments(r.Context(), &deploy_service_pb.GetDeploymentsRequest{
 		AppId: appId,
@@ -44,7 +44,7 @@ func (handler *DeployHandler) GetDeploymentsHandler(w http.ResponseWriter, r *ht
 		return
 	}
 
-	span.SetAttributes(attribute.Int("app_deployments_count", len(getDeploymentsResponse.Deployments)))
+	span.SetAttributes(attribute.Int("deployments.count", len(getDeploymentsResponse.Deployments)))
 
 	if getDeploymentsResponse.Deployments == nil {
 		messaging.WriteSuccess(w, "Deployments Fetched Successfully", []*deploy_service_pb.Deployment{})

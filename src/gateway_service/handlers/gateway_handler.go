@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"strings"
 	"time"
 
 	"apps-hosting.com/messaging"
@@ -64,6 +65,7 @@ func (handler *GatewayHandler) LoggingMiddleware(next http.Handler) http.Handler
 					path = tmpl
 				}
 			}
-			return path
+
+			return fmt.Sprintf("%s %s", strings.ToLower(r.Method), path)
 		}))
 }

@@ -131,7 +131,7 @@ func (server *GRPCUserServiceServer) Auth(ctx context.Context, authRequest *user
 		}
 	}
 
-	span.SetAttributes(attribute.String("user_id", user.Id))
+	span.SetAttributes(attribute.String("user.id", user.Id))
 
 	return &user_service_pb.AuthResponse{
 		User: &user_service_pb.User{
@@ -233,7 +233,7 @@ func (server *GRPCUserServiceServer) SignUp(ctx context.Context, createUser *use
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	span.SetAttributes(attribute.String("user_id", createdUser.Id))
+	span.SetAttributes(attribute.String("user.id", createdUser.Id))
 
 	return &user_service_pb.SignUpResponse{
 		User: &user_service_pb.User{
@@ -248,7 +248,7 @@ func (server *GRPCUserServiceServer) SignUp(ctx context.Context, createUser *use
 func (server *GRPCUserServiceServer) GetGithubRepositories(ctx context.Context, getGithubRepositoriesRequest *user_service_pb.GetGithubRepositoriesRequest) (*user_service_pb.GetGithubRepositoriesResponse, error) {
 	span := trace.SpanFromContext(ctx)
 
-	span.SetAttributes(attribute.String("user_id", getGithubRepositoriesRequest.UserId))
+	span.SetAttributes(attribute.String("user.id", getGithubRepositoriesRequest.UserId))
 
 	user, err := server.UserRepository.GetUserById(ctx, getGithubRepositoriesRequest.UserId)
 	if err == repositories.ErrUserNotFound {
@@ -300,8 +300,8 @@ func (server *GRPCUserServiceServer) GetGithubRepositories(ctx context.Context, 
 	}
 
 	span.SetAttributes(
-		attribute.StringSlice("github_repositories_ids", githubRepositoriesIds),
-		attribute.Int("github_repositories_count", len(githubRepositories)),
+		attribute.StringSlice("github_repositories.ids", githubRepositoriesIds),
+		attribute.Int("github_repositories.count", len(githubRepositories)),
 	)
 
 	return &user_service_pb.GetGithubRepositoriesResponse{
@@ -312,7 +312,7 @@ func (server *GRPCUserServiceServer) GetGithubRepositories(ctx context.Context, 
 func (server *GRPCUserServiceServer) ExchangeGitHubCodeForToken(ctx context.Context, exchangeGitHubCodeForTokenRequest *user_service_pb.ExchangeGitHubCodeForTokenRequest) (*user_service_pb.ExchangeGitHubCodeForTokenResponse, error) {
 	span := trace.SpanFromContext(ctx)
 
-	span.SetAttributes(attribute.String("user_id", exchangeGitHubCodeForTokenRequest.UserId))
+	span.SetAttributes(attribute.String("user.id", exchangeGitHubCodeForTokenRequest.UserId))
 
 	githubClient := githubclient.NewGithubClient(nil, server.Logger)
 	githubOAuth, err := githubClient.Auth(exchangeGitHubCodeForTokenRequest.Code)
@@ -350,7 +350,7 @@ func (server *GRPCUserServiceServer) ExchangeGitHubCodeForToken(ctx context.Cont
 func (server *GRPCUserServiceServer) GetGithubUserAccessToken(ctx context.Context, getGithubUserAccessTokenRequest *user_service_pb.GetGithubUserAccessTokenRequest) (*user_service_pb.GetGithubUserAccessTokenRespone, error) {
 	span := trace.SpanFromContext(ctx)
 
-	span.SetAttributes(attribute.String("user_id", getGithubUserAccessTokenRequest.UserId))
+	span.SetAttributes(attribute.String("user.id", getGithubUserAccessTokenRequest.UserId))
 
 	user, err := server.UserRepository.GetUserById(ctx, getGithubUserAccessTokenRequest.UserId)
 	if err != nil {

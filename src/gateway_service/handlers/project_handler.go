@@ -37,8 +37,10 @@ func (handler *ProjectHandler) OwnershipMiddleware(next http.Handler) http.Handl
 		projectId := params["project_id"]
 		userId := r.URL.Query().Get("user_id")
 
-		span.SetAttributes(attribute.String("user_id", userId))
-		span.SetAttributes(attribute.String("project_id", projectId))
+		span.SetAttributes(
+			attribute.String("user.id", userId),
+			attribute.String("project.id", projectId),
+		)
 
 		handler.Logger.LogErrorF("projectId=%s, userId=%s", projectId, userId)
 
@@ -70,7 +72,7 @@ func (handler *ProjectHandler) CreateProjectHandler(w http.ResponseWriter, r *ht
 	span := trace.SpanFromContext(r.Context())
 
 	userId := r.URL.Query().Get("user_id")
-	span.SetAttributes(attribute.String("user_id", userId))
+	span.SetAttributes(attribute.String("user.id", userId))
 	createProjectRequest := project_service_pb.CreateProjectRequest{}
 
 	err := json.NewDecoder(r.Body).Decode(&createProjectRequest)
@@ -79,8 +81,6 @@ func (handler *ProjectHandler) CreateProjectHandler(w http.ResponseWriter, r *ht
 		span.SetAttributes(attribute.String("error", err.Error()))
 		return
 	}
-
-	span.SetAttributes(attribute.String("project_name", createProjectRequest.Name))
 
 	createProjectRequest.UserId = userId
 	createAppResponse, err := handler.ProjectServiceClient.CreateProject(r.Context(), &createProjectRequest)
@@ -101,8 +101,10 @@ func (handler *ProjectHandler) DeleteProjectHandler(w http.ResponseWriter, r *ht
 	projectId := params["project_id"]
 	userId := r.URL.Query().Get("user_id")
 
-	span.SetAttributes(attribute.String("user_id", userId))
-	span.SetAttributes(attribute.String("project_id", projectId))
+	span.SetAttributes(
+		attribute.String("user.id", userId),
+		attribute.String("project.id", projectId),
+	)
 
 	_, err := handler.ProjectServiceClient.DeleteUserProject(r.Context(), &project_service_pb.DeleteUserProjectRequest{
 		ProjectId: projectId,
@@ -126,8 +128,10 @@ func (handler *ProjectHandler) GetUserProjectByIdHandler(w http.ResponseWriter, 
 	projectId := params["project_id"]
 	userId := r.URL.Query().Get("user_id")
 
-	span.SetAttributes(attribute.String("user_Id", userId))
-	span.SetAttributes(attribute.String("project_id", projectId))
+	span.SetAttributes(
+		attribute.String("user.id", userId),
+		attribute.String("project.id", projectId),
+	)
 
 	handler.Logger.LogErrorF("projectId=%s, userId=%s", projectId, userId)
 
@@ -143,8 +147,6 @@ func (handler *ProjectHandler) GetUserProjectByIdHandler(w http.ResponseWriter, 
 		return
 	}
 
-	span.SetAttributes(attribute.String("project_name", getUserProjectByIdResponse.Project.Name))
-
 	messaging.WriteSuccess(w, "Project Fetched Successfully", getUserProjectByIdResponse.Project)
 }
 
@@ -152,7 +154,7 @@ func (handler *ProjectHandler) GetUserProjectsHandler(w http.ResponseWriter, r *
 	span := trace.SpanFromContext(r.Context())
 
 	userId := r.URL.Query().Get("user_id")
-	span.SetAttributes(attribute.String("user_id", userId))
+	span.SetAttributes(attribute.String("user.id", userId))
 
 	handler.Logger.LogInfoF("userId=%s", userId)
 	getUserProjectsResponse, err := handler.ProjectServiceClient.GetUserProjects(r.Context(), &project_service_pb.GetUserProjectsRequest{UserId: userId})
@@ -162,7 +164,7 @@ func (handler *ProjectHandler) GetUserProjectsHandler(w http.ResponseWriter, r *
 		span.SetAttributes(attribute.String("error", err.Error()))
 		return
 	}
-	span.SetAttributes(attribute.Int("user_projects_count", len(getUserProjectsResponse.Projects)))
+	span.SetAttributes(attribute.Int("projects.count", len(getUserProjectsResponse.Projects)))
 
 	if getUserProjectsResponse.Projects == nil {
 		messaging.WriteSuccess(w, "Projects Fetched Successfully", []*project_service_pb.Project{})

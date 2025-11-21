@@ -38,8 +38,8 @@ func (server *GRPCLogServiceServer) QueryLogs(ctx context.Context, queryLogsRequ
 	span := trace.SpanFromContext(ctx)
 
 	span.SetAttributes(
-		attribute.String("app_id", queryLogsRequest.AppId),
-		attribute.String("user_id", queryLogsRequest.UserId),
+		attribute.String("app.id", queryLogsRequest.AppId),
+		attribute.String("user.id", queryLogsRequest.UserId),
 	)
 
 	logs, err := server.KubernetesClient.ReadPodLogs(queryLogsRequest.AppId)

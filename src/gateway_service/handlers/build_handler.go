@@ -31,7 +31,7 @@ func (handler *BuildHandler) GetBuildsHandler(w http.ResponseWriter, r *http.Req
 	params := mux.Vars(r)
 
 	appId := params["app_id"]
-	span.SetAttributes(attribute.String("app_id", appId))
+	span.SetAttributes(attribute.String("app.id", appId))
 
 	getBuildsResponse, err := handler.BuildServiceClient.GetBuilds(r.Context(), &build_service_pb.GetBuildsRequest{
 		AppId: appId,
@@ -43,7 +43,7 @@ func (handler *BuildHandler) GetBuildsHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	span.SetAttributes(attribute.Int("app_builds_count", len(getBuildsResponse.Builds)))
+	span.SetAttributes(attribute.Int("builds.count", len(getBuildsResponse.Builds)))
 
 	if getBuildsResponse.Builds == nil {
 		messaging.WriteSuccess(w, "Builds Fetched Successfully", []*build_service_pb.Build{})

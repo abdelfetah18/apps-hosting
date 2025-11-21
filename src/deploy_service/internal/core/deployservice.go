@@ -34,9 +34,7 @@ func (server *GRPCDeployServiceServer) Health(ctx context.Context, _ *deploy_ser
 func (server *GRPCDeployServiceServer) GetDeployments(ctx context.Context, getDeploymentsRequest *deploy_service_pb.GetDeploymentsRequest) (*deploy_service_pb.GetDeploymentsResponse, error) {
 	span := trace.SpanFromContext(ctx)
 
-	span.SetAttributes(
-		attribute.String("app_id", getDeploymentsRequest.AppId),
-	)
+	span.SetAttributes(attribute.String("app.id", getDeploymentsRequest.AppId))
 
 	deployments, err := server.deploymentRepository.GetDeployments(ctx, getDeploymentsRequest.AppId)
 	if err != nil {
@@ -48,8 +46,8 @@ func (server *GRPCDeployServiceServer) GetDeployments(ctx context.Context, getDe
 	deployments_ids := ExtractDeploymentIDs(deployments)
 
 	span.SetAttributes(
-		attribute.StringSlice("deployments_ids", deployments_ids),
-		attribute.Int("deployments_count", len(deployments)),
+		attribute.StringSlice("deployments.ids", deployments_ids),
+		attribute.Int("deployments.count", len(deployments)),
 	)
 
 	return &deploy_service_pb.GetDeploymentsResponse{

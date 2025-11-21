@@ -162,10 +162,7 @@ func (h *EventsHandlers) HandleAppDeletedEvent(ctx context.Context, message *eve
 		return
 	}
 
-	span.SetAttributes(
-		attribute.String("app_id", data.AppId),
-		attribute.String("app_name", data.AppName),
-	)
+	span.SetAttributes(attribute.String("app.id", data.AppId))
 
 	h.logger.LogInfoF("Deleting all builds entities related to app '%s'", data.AppId)
 	err := h.buildRepository.DeleteBuilds(ctx, data.AppId)

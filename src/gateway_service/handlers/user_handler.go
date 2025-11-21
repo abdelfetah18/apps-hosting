@@ -39,7 +39,7 @@ func (handler *UserHandler) AuthHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	span.SetAttributes(attribute.String("user_id", authResponse.User.Id))
+	span.SetAttributes(attribute.String("user.id", authResponse.User.Id))
 	messaging.WriteSuccess(w, "Authentication passed", authResponse.User)
 }
 
@@ -61,7 +61,7 @@ func (handler *UserHandler) SignUpHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	span.SetAttributes(attribute.String("user_id", signUpResponse.User.Id))
+	span.SetAttributes(attribute.String("user.id", signUpResponse.User.Id))
 	messaging.WriteSuccess(w, "SignUp Successfully", signUpResponse.User)
 }
 
@@ -84,7 +84,7 @@ func (handler *UserHandler) SignInHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	span.SetAttributes(attribute.String("user_id", signInResponse.UserSession.User.Id))
+	span.SetAttributes(attribute.String("user.id", signInResponse.UserSession.User.Id))
 	messaging.WriteSuccess(w, "SignIn Successfully", signInResponse.UserSession)
 }
 
@@ -105,7 +105,7 @@ func (handler *UserHandler) AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		span.SetAttributes(attribute.String("user_id", authResponse.User.Id))
+		span.SetAttributes(attribute.String("user.id", authResponse.User.Id))
 
 		q := r.URL.Query()
 		q.Set("user_id", authResponse.User.Id)
