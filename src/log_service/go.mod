@@ -7,6 +7,7 @@ toolchain go1.24.4
 require google.golang.org/grpc v1.75.0
 
 require (
+	apps-hosting.com/logging v0.0.1-20251121190606-2342b49d815c // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
@@ -42,7 +43,6 @@ require (
 )
 
 require (
-	apps-hosting.com/logging v1.0.0
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/emicklei/go-restful/v3 v3.12.2 // indirect
 	github.com/fxamacker/cbor/v2 v2.9.0 // indirect

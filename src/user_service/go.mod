@@ -5,6 +5,7 @@ go 1.23.5
 require github.com/uptrace/bun v1.2.15
 
 require (
+	apps-hosting.com/logging v0.0.1-20251121190606-2342b49d815c // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
@@ -51,7 +52,6 @@ require (
 )
 
 require (
-	apps-hosting.com/logging v1.0.0
 	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/google/go-github/v74 v74.0.0

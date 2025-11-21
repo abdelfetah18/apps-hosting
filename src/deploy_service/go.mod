@@ -5,7 +5,6 @@ go 1.24.0
 toolchain go1.24.3
 
 require (
-	apps-hosting.com/messaging v0.0.1
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.63.0
 	go.opentelemetry.io/otel v1.38.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.38.0
@@ -18,6 +17,8 @@ require (
 )
 
 require (
+	apps-hosting.com/logging v0.0.1-20251121190606-2342b49d815c // indirect
+	apps-hosting.com/messaging v0.0.1-20251121190606-2342b49d815c // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/emicklei/go-restful/v3 v3.12.2 // indirect
@@ -67,7 +68,6 @@ require (
 )
 
 require (
-	apps-hosting.com/logging v1.0.0
 	github.com/fxamacker/cbor/v2 v2.9.0 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect

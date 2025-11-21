@@ -5,7 +5,6 @@ go 1.24.0
 toolchain go1.24.3
 
 require (
-	apps-hosting.com/messaging v0.0.1
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.63.0
 	k8s.io/api v0.34.1
 	k8s.io/apimachinery v0.34.1
@@ -13,6 +12,8 @@ require (
 )
 
 require (
+	apps-hosting.com/logging v0.0.1-20251121190606-2342b49d815c // indirect
+	apps-hosting.com/messaging v0.0.1-20251121190606-2342b49d815c // indirect
 	dario.cat/mergo v1.0.0 // indirect
 	github.com/ProtonMail/go-crypto v1.1.6 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
@@ -84,7 +85,6 @@ require (
 )
 
 require (
-	apps-hosting.com/logging v1.0.0
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/go-git/go-git/v5 v5.16.0
 	github.com/go-logr/logr v1.4.3 // indirect

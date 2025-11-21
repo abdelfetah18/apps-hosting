@@ -5,6 +5,8 @@ go 1.23.5
 require github.com/jackc/pgx/v5 v5.7.6
 
 require (
+	apps-hosting.com/logging v0.0.1-20251121190606-2342b49d815c // indirect
+	apps-hosting.com/messaging v0.0.1-20251121190606-2342b49d815c // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
@@ -52,8 +54,6 @@ require (
 )
 
 require (
-	apps-hosting.com/logging v1.0.0
-	apps-hosting.com/messaging v0.0.1
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/stretchr/testify v1.11.1
