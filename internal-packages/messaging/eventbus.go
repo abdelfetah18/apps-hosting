@@ -17,11 +17,12 @@ import (
 type EventHandler func(ctx context.Context, message *events_pb.Message)
 
 type EventBus struct {
-	conn      *nats.Conn
-	jetStream nats.JetStreamContext
+	serviceName string
+	conn        *nats.Conn
+	jetStream   nats.JetStreamContext
 }
 
-func NewEventBus(natsURL string, streamName events_pb.StreamName, subjects []events_pb.EventName) (*EventBus, error) {
+func NewEventBus(serviceName string, natsURL string, streamName events_pb.StreamName, subjects []events_pb.EventName) (*EventBus, error) {
 	natsConnection, err := nats.Connect(natsURL)
 	if err != nil {
 		return nil, err
@@ -45,10 +46,10 @@ func NewEventBus(natsURL string, streamName events_pb.StreamName, subjects []eve
 		return nil, err
 	}
 
-	return &EventBus{conn: natsConnection, jetStream: jetStream}, nil
+	return &EventBus{serviceName: serviceName, conn: natsConnection, jetStream: jetStream}, nil
 }
 
-func (e *EventBus) Subscribe(serviceName string, eventName events_pb.EventName, handler EventHandler) error {
+func (e *EventBus) Subscribe(eventName events_pb.EventName, handler EventHandler) error {
 	_, err := e.jetStream.Subscribe(getEventName(eventName), func(msg *nats.Msg) {
 		//	1. validate the message
 		message := events_pb.Message{}
@@ -74,7 +75,7 @@ func (e *EventBus) Subscribe(serviceName string, eventName events_pb.EventName, 
 		//	3. call the handler
 		handler(ctx, &message)
 	},
-		nats.Durable(serviceName),
+		nats.Durable(fmt.Sprintf("%s-%s", e.serviceName, getEventName(eventName))),
 		nats.AckWait(5*time.Minute), // FIXME: build-service may take longer.
 		nats.DeliverAll())
 
