@@ -50,6 +50,7 @@ func setupTracer(ctx context.Context) func(context.Context) error {
 }
 
 func main() {
+	serviceName := os.Getenv("SERVICE_NAME")
 	ctx := context.Background()
 	shutdown := setupTracer(ctx)
 	defer shutdown(ctx)
@@ -66,6 +67,7 @@ func main() {
 
 	natsURL := os.Getenv("NATS_URL")
 	eventBus, err := messaging.NewEventBus(
+		serviceName,
 		natsURL,
 		events_pb.StreamName_PROJECT_STREAM,
 		[]events_pb.EventName{

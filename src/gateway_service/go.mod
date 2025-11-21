@@ -6,7 +6,7 @@ require github.com/gorilla/mux v1.8.1
 
 require (
 	apps-hosting.com/logging v0.0.1-20251121190606-2342b49d815c // indirect
-	apps-hosting.com/messaging v0.0.1-20251121190606-2342b49d815c // indirect
+	apps-hosting.com/messaging v0.0.1-20251121205411-fef380254144 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.8 // indirect

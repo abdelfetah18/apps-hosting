@@ -18,7 +18,7 @@ require (
 
 require (
 	apps-hosting.com/logging v0.0.1-20251121190606-2342b49d815c // indirect
-	apps-hosting.com/messaging v0.0.1-20251121190606-2342b49d815c // indirect
+	apps-hosting.com/messaging v0.0.1-20251121205411-fef380254144 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/emicklei/go-restful/v3 v3.12.2 // indirect

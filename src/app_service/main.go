@@ -7,7 +7,6 @@ import (
 	"app/proto/app_service_pb"
 	"app/repositories"
 	"context"
-	"fmt"
 	"net"
 	"os"
 
@@ -86,6 +85,7 @@ func main() {
 
 	natsURL := os.Getenv("NATS_URL")
 	eventBus, err := messaging.NewEventBus(
+		serviceName,
 		natsURL,
 		events_pb.StreamName_APP_STREAM,
 		[]events_pb.EventName{
@@ -106,7 +106,7 @@ func main() {
 		logger,
 	)
 
-	eventBus.Subscribe(fmt.Sprintf("%s-%s", serviceName, "project-deleted"), events_pb.EventName_PROJECT_DELETED, eventsHandlers.HandleProjectDeletedEvent)
+	eventBus.Subscribe(events_pb.EventName_PROJECT_DELETED, eventsHandlers.HandleProjectDeletedEvent)
 
 	grpcServer := grpc.NewServer(grpc.StatsHandler(otelgrpc.NewServerHandler()))
 	grpcAppServiceServer := grpc_server.NewGRPCAppServiceServer(appRepository, environmentVariablesRepository, gitRepositoryRepository, *eventBus, logger)

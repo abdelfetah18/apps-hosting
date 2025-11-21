@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"net"
 	"os"
 
@@ -56,6 +55,7 @@ func main() {
 
 	natsURL := os.Getenv("NATS_URL")
 	eventBus, err := messaging.NewEventBus(
+		serviceName,
 		natsURL,
 		events_pb.StreamName_DEPLOY_STREAM,
 		[]events_pb.EventName{
@@ -69,8 +69,8 @@ func main() {
 
 	eventsHandlers := eventshandlers.NewEventsHandlers(*eventBus, appServiceClient, deploymentRepository, logger)
 
-	eventBus.Subscribe(fmt.Sprintf("%s-%s", serviceName, "build-completed"), events_pb.EventName_BUILD_COMPLETED, eventsHandlers.HandleBuildCompletedEvent)
-	eventBus.Subscribe(fmt.Sprintf("%s-%s", serviceName, "app-deleted"), events_pb.EventName_APP_DELETED, eventsHandlers.HandleAppDeletedEvent)
+	eventBus.Subscribe(events_pb.EventName_BUILD_COMPLETED, eventsHandlers.HandleBuildCompletedEvent)
+	eventBus.Subscribe(events_pb.EventName_APP_DELETED, eventsHandlers.HandleAppDeletedEvent)
 
 	grpcServer := grpc.NewServer(grpc.StatsHandler(otelgrpc.NewServerHandler()))
 	grpcDeployServiceServer := core.NewGRPCDeployServiceServer(deploymentRepository)

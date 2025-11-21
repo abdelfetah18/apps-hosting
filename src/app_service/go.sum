@@ -2,6 +2,8 @@ apps-hosting.com/logging v0.0.1-20251121190606-2342b49d815c h1:8Tu/DgKktk2V3ssLQ
 apps-hosting.com/logging v0.0.1-20251121190606-2342b49d815c/go.mod h1:kTvy5UfzRgH0S/6ecNhgn2EXqu+aE50SVlfb/KHp3wI=
 apps-hosting.com/messaging v0.0.1-20251121190606-2342b49d815c h1:l92E1GDl/KVZDFeHo0bR4Uz3YbRpM3Il/7kVOioTYRU=
 apps-hosting.com/messaging v0.0.1-20251121190606-2342b49d815c/go.mod h1:3/ZaHZ4YJkWSzP/X7wWWpPp73ouLTOkZehKdb+gedVM=
+apps-hosting.com/messaging v0.0.1-20251121205411-fef380254144 h1:JJUgqf/VP+OdFJPqKQpYZQz7H2M1CikeaZHSSBuboJg=
+apps-hosting.com/messaging v0.0.1-20251121205411-fef380254144/go.mod h1:3/ZaHZ4YJkWSzP/X7wWWpPp73ouLTOkZehKdb+gedVM=
 github.com/cenkalti/backoff/v5 v5.0.3 h1:ZN+IMa753KfX5hd8vVaMixjnqRZ3y8CuJKRKj1xcsSM=
 github.com/cenkalti/backoff/v5 v5.0.3/go.mod h1:rkhZdG3JZukswDf7f0cwqPNk4K0sa+F97BxZthm/crw=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

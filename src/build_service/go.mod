@@ -13,7 +13,7 @@ require (
 
 require (
 	apps-hosting.com/logging v0.0.1-20251121190606-2342b49d815c // indirect
-	apps-hosting.com/messaging v0.0.1-20251121190606-2342b49d815c // indirect
+	apps-hosting.com/messaging v0.0.1-20251121205411-fef380254144 // indirect
 	dario.cat/mergo v1.0.0 // indirect
 	github.com/ProtonMail/go-crypto v1.1.6 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
