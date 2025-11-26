@@ -3,8 +3,8 @@ resources:
     memory: 512Mi
 replicas: 1
 persistence:
-  enabled: false
-  size: 2Gi
+  enabled: true
+  size: 10Gi
 mode: standalone 
 rootUser: minioadmin
 rootPassword: minioadmin
