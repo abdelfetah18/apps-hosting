@@ -3,6 +3,8 @@ module app
 go 1.23.5
 
 require (
+	apps-hosting.com/logging v0.0.1-20251121190606-2342b49d815c
+	apps-hosting.com/messaging v0.0.1-20251121205411-fef380254144
 	github.com/google/uuid v1.6.0
 	github.com/uptrace/bun v1.2.15
 	github.com/uptrace/bun/extra/bunotel v1.2.15
@@ -15,8 +17,6 @@ require (
 )
 
 require (
-	apps-hosting.com/logging v0.0.1-20251121190606-2342b49d815c // indirect
-	apps-hosting.com/messaging v0.0.1-20251121205411-fef380254144 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
