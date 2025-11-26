@@ -6,7 +6,7 @@ toolchain go1.24.3
 
 require (
 	apps-hosting.com/logging v0.0.1-20251121190606-2342b49d815c
-	apps-hosting.com/messaging v0.0.1-20251121205411-fef380254144
+	apps-hosting.com/messaging v0.0.1-20251126184644-8681987a9495
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.63.0
 	go.opentelemetry.io/otel v1.38.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.38.0

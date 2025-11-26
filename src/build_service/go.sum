@@ -1,7 +1,7 @@
 apps-hosting.com/logging v0.0.1-20251121190606-2342b49d815c h1:8Tu/DgKktk2V3ssLQ7mKRuCDqeBwWNL1RbyIlQJqjPQ=
 apps-hosting.com/logging v0.0.1-20251121190606-2342b49d815c/go.mod h1:kTvy5UfzRgH0S/6ecNhgn2EXqu+aE50SVlfb/KHp3wI=
-apps-hosting.com/messaging v0.0.1-20251121205411-fef380254144 h1:8gJp1SWGtUyW7UlTNimhbbiLLR+kz8MocpDuzFRSFnI=
-apps-hosting.com/messaging v0.0.1-20251121205411-fef380254144/go.mod h1:3/ZaHZ4YJkWSzP/X7wWWpPp73ouLTOkZehKdb+gedVM=
+apps-hosting.com/messaging v0.0.1-20251126184644-8681987a9495 h1:XDaKmGFYT7BGGkumHWXm9mq68YJSbSCg0KxalabRvPs=
+apps-hosting.com/messaging v0.0.1-20251126184644-8681987a9495/go.mod h1:3/ZaHZ4YJkWSzP/X7wWWpPp73ouLTOkZehKdb+gedVM=
 dario.cat/mergo v1.0.0 h1:AGCNq9Evsj31mOgNPcLyXc+4PNABt905YmuqPYYpBWk=
 dario.cat/mergo v1.0.0/go.mod h1:uNxQE+84aUszobStD9th8a29P2fMDhsBdgRYvZOxGmk=
 github.com/Microsoft/go-winio v0.5.2/go.mod h1:WpS1mjBmmwHBEWmogvA2mj8546UReBk4v8QkMxJ6pZY=
