@@ -59,12 +59,16 @@ func (k *KanikoExecutor) Execute(srcContext, destination, appId, appName string)
 }
 
 func (k *KanikoExecutor) DeleteJobs(appName string) error {
+	policy := metav1.DeletePropagationForeground
+
 	return k.kubernetesClientset.
 		BatchV1().
 		Jobs("default").
 		DeleteCollection(
 			context.Background(),
-			metav1.DeleteOptions{},
+			metav1.DeleteOptions{
+				PropagationPolicy: &policy,
+			},
 			metav1.ListOptions{
 				LabelSelector: "app_name=" + ToK8sLabelValue(appName),
 			},
