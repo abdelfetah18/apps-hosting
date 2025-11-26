@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"apps-hosting.com/messaging/proto/events_pb"
@@ -75,7 +76,7 @@ func (e *EventBus) Subscribe(eventName events_pb.EventName, handler EventHandler
 		//	3. call the handler
 		handler(ctx, &message)
 	},
-		nats.Durable(fmt.Sprintf("%s-%s", e.serviceName, getEventName(eventName))),
+		nats.Durable(fmt.Sprintf("%s-%s", e.serviceName, strings.ReplaceAll(getEventName(eventName), ".", "-"))),
 		nats.AckWait(5*time.Minute), // FIXME: build-service may take longer.
 		nats.DeliverAll())
 
