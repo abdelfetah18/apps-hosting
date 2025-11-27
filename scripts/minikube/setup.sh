@@ -27,7 +27,7 @@ check_minikube_status() {
 # 1. Run minikube
 if ! check_minikube_status; then
     # Start minikube
-    minikube start --insecure-registry="192.168.49.2:5000,docker-registry:5000"
+    minikube start --embed-certs --insecure-registry="192.168.49.2:5000,docker-registry:5000"
 
 # 2. Install ingress & registry
     # Enable ingress
