@@ -3,7 +3,7 @@ module user
 go 1.23.5
 
 require (
-	apps-hosting.com/logging v0.0.1-20251121190606-2342b49d815c
+	apps-hosting.com/logging v0.0.1-20251127192047-9a4b3aa8018d
 	github.com/uptrace/bun v1.2.15
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.63.0
 	go.opentelemetry.io/otel v1.38.0

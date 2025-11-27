@@ -3,8 +3,8 @@ module app
 go 1.23.5
 
 require (
-	apps-hosting.com/logging v0.0.1-20251121190606-2342b49d815c
-	apps-hosting.com/messaging v0.0.1-20251126184644-8681987a9495
+	apps-hosting.com/logging v0.0.1-20251127192047-9a4b3aa8018d
+	apps-hosting.com/messaging v0.0.1-20251127192047-9a4b3aa8018d
 	github.com/google/uuid v1.6.0
 	github.com/uptrace/bun v1.2.15
 	github.com/uptrace/bun/extra/bunotel v1.2.15
