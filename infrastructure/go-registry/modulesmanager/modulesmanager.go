@@ -38,7 +38,7 @@ func (m *ModulesManager) UploadModule(moduleVersion string, modulePath string) e
 	// Check If a version already exists
 	hasFile := m.storage.HasFile(filepath.Join(modPath, fmt.Sprintf("%s.info", moduleVersion)))
 	if hasFile {
-		return fmt.Errorf("module with that version already exist.")
+		return fmt.Errorf("module with that version already exist")
 	}
 
 	// Create unique output directory
@@ -73,6 +73,16 @@ func (m *ModulesManager) UploadModule(moduleVersion string, modulePath string) e
 	}
 
 	// --- 3. Create $version.zip file ---
+	outputZipDir, err := os.MkdirTemp("", "gomod_upload_*_zip")
+	if err != nil {
+		return fmt.Errorf("failed to create temp output zip directory: %w", err)
+	}
+
+	err = copyDirExcluding(modulePath, outputZipDir, []string{".last_version"})
+	if err != nil {
+		return fmt.Errorf("failed to copy modules files to zip directory: %w", err)
+	}
+
 	zipFile := filepath.Join(outputDir, fmt.Sprintf("%s.zip", moduleVersion))
 	outFile, err := os.Create(zipFile)
 	if err != nil {
@@ -85,7 +95,7 @@ func (m *ModulesManager) UploadModule(moduleVersion string, modulePath string) e
 		Version: moduleVersion,
 	}
 
-	if err := zip.CreateFromDir(outFile, modVer, modulePath); err != nil {
+	if err := zip.CreateFromDir(outFile, modVer, outputZipDir); err != nil {
 		return fmt.Errorf("failed to create module zip: %w", err)
 	}
 
@@ -150,4 +160,48 @@ func readModulePath(modFile string) (string, error) {
 	}
 
 	return "", fmt.Errorf("no module path found in go.mod")
+}
+
+// copyDirExcluding copies a directory tree from src to dst while skipping any path
+// whose relative path matches one of the exclude strings.
+func copyDirExcluding(src, dst string, excludes []string) error {
+	isExcluded := func(rel string) bool {
+		for _, ex := range excludes {
+			if rel == ex || strings.HasPrefix(rel, ex+"/") {
+				return true
+			}
+		}
+		return false
+	}
+
+	return filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		rel, err := filepath.Rel(src, path)
+		if err != nil {
+			return err
+		}
+		rel = filepath.ToSlash(rel)
+
+		if isExcluded(rel) {
+			if info.IsDir() {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+
+		dstPath := filepath.Join(dst, rel)
+
+		if info.IsDir() {
+			return os.MkdirAll(dstPath, 0755)
+		}
+
+		data, err := os.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		return os.WriteFile(dstPath, data, info.Mode())
+	})
 }
