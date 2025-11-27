@@ -1,0 +1,12 @@
+persistence:
+  enabled: true
+  size: 5Gi
+ingress:
+  enabled: true
+  path: /
+  hosts:
+    - docker-registry.apps-hosting.com
+  tls:
+    - hosts:
+        - docker-registry.apps-hosting.com
+      secretName: tls-wildcard.apps-hosting.com

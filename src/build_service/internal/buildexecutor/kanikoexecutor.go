@@ -104,10 +104,9 @@ func NewKanikoJob(srcContext, destination, appId, appName string) batchv1.Job {
 							Args: []string{
 								fmt.Sprintf("--context=%s", srcContext),
 								fmt.Sprintf("--destination=%s", destination),
-								// "--context=s3://apps-source/" + repoFile,
-								// "--destination=" + imageName,
 								"--build-arg=START_CMD=start",
 								"--build-arg=BUILD_CMD=build",
+								"--insecure",
 							},
 							Env: []corev1.EnvVar{
 								{Name: "AWS_ACCESS_KEY_ID", Value: "minioadmin"},

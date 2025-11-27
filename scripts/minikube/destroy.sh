@@ -44,7 +44,10 @@ helm uninstall my-grafana
 helm uninstall tempo
 kubectl delete -f ./infrastructure/grafana/ingress.yaml
 
-# 6. Stop minikube
+# 6. Delete docker-registry
+helm uninstall docker-registry
+
+# 7. Stop minikube
 minikube stop
 
 echo "[*] Done."

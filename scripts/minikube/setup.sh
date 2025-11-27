@@ -27,7 +27,7 @@ check_minikube_status() {
 # 1. Run minikube
 if ! check_minikube_status; then
     # Start minikube
-    minikube start --insecure-registry="192.168.49.2:5000"
+    minikube start --insecure-registry="192.168.49.2:5000,docker-registry:5000"
 
 # 2. Install ingress & registry
     # Enable ingress
@@ -66,3 +66,6 @@ helm install my-grafana grafana/grafana
 helm install tempo grafana/tempo
 kubectl apply -f ./infrastructure/grafana/ingress.yaml
 
+# Deploy docker registry
+helm repo add twuni https://twuni.github.io/docker-registry.helm --force-update
+helm install docker-registry -f infrastructure/docker-registry/values.yaml twuni/docker-registry
