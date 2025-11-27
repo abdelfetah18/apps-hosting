@@ -12,6 +12,8 @@ import "./app.css";
 import useToast from "./hooks/useToast";
 import Toast from "./components/toast";
 import ToastContext from "./contexts/ToastContext";
+import { MouseManagerProvider } from "./components/mouse_manager";
+import { FocusManagerProvider } from "./components/focus_manager";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -38,10 +40,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <ToastContext.Provider value={toastManager}>
-          {children}
-          <Toast />
-        </ToastContext.Provider>
+        <MouseManagerProvider>
+          <FocusManagerProvider>
+            <ToastContext.Provider value={toastManager}>
+              {children}
+              <Toast />
+            </ToastContext.Provider>
+          </FocusManagerProvider>
+        </MouseManagerProvider>
         <ScrollRestoration />
         <Scripts />
       </body>

@@ -91,7 +91,7 @@ export default function App({ params }: Route.ComponentProps) {
                                                         <div className="text-sm text-gray-900">Build {activity.status} <a className="underline cursor-pointer hover:text-purple-800">{activity.commit_hash}</a></div>
                                                     )
                                                 }
-                                                <div className="flex-grow"></div>
+                                                <div className="grow"></div>
                                                 <div className="text-xs text-gray-600">{moment(activity.created_at).fromNow()}</div>
                                             </div>
                                         );
