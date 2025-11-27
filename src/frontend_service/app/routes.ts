@@ -6,6 +6,7 @@ export default [
     layout("components/wrappers/auth_wrapper.tsx", [
         layout("components/wrappers/header_wrapper.tsx", [
             index("routes/home.tsx"),
+            route("/user/settings", "routes/user_settings.tsx"),
 
             route("/projects/create", "routes/create_project.tsx"),
             route("/projects/:project_id/apps/create", "routes/create_app.tsx"),

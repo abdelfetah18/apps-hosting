@@ -9,7 +9,8 @@ export default function HeaderWrapper({ params }: Route.ComponentProps) {
     const location = useLocation();
     const outletData: UserSession = useOutletContext();
     const { activeRegion, setActiveRegion } = useFocusManager();
-    const isOpen = activeRegion == "test";
+    const modelId = "user-profile";
+    const isOpen = activeRegion == modelId;
 
     return (
         <div className="w-full h-screen overflow-auto flex flex-col items-center">
@@ -23,20 +24,20 @@ export default function HeaderWrapper({ params }: Route.ComponentProps) {
                     </div>
                 </div>
                 <div className="w-8 h-8 relative">
-                    <img src={DEFAULT_PROFILE_PICTURE} className="w-full h-full object-cover rounded-full cursor-pointer" onClick={() => { isOpen ? setActiveRegion("") : setActiveRegion("test") }} data-focus-region />
-                    <FocusRegion id="test" className="absolute top-full my-2 right-0 border border-gray-300 shadow-2xl bg-white flex flex-col px-8 py-4">
-                        <div className="w-full flex items-center gap-2">
+                    <img src={DEFAULT_PROFILE_PICTURE} className="w-full h-full object-cover rounded-full cursor-pointer" onClick={() => { isOpen ? setActiveRegion("") : setActiveRegion(modelId) }} data-focus-region />
+                    <FocusRegion id={modelId} className="absolute top-full my-2 right-0 border border-gray-300 shadow-2xl bg-white flex flex-col py-4">
+                        <div className="w-full flex items-center gap-2 px-8">
                             <div className="h-10 w-10 rounded-full bg-gray-300"></div>
                             <div>
                                 <div className="">{outletData.user.username}</div>
                                 <div className="text-xs">{outletData.user.email}</div>
                             </div>
                         </div>
-                        <div className="w-full flex items-center gap-2 text-sm border-b border-gray-300 py-4">
+                        <Link to={"/user/settings"} className="w-full flex items-center gap-2 text-sm border-b border-gray-300 py-4 px-8 cursor-pointer hover:underline">
                             <Iconify icon="quill:cog-alt" size={20} />
                             <div className="font-medium">Account setting</div>
-                        </div>
-                        <div className="w-full flex items-center gap-2 text-sm py-4">
+                        </Link>
+                        <div className="w-full flex items-center gap-2 text-sm py-4 px-8 cursor-pointer hover:underline ">
                             <Iconify icon="material-symbols:logout-rounded" size={20} />
                             <div className="font-medium">Sign Out</div>
                         </div>
