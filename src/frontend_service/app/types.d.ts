@@ -147,3 +147,5 @@ interface GithubRepository {
     url: string;
     visibility: string;
 }
+
+type GetUserProjectsResponse = Array<{ id: string; name: string; apps_count: number; created_at: string; }>; 

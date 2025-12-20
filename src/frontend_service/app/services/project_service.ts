@@ -5,7 +5,7 @@ import { getAxiosInstance } from "./api_service";
 const axios = getAxiosInstance();
 axios.defaults.baseURL = "https://api.apps-hosting.com";
 
-export async function listProjects(): Promise<Result<string, Project[]>> {
+export async function getUserProjects(): Promise<Result<string, GetUserProjectsResponse>> {
     try {
         const response = await axios.get("/projects");
         if (response.data.status == "error") {

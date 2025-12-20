@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"gateway/proto/app_service_pb"
 	"gateway/proto/project_service_pb"
 	"gateway/utils"
 	"net/http"
@@ -19,12 +20,18 @@ import (
 
 type ProjectHandler struct {
 	ProjectServiceClient project_service_pb.ProjectServiceClient
+	AppServiceClient     app_service_pb.AppServiceClient
 	Logger               logging.ServiceLogger
 }
 
-func NewProjectHandler(projectServiceClient project_service_pb.ProjectServiceClient, logger logging.ServiceLogger) ProjectHandler {
+func NewProjectHandler(
+	projectServiceClient project_service_pb.ProjectServiceClient,
+	appServiceClient app_service_pb.AppServiceClient,
+	logger logging.ServiceLogger,
+) ProjectHandler {
 	return ProjectHandler{
 		ProjectServiceClient: projectServiceClient,
+		AppServiceClient:     appServiceClient,
 		Logger:               logger,
 	}
 }
@@ -151,12 +158,12 @@ func (handler *ProjectHandler) GetUserProjectByIdHandler(w http.ResponseWriter, 
 }
 
 func (handler *ProjectHandler) GetUserProjectsHandler(w http.ResponseWriter, r *http.Request) {
+	response := GetUserProjectsResponse{}
 	span := trace.SpanFromContext(r.Context())
 
 	userId := r.URL.Query().Get("user_id")
 	span.SetAttributes(attribute.String("user.id", userId))
 
-	handler.Logger.LogInfoF("userId=%s", userId)
 	getUserProjectsResponse, err := handler.ProjectServiceClient.GetUserProjects(r.Context(), &project_service_pb.GetUserProjectsRequest{UserId: userId})
 	if err != nil {
 		status, _ := status.FromError(err)
@@ -165,13 +172,30 @@ func (handler *ProjectHandler) GetUserProjectsHandler(w http.ResponseWriter, r *
 		return
 	}
 	span.SetAttributes(attribute.Int("projects.count", len(getUserProjectsResponse.Projects)))
-
 	if getUserProjectsResponse.Projects == nil {
-		messaging.WriteSuccess(w, "Projects Fetched Successfully", []*project_service_pb.Project{})
+		messaging.WriteSuccess(w, "Projects Fetched Successfully", response)
 		return
 	}
 
-	messaging.WriteSuccess(w, "Projects Fetched Successfully", getUserProjectsResponse.Projects)
+	projectsIds := []string{}
+	for _, project := range getUserProjectsResponse.Projects {
+		projectsIds = append(projectsIds, project.Id)
+	}
+	batchGetAppsCountResponse, err := handler.AppServiceClient.BatchGetAppsCount(
+		r.Context(),
+		&app_service_pb.BatchGetAppsCountRequest{ProjectIds: projectsIds},
+	)
+
+	for _, project := range getUserProjectsResponse.Projects {
+		response = append(response, GetUserProjectsResponseItem{
+			ID:        project.Id,
+			Name:      project.Name,
+			AppsCount: batchGetAppsCountResponse.ProjectAppsCount[project.Id],
+			CreatedAt: project.CreatedAt,
+		})
+	}
+
+	messaging.WriteSuccess(w, "user projects fetched successfully", response)
 }
 
 func (handler *ProjectHandler) UpdateProjectHandler(w http.ResponseWriter, r *http.Request) {

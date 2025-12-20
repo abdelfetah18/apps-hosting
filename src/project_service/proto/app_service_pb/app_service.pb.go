@@ -1185,6 +1185,94 @@ func (*DeleteEnvironmentVariablesResponse) Descriptor() ([]byte, []int) {
 	return file_src_protos_app_service_proto_rawDescGZIP(), []int{20}
 }
 
+type BatchGetAppsCountRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ProjectIds    []string               `protobuf:"bytes,1,rep,name=project_ids,json=projectIds,proto3" json:"project_ids,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BatchGetAppsCountRequest) Reset() {
+	*x = BatchGetAppsCountRequest{}
+	mi := &file_src_protos_app_service_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchGetAppsCountRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchGetAppsCountRequest) ProtoMessage() {}
+
+func (x *BatchGetAppsCountRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_src_protos_app_service_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchGetAppsCountRequest.ProtoReflect.Descriptor instead.
+func (*BatchGetAppsCountRequest) Descriptor() ([]byte, []int) {
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *BatchGetAppsCountRequest) GetProjectIds() []string {
+	if x != nil {
+		return x.ProjectIds
+	}
+	return nil
+}
+
+type BatchGetAppsCountResponse struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	ProjectAppsCount map[string]int32       `protobuf:"bytes,1,rep,name=project_apps_count,json=projectAppsCount,proto3" json:"project_apps_count,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *BatchGetAppsCountResponse) Reset() {
+	*x = BatchGetAppsCountResponse{}
+	mi := &file_src_protos_app_service_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchGetAppsCountResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchGetAppsCountResponse) ProtoMessage() {}
+
+func (x *BatchGetAppsCountResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_src_protos_app_service_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchGetAppsCountResponse.ProtoReflect.Descriptor instead.
+func (*BatchGetAppsCountResponse) Descriptor() ([]byte, []int) {
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *BatchGetAppsCountResponse) GetProjectAppsCount() map[string]int32 {
+	if x != nil {
+		return x.ProjectAppsCount
+	}
+	return nil
+}
+
 type HealthRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -1193,7 +1281,7 @@ type HealthRequest struct {
 
 func (x *HealthRequest) Reset() {
 	*x = HealthRequest{}
-	mi := &file_src_protos_app_service_proto_msgTypes[21]
+	mi := &file_src_protos_app_service_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1205,7 +1293,7 @@ func (x *HealthRequest) String() string {
 func (*HealthRequest) ProtoMessage() {}
 
 func (x *HealthRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_app_service_proto_msgTypes[21]
+	mi := &file_src_protos_app_service_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1218,7 +1306,7 @@ func (x *HealthRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthRequest.ProtoReflect.Descriptor instead.
 func (*HealthRequest) Descriptor() ([]byte, []int) {
-	return file_src_protos_app_service_proto_rawDescGZIP(), []int{21}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{23}
 }
 
 type HealthResponse struct {
@@ -1231,7 +1319,7 @@ type HealthResponse struct {
 
 func (x *HealthResponse) Reset() {
 	*x = HealthResponse{}
-	mi := &file_src_protos_app_service_proto_msgTypes[22]
+	mi := &file_src_protos_app_service_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1243,7 +1331,7 @@ func (x *HealthResponse) String() string {
 func (*HealthResponse) ProtoMessage() {}
 
 func (x *HealthResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_app_service_proto_msgTypes[22]
+	mi := &file_src_protos_app_service_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1256,7 +1344,7 @@ func (x *HealthResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthResponse.ProtoReflect.Descriptor instead.
 func (*HealthResponse) Descriptor() ([]byte, []int) {
-	return file_src_protos_app_service_proto_rawDescGZIP(), []int{22}
+	return file_src_protos_app_service_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *HealthResponse) GetStatus() string {
@@ -1368,11 +1456,19 @@ const file_src_protos_app_service_proto_rawDesc = "" +
 	"\x14environment_variable\x18\x01 \x01(\v2!.app_service.EnvironmentVariablesR\x13environmentVariable\":\n" +
 	"!DeleteEnvironmentVariablesRequest\x12\x15\n" +
 	"\x06app_id\x18\x01 \x01(\tR\x05appId\"$\n" +
-	"\"DeleteEnvironmentVariablesResponse\"\x0f\n" +
+	"\"DeleteEnvironmentVariablesResponse\";\n" +
+	"\x18BatchGetAppsCountRequest\x12\x1f\n" +
+	"\vproject_ids\x18\x01 \x03(\tR\n" +
+	"projectIds\"\xcc\x01\n" +
+	"\x19BatchGetAppsCountResponse\x12j\n" +
+	"\x12project_apps_count\x18\x01 \x03(\v2<.app_service.BatchGetAppsCountResponse.ProjectAppsCountEntryR\x10projectAppsCount\x1aC\n" +
+	"\x15ProjectAppsCountEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x05R\x05value:\x028\x01\"\x0f\n" +
 	"\rHealthRequest\"B\n" +
 	"\x0eHealthResponse\x12\x16\n" +
 	"\x06status\x18\x01 \x01(\tR\x06status\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage2\xaf\a\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage2\x93\b\n" +
 	"\n" +
 	"AppService\x12A\n" +
 	"\x06Health\x12\x1a.app_service.HealthRequest\x1a\x1b.app_service.HealthResponse\x12J\n" +
@@ -1384,7 +1480,8 @@ const file_src_protos_app_service_proto_rawDesc = "" +
 	"\x17GetEnvironmentVariables\x12+.app_service.GetEnvironmentVariablesRequest\x1a,.app_service.GetEnvironmentVariablesResponse\x12}\n" +
 	"\x1aCreateEnvironmentVariables\x12..app_service.CreateEnvironmentVariablesRequest\x1a/.app_service.CreateEnvironmentVariablesResponse\x12}\n" +
 	"\x1aUpdateEnvironmentVariables\x12..app_service.UpdateEnvironmentVariablesRequest\x1a/.app_service.UpdateEnvironmentVariablesResponse\x12}\n" +
-	"\x1aDeleteEnvironmentVariables\x12..app_service.DeleteEnvironmentVariablesRequest\x1a/.app_service.DeleteEnvironmentVariablesResponseB%Z#proto/app_service_pb;app_service_pbb\x06proto3"
+	"\x1aDeleteEnvironmentVariables\x12..app_service.DeleteEnvironmentVariablesRequest\x1a/.app_service.DeleteEnvironmentVariablesResponse\x12b\n" +
+	"\x11BatchGetAppsCount\x12%.app_service.BatchGetAppsCountRequest\x1a&.app_service.BatchGetAppsCountResponseB%Z#proto/app_service_pb;app_service_pbb\x06proto3"
 
 var (
 	file_src_protos_app_service_proto_rawDescOnce sync.Once
@@ -1398,7 +1495,7 @@ func file_src_protos_app_service_proto_rawDescGZIP() []byte {
 	return file_src_protos_app_service_proto_rawDescData
 }
 
-var file_src_protos_app_service_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
+var file_src_protos_app_service_proto_msgTypes = make([]protoimpl.MessageInfo, 26)
 var file_src_protos_app_service_proto_goTypes = []any{
 	(*App)(nil),                                // 0: app_service.App
 	(*EnvironmentVariables)(nil),               // 1: app_service.EnvironmentVariables
@@ -1421,8 +1518,11 @@ var file_src_protos_app_service_proto_goTypes = []any{
 	(*UpdateEnvironmentVariablesResponse)(nil), // 18: app_service.UpdateEnvironmentVariablesResponse
 	(*DeleteEnvironmentVariablesRequest)(nil),  // 19: app_service.DeleteEnvironmentVariablesRequest
 	(*DeleteEnvironmentVariablesResponse)(nil), // 20: app_service.DeleteEnvironmentVariablesResponse
-	(*HealthRequest)(nil),                      // 21: app_service.HealthRequest
-	(*HealthResponse)(nil),                     // 22: app_service.HealthResponse
+	(*BatchGetAppsCountRequest)(nil),           // 21: app_service.BatchGetAppsCountRequest
+	(*BatchGetAppsCountResponse)(nil),          // 22: app_service.BatchGetAppsCountResponse
+	(*HealthRequest)(nil),                      // 23: app_service.HealthRequest
+	(*HealthResponse)(nil),                     // 24: app_service.HealthResponse
+	nil,                                        // 25: app_service.BatchGetAppsCountResponse.ProjectAppsCountEntry
 }
 var file_src_protos_app_service_proto_depIdxs = []int32{
 	2,  // 0: app_service.CreateAppRequest.git_repository:type_name -> app_service.GitRepository
@@ -1433,31 +1533,34 @@ var file_src_protos_app_service_proto_depIdxs = []int32{
 	1,  // 5: app_service.GetEnvironmentVariablesResponse.environment_variable:type_name -> app_service.EnvironmentVariables
 	1,  // 6: app_service.CreateEnvironmentVariablesResponse.environment_variable:type_name -> app_service.EnvironmentVariables
 	1,  // 7: app_service.UpdateEnvironmentVariablesResponse.environment_variable:type_name -> app_service.EnvironmentVariables
-	21, // 8: app_service.AppService.Health:input_type -> app_service.HealthRequest
-	3,  // 9: app_service.AppService.CreateApp:input_type -> app_service.CreateAppRequest
-	5,  // 10: app_service.AppService.GetApp:input_type -> app_service.GetAppRequest
-	7,  // 11: app_service.AppService.GetApps:input_type -> app_service.GetAppsRequest
-	9,  // 12: app_service.AppService.UpdateApp:input_type -> app_service.UpdateAppRequest
-	11, // 13: app_service.AppService.DeleteApp:input_type -> app_service.DeleteAppRequest
-	13, // 14: app_service.AppService.GetEnvironmentVariables:input_type -> app_service.GetEnvironmentVariablesRequest
-	15, // 15: app_service.AppService.CreateEnvironmentVariables:input_type -> app_service.CreateEnvironmentVariablesRequest
-	17, // 16: app_service.AppService.UpdateEnvironmentVariables:input_type -> app_service.UpdateEnvironmentVariablesRequest
-	19, // 17: app_service.AppService.DeleteEnvironmentVariables:input_type -> app_service.DeleteEnvironmentVariablesRequest
-	22, // 18: app_service.AppService.Health:output_type -> app_service.HealthResponse
-	4,  // 19: app_service.AppService.CreateApp:output_type -> app_service.CreateAppResponse
-	6,  // 20: app_service.AppService.GetApp:output_type -> app_service.GetAppResponse
-	8,  // 21: app_service.AppService.GetApps:output_type -> app_service.GetAppsResponse
-	10, // 22: app_service.AppService.UpdateApp:output_type -> app_service.UpdateAppResponse
-	12, // 23: app_service.AppService.DeleteApp:output_type -> app_service.DeleteAppResponse
-	14, // 24: app_service.AppService.GetEnvironmentVariables:output_type -> app_service.GetEnvironmentVariablesResponse
-	16, // 25: app_service.AppService.CreateEnvironmentVariables:output_type -> app_service.CreateEnvironmentVariablesResponse
-	18, // 26: app_service.AppService.UpdateEnvironmentVariables:output_type -> app_service.UpdateEnvironmentVariablesResponse
-	20, // 27: app_service.AppService.DeleteEnvironmentVariables:output_type -> app_service.DeleteEnvironmentVariablesResponse
-	18, // [18:28] is the sub-list for method output_type
-	8,  // [8:18] is the sub-list for method input_type
-	8,  // [8:8] is the sub-list for extension type_name
-	8,  // [8:8] is the sub-list for extension extendee
-	0,  // [0:8] is the sub-list for field type_name
+	25, // 8: app_service.BatchGetAppsCountResponse.project_apps_count:type_name -> app_service.BatchGetAppsCountResponse.ProjectAppsCountEntry
+	23, // 9: app_service.AppService.Health:input_type -> app_service.HealthRequest
+	3,  // 10: app_service.AppService.CreateApp:input_type -> app_service.CreateAppRequest
+	5,  // 11: app_service.AppService.GetApp:input_type -> app_service.GetAppRequest
+	7,  // 12: app_service.AppService.GetApps:input_type -> app_service.GetAppsRequest
+	9,  // 13: app_service.AppService.UpdateApp:input_type -> app_service.UpdateAppRequest
+	11, // 14: app_service.AppService.DeleteApp:input_type -> app_service.DeleteAppRequest
+	13, // 15: app_service.AppService.GetEnvironmentVariables:input_type -> app_service.GetEnvironmentVariablesRequest
+	15, // 16: app_service.AppService.CreateEnvironmentVariables:input_type -> app_service.CreateEnvironmentVariablesRequest
+	17, // 17: app_service.AppService.UpdateEnvironmentVariables:input_type -> app_service.UpdateEnvironmentVariablesRequest
+	19, // 18: app_service.AppService.DeleteEnvironmentVariables:input_type -> app_service.DeleteEnvironmentVariablesRequest
+	21, // 19: app_service.AppService.BatchGetAppsCount:input_type -> app_service.BatchGetAppsCountRequest
+	24, // 20: app_service.AppService.Health:output_type -> app_service.HealthResponse
+	4,  // 21: app_service.AppService.CreateApp:output_type -> app_service.CreateAppResponse
+	6,  // 22: app_service.AppService.GetApp:output_type -> app_service.GetAppResponse
+	8,  // 23: app_service.AppService.GetApps:output_type -> app_service.GetAppsResponse
+	10, // 24: app_service.AppService.UpdateApp:output_type -> app_service.UpdateAppResponse
+	12, // 25: app_service.AppService.DeleteApp:output_type -> app_service.DeleteAppResponse
+	14, // 26: app_service.AppService.GetEnvironmentVariables:output_type -> app_service.GetEnvironmentVariablesResponse
+	16, // 27: app_service.AppService.CreateEnvironmentVariables:output_type -> app_service.CreateEnvironmentVariablesResponse
+	18, // 28: app_service.AppService.UpdateEnvironmentVariables:output_type -> app_service.UpdateEnvironmentVariablesResponse
+	20, // 29: app_service.AppService.DeleteEnvironmentVariables:output_type -> app_service.DeleteEnvironmentVariablesResponse
+	22, // 30: app_service.AppService.BatchGetAppsCount:output_type -> app_service.BatchGetAppsCountResponse
+	20, // [20:31] is the sub-list for method output_type
+	9,  // [9:20] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_src_protos_app_service_proto_init() }
@@ -1473,7 +1576,7 @@ func file_src_protos_app_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_src_protos_app_service_proto_rawDesc), len(file_src_protos_app_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   23,
+			NumMessages:   26,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

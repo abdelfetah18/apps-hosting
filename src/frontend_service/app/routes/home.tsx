@@ -1,10 +1,8 @@
 import type { Route } from "./+types/home";
 import { Link } from "react-router";
-import { useEffect } from "react";
 import moment from "moment";
-import useProjects from "~/hooks/useProjects";
 import Iconify from "~/components/Iconify";
-import { listProjects } from "~/services/project_service";
+import { getUserProjects } from "~/services/project_service";
 
 export function meta({ }: Route.MetaArgs) {
   return [
@@ -14,13 +12,13 @@ export function meta({ }: Route.MetaArgs) {
 }
 
 export async function clientLoader() {
-  const listProjectsResult = await listProjects();
-  if (listProjectsResult.isFailure()) {
+  const getUserProjectsResult = await getUserProjects();
+  if (getUserProjectsResult.isFailure()) {
     throw new Response("Failed to load project or apps", { status: 500 });
   }
 
   return {
-    projects: listProjectsResult.value!,
+    projects: getUserProjectsResult.value!,
   };
 }
 
@@ -44,10 +42,10 @@ export default function Home({ loaderData }: Route.ComponentProps) {
               <div key={index} className="flex flex-col border border-gray-300 rounded-lg px-4 py-4 gap-1">
                 <div className="flex items-center gap-2">
                   <Link to={`/projects/${project.id}`} className="text-balance font-semibold hover:underline">{project.name}</Link>
-                  <div className="flex-grow"></div>
-                  <div className="text-gray-600 text-xs">{moment(project.created_at).format("dddd DD, MMMM YYYY HH:MM:ss")}</div>
+                  <div className="grow"></div>
+                  <div className="text-gray-600 text-xs">{moment(project.created_at).fromNow()}</div>
                 </div>
-                <div className="text-xs text-gray-500">5 Apps</div>
+                <div className="text-xs text-gray-500">{project.apps_count} Apps</div>
               </div>
             )
           })

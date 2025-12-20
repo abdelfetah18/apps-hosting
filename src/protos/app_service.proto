@@ -17,6 +17,8 @@ service AppService {
     rpc CreateEnvironmentVariables(CreateEnvironmentVariablesRequest) returns (CreateEnvironmentVariablesResponse);
     rpc UpdateEnvironmentVariables(UpdateEnvironmentVariablesRequest) returns (UpdateEnvironmentVariablesResponse);
     rpc DeleteEnvironmentVariables(DeleteEnvironmentVariablesRequest) returns (DeleteEnvironmentVariablesResponse);
+
+    rpc BatchGetAppsCount(BatchGetAppsCountRequest) returns (BatchGetAppsCountResponse);
 }
 
 message App {
@@ -126,6 +128,12 @@ message DeleteEnvironmentVariablesRequest {
 }
 message DeleteEnvironmentVariablesResponse {}
 
+message BatchGetAppsCountRequest {
+    repeated string project_ids = 1;
+}
+message BatchGetAppsCountResponse {
+    map<string, int32> project_apps_count = 1;
+}
 
 message HealthRequest {}
 message HealthResponse {

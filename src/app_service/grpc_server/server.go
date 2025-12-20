@@ -515,3 +515,19 @@ func (server *GRPCAppServiceServer) UpdateEnvironmentVariables(ctx context.Conte
 func (server *GRPCAppServiceServer) DeleteEnvironmentVariables(ctx context.Context, deleteEnvironmentVariablesRequest *app_service_pb.DeleteEnvironmentVariablesRequest) (*app_service_pb.DeleteEnvironmentVariablesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "Unimplemented")
 }
+
+func (server *GRPCAppServiceServer) BatchGetAppsCount(ctx context.Context, batchGetAppsCountRequest *app_service_pb.BatchGetAppsCountRequest) (*app_service_pb.BatchGetAppsCountResponse, error) {
+	span := trace.SpanFromContext(ctx)
+
+	span.SetAttributes(attribute.StringSlice("projects.ids", batchGetAppsCountRequest.ProjectIds))
+
+	projectsAppsCounts, err := server.AppRepository.GetProjectsAppsCounts(ctx, batchGetAppsCountRequest.ProjectIds)
+	if err != nil {
+		span.SetAttributes(attribute.String("error", err.Error()))
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &app_service_pb.BatchGetAppsCountResponse{
+		ProjectAppsCount: projectsAppsCounts,
+	}, nil
+}

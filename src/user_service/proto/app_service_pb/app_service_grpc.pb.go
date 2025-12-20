@@ -29,6 +29,7 @@ const (
 	AppService_CreateEnvironmentVariables_FullMethodName = "/app_service.AppService/CreateEnvironmentVariables"
 	AppService_UpdateEnvironmentVariables_FullMethodName = "/app_service.AppService/UpdateEnvironmentVariables"
 	AppService_DeleteEnvironmentVariables_FullMethodName = "/app_service.AppService/DeleteEnvironmentVariables"
+	AppService_BatchGetAppsCount_FullMethodName          = "/app_service.AppService/BatchGetAppsCount"
 )
 
 // AppServiceClient is the client API for AppService service.
@@ -45,6 +46,7 @@ type AppServiceClient interface {
 	CreateEnvironmentVariables(ctx context.Context, in *CreateEnvironmentVariablesRequest, opts ...grpc.CallOption) (*CreateEnvironmentVariablesResponse, error)
 	UpdateEnvironmentVariables(ctx context.Context, in *UpdateEnvironmentVariablesRequest, opts ...grpc.CallOption) (*UpdateEnvironmentVariablesResponse, error)
 	DeleteEnvironmentVariables(ctx context.Context, in *DeleteEnvironmentVariablesRequest, opts ...grpc.CallOption) (*DeleteEnvironmentVariablesResponse, error)
+	BatchGetAppsCount(ctx context.Context, in *BatchGetAppsCountRequest, opts ...grpc.CallOption) (*BatchGetAppsCountResponse, error)
 }
 
 type appServiceClient struct {
@@ -155,6 +157,16 @@ func (c *appServiceClient) DeleteEnvironmentVariables(ctx context.Context, in *D
 	return out, nil
 }
 
+func (c *appServiceClient) BatchGetAppsCount(ctx context.Context, in *BatchGetAppsCountRequest, opts ...grpc.CallOption) (*BatchGetAppsCountResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BatchGetAppsCountResponse)
+	err := c.cc.Invoke(ctx, AppService_BatchGetAppsCount_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AppServiceServer is the server API for AppService service.
 // All implementations must embed UnimplementedAppServiceServer
 // for forward compatibility.
@@ -169,6 +181,7 @@ type AppServiceServer interface {
 	CreateEnvironmentVariables(context.Context, *CreateEnvironmentVariablesRequest) (*CreateEnvironmentVariablesResponse, error)
 	UpdateEnvironmentVariables(context.Context, *UpdateEnvironmentVariablesRequest) (*UpdateEnvironmentVariablesResponse, error)
 	DeleteEnvironmentVariables(context.Context, *DeleteEnvironmentVariablesRequest) (*DeleteEnvironmentVariablesResponse, error)
+	BatchGetAppsCount(context.Context, *BatchGetAppsCountRequest) (*BatchGetAppsCountResponse, error)
 	mustEmbedUnimplementedAppServiceServer()
 }
 
@@ -208,6 +221,9 @@ func (UnimplementedAppServiceServer) UpdateEnvironmentVariables(context.Context,
 }
 func (UnimplementedAppServiceServer) DeleteEnvironmentVariables(context.Context, *DeleteEnvironmentVariablesRequest) (*DeleteEnvironmentVariablesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteEnvironmentVariables not implemented")
+}
+func (UnimplementedAppServiceServer) BatchGetAppsCount(context.Context, *BatchGetAppsCountRequest) (*BatchGetAppsCountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BatchGetAppsCount not implemented")
 }
 func (UnimplementedAppServiceServer) mustEmbedUnimplementedAppServiceServer() {}
 func (UnimplementedAppServiceServer) testEmbeddedByValue()                    {}
@@ -410,6 +426,24 @@ func _AppService_DeleteEnvironmentVariables_Handler(srv interface{}, ctx context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AppService_BatchGetAppsCount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BatchGetAppsCountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AppServiceServer).BatchGetAppsCount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AppService_BatchGetAppsCount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AppServiceServer).BatchGetAppsCount(ctx, req.(*BatchGetAppsCountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AppService_ServiceDesc is the grpc.ServiceDesc for AppService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -456,6 +490,10 @@ var AppService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteEnvironmentVariables",
 			Handler:    _AppService_DeleteEnvironmentVariables_Handler,
+		},
+		{
+			MethodName: "BatchGetAppsCount",
+			Handler:    _AppService_BatchGetAppsCount_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

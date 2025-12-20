@@ -60,7 +60,7 @@ func main() {
 		return
 	}
 
-	projectHandler := handlers.NewProjectHandler(grpcClients.ProjectServiceClient, logger)
+	projectHandler := handlers.NewProjectHandler(grpcClients.ProjectServiceClient, grpcClients.AppServiceClient, logger)
 	appHandler := handlers.NewAppHandler(grpcClients.AppServiceClient, logger)
 	userHandler := handlers.NewUserHandler(grpcClients.UserServiceClient, logger)
 	buildHandler := handlers.NewBuildHandler(grpcClients.BuildServiceClient, logger)

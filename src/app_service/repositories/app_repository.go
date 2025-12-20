@@ -205,3 +205,40 @@ func (repository *AppRepository) DeleteAppsByProjectId(ctx context.Context, proj
 		Exec(ctx)
 	return err
 }
+
+func (repository *AppRepository) GetProjectsAppsCounts(
+	ctx context.Context,
+	projectIds []string,
+) (map[string]int32, error) {
+
+	if len(projectIds) == 0 {
+		return map[string]int32{}, nil
+	}
+
+	type result struct {
+		ProjectId string `bun:"project_id"`
+		Count     int32  `bun:"apps_count"`
+	}
+
+	var rows []result
+
+	err := repository.Database.
+		NewSelect().
+		Model((*App)(nil)).
+		Column("project_id").
+		ColumnExpr("COUNT(*) AS apps_count").
+		Where("project_id IN (?)", bun.In(projectIds)).
+		Group("project_id").
+		Scan(ctx, &rows)
+
+	if err != nil {
+		return nil, err
+	}
+
+	projectAppsCount := make(map[string]int32, len(rows))
+	for _, row := range rows {
+		projectAppsCount[row.ProjectId] = row.Count
+	}
+
+	return projectAppsCount, nil
+}
