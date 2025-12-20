@@ -19,9 +19,9 @@ type User struct {
 	Email                       string    `bun:"email,unique" json:"email"`
 	GithubAppInstalled          bool      `bun:"github_app_installed" json:"github_app_installed"`
 	GithubAccessToken           string    `bun:"github_access_token" json:"github_access_token"`
-	GithhubAccessTokenExpiresAt time.Time `bun:"github_access_token_expires_at" json:"github_access_token_expires_at"`
+	GithhubAccessTokenExpiresAt time.Time `bun:"github_access_token_expires_at,default:null" json:"github_access_token_expires_at"`
 	GithubRefreshToken          string    `bun:"github_refresh_token" json:"github_refresh_token"`
-	GithubRefreshTokenExpiresAt time.Time `bun:"github_refresh_token_expires_at" json:"github_refresh_token_expires_at"`
+	GithubRefreshTokenExpiresAt time.Time `bun:"github_refresh_token_expires_at,default:null" json:"github_refresh_token_expires_at"`
 	CreatedAt                   time.Time `bun:"created_at,default:now()" json:"created_at"`
 }
 
