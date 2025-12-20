@@ -96,8 +96,14 @@ func main() {
 		logger,
 	)
 
-	eventBus.Subscribe(events_pb.EventName_APP_CREATED, eventsHandlers.HandleAppCreatedEvent)
-	eventBus.Subscribe(events_pb.EventName_APP_DELETED, eventsHandlers.HandleAppDeletedEvent)
+	err = eventBus.Subscribe(events_pb.EventName_APP_CREATED, eventsHandlers.HandleAppCreatedEvent)
+	if err != nil {
+		logger.LogErrorF("failed to subscribe to '%s': %v", events_pb.EventName_name[int32(events_pb.EventName_APP_CREATED)], err)
+	}
+	err = eventBus.Subscribe(events_pb.EventName_APP_DELETED, eventsHandlers.HandleAppDeletedEvent)
+	if err != nil {
+		logger.LogErrorF("failed to subscribe to '%s': %v", events_pb.EventName_name[int32(events_pb.EventName_APP_DELETED)], err)
+	}
 
 	grpcServer := grpc.NewServer(grpc.StatsHandler(otelgrpc.NewServerHandler()))
 	buildServiceServer := core.NewBuildServiceServer(buildRepository)

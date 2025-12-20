@@ -106,7 +106,10 @@ func main() {
 		logger,
 	)
 
-	eventBus.Subscribe(events_pb.EventName_PROJECT_DELETED, eventsHandlers.HandleProjectDeletedEvent)
+	err = eventBus.Subscribe(events_pb.EventName_PROJECT_DELETED, eventsHandlers.HandleProjectDeletedEvent)
+	if err != nil {
+		logger.LogErrorF("failed to subscribe to '%s': %v", events_pb.EventName_name[int32(events_pb.EventName_PROJECT_DELETED)], err)
+	}
 
 	grpcServer := grpc.NewServer(grpc.StatsHandler(otelgrpc.NewServerHandler()))
 	grpcAppServiceServer := grpc_server.NewGRPCAppServiceServer(appRepository, environmentVariablesRepository, gitRepositoryRepository, *eventBus, logger)
