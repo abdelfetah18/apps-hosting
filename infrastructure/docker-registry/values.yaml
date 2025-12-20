@@ -2,6 +2,8 @@ persistence:
   enabled: true
   size: 5Gi
 ingress:
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
   enabled: true
   path: /
   hosts:

@@ -107,6 +107,7 @@ func NewKanikoJob(srcContext, destination, appId, appName string) batchv1.Job {
 								"--build-arg=START_CMD=start",
 								"--build-arg=BUILD_CMD=build",
 								"--insecure",
+								"--skip-tls-verify",
 							},
 							Env: []corev1.EnvVar{
 								{Name: "AWS_ACCESS_KEY_ID", Value: "minioadmin"},
