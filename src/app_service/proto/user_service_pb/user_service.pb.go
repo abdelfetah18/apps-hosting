@@ -553,6 +553,86 @@ func (x *SignUpResponse) GetUser() *User {
 	return nil
 }
 
+type SignOutRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AccessToken   string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SignOutRequest) Reset() {
+	*x = SignOutRequest{}
+	mi := &file_src_protos_user_service_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SignOutRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SignOutRequest) ProtoMessage() {}
+
+func (x *SignOutRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_src_protos_user_service_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SignOutRequest.ProtoReflect.Descriptor instead.
+func (*SignOutRequest) Descriptor() ([]byte, []int) {
+	return file_src_protos_user_service_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *SignOutRequest) GetAccessToken() string {
+	if x != nil {
+		return x.AccessToken
+	}
+	return ""
+}
+
+type SignOutResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SignOutResponse) Reset() {
+	*x = SignOutResponse{}
+	mi := &file_src_protos_user_service_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SignOutResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SignOutResponse) ProtoMessage() {}
+
+func (x *SignOutResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_src_protos_user_service_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SignOutResponse.ProtoReflect.Descriptor instead.
+func (*SignOutResponse) Descriptor() ([]byte, []int) {
+	return file_src_protos_user_service_proto_rawDescGZIP(), []int{10}
+}
+
 type GetGithubRepositoriesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
@@ -562,7 +642,7 @@ type GetGithubRepositoriesRequest struct {
 
 func (x *GetGithubRepositoriesRequest) Reset() {
 	*x = GetGithubRepositoriesRequest{}
-	mi := &file_src_protos_user_service_proto_msgTypes[9]
+	mi := &file_src_protos_user_service_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -574,7 +654,7 @@ func (x *GetGithubRepositoriesRequest) String() string {
 func (*GetGithubRepositoriesRequest) ProtoMessage() {}
 
 func (x *GetGithubRepositoriesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_user_service_proto_msgTypes[9]
+	mi := &file_src_protos_user_service_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -587,7 +667,7 @@ func (x *GetGithubRepositoriesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetGithubRepositoriesRequest.ProtoReflect.Descriptor instead.
 func (*GetGithubRepositoriesRequest) Descriptor() ([]byte, []int) {
-	return file_src_protos_user_service_proto_rawDescGZIP(), []int{9}
+	return file_src_protos_user_service_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *GetGithubRepositoriesRequest) GetUserId() string {
@@ -606,7 +686,7 @@ type GetGithubRepositoriesResponse struct {
 
 func (x *GetGithubRepositoriesResponse) Reset() {
 	*x = GetGithubRepositoriesResponse{}
-	mi := &file_src_protos_user_service_proto_msgTypes[10]
+	mi := &file_src_protos_user_service_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -618,7 +698,7 @@ func (x *GetGithubRepositoriesResponse) String() string {
 func (*GetGithubRepositoriesResponse) ProtoMessage() {}
 
 func (x *GetGithubRepositoriesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_user_service_proto_msgTypes[10]
+	mi := &file_src_protos_user_service_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -631,7 +711,7 @@ func (x *GetGithubRepositoriesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetGithubRepositoriesResponse.ProtoReflect.Descriptor instead.
 func (*GetGithubRepositoriesResponse) Descriptor() ([]byte, []int) {
-	return file_src_protos_user_service_proto_rawDescGZIP(), []int{10}
+	return file_src_protos_user_service_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetGithubRepositoriesResponse) GetGithubRepositories() []*GithubRepository {
@@ -651,7 +731,7 @@ type ExchangeGitHubCodeForTokenRequest struct {
 
 func (x *ExchangeGitHubCodeForTokenRequest) Reset() {
 	*x = ExchangeGitHubCodeForTokenRequest{}
-	mi := &file_src_protos_user_service_proto_msgTypes[11]
+	mi := &file_src_protos_user_service_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -663,7 +743,7 @@ func (x *ExchangeGitHubCodeForTokenRequest) String() string {
 func (*ExchangeGitHubCodeForTokenRequest) ProtoMessage() {}
 
 func (x *ExchangeGitHubCodeForTokenRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_user_service_proto_msgTypes[11]
+	mi := &file_src_protos_user_service_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -676,7 +756,7 @@ func (x *ExchangeGitHubCodeForTokenRequest) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use ExchangeGitHubCodeForTokenRequest.ProtoReflect.Descriptor instead.
 func (*ExchangeGitHubCodeForTokenRequest) Descriptor() ([]byte, []int) {
-	return file_src_protos_user_service_proto_rawDescGZIP(), []int{11}
+	return file_src_protos_user_service_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *ExchangeGitHubCodeForTokenRequest) GetCode() string {
@@ -707,7 +787,7 @@ type ExchangeGitHubCodeForTokenResponse struct {
 
 func (x *ExchangeGitHubCodeForTokenResponse) Reset() {
 	*x = ExchangeGitHubCodeForTokenResponse{}
-	mi := &file_src_protos_user_service_proto_msgTypes[12]
+	mi := &file_src_protos_user_service_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -719,7 +799,7 @@ func (x *ExchangeGitHubCodeForTokenResponse) String() string {
 func (*ExchangeGitHubCodeForTokenResponse) ProtoMessage() {}
 
 func (x *ExchangeGitHubCodeForTokenResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_user_service_proto_msgTypes[12]
+	mi := &file_src_protos_user_service_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -732,7 +812,7 @@ func (x *ExchangeGitHubCodeForTokenResponse) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use ExchangeGitHubCodeForTokenResponse.ProtoReflect.Descriptor instead.
 func (*ExchangeGitHubCodeForTokenResponse) Descriptor() ([]byte, []int) {
-	return file_src_protos_user_service_proto_rawDescGZIP(), []int{12}
+	return file_src_protos_user_service_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ExchangeGitHubCodeForTokenResponse) GetAccessToken() string {
@@ -786,7 +866,7 @@ type GetGithubUserAccessTokenRequest struct {
 
 func (x *GetGithubUserAccessTokenRequest) Reset() {
 	*x = GetGithubUserAccessTokenRequest{}
-	mi := &file_src_protos_user_service_proto_msgTypes[13]
+	mi := &file_src_protos_user_service_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -798,7 +878,7 @@ func (x *GetGithubUserAccessTokenRequest) String() string {
 func (*GetGithubUserAccessTokenRequest) ProtoMessage() {}
 
 func (x *GetGithubUserAccessTokenRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_user_service_proto_msgTypes[13]
+	mi := &file_src_protos_user_service_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -811,7 +891,7 @@ func (x *GetGithubUserAccessTokenRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetGithubUserAccessTokenRequest.ProtoReflect.Descriptor instead.
 func (*GetGithubUserAccessTokenRequest) Descriptor() ([]byte, []int) {
-	return file_src_protos_user_service_proto_rawDescGZIP(), []int{13}
+	return file_src_protos_user_service_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *GetGithubUserAccessTokenRequest) GetUserId() string {
@@ -830,7 +910,7 @@ type GetGithubUserAccessTokenRespone struct {
 
 func (x *GetGithubUserAccessTokenRespone) Reset() {
 	*x = GetGithubUserAccessTokenRespone{}
-	mi := &file_src_protos_user_service_proto_msgTypes[14]
+	mi := &file_src_protos_user_service_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -842,7 +922,7 @@ func (x *GetGithubUserAccessTokenRespone) String() string {
 func (*GetGithubUserAccessTokenRespone) ProtoMessage() {}
 
 func (x *GetGithubUserAccessTokenRespone) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_user_service_proto_msgTypes[14]
+	mi := &file_src_protos_user_service_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -855,7 +935,7 @@ func (x *GetGithubUserAccessTokenRespone) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetGithubUserAccessTokenRespone.ProtoReflect.Descriptor instead.
 func (*GetGithubUserAccessTokenRespone) Descriptor() ([]byte, []int) {
-	return file_src_protos_user_service_proto_rawDescGZIP(), []int{14}
+	return file_src_protos_user_service_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *GetGithubUserAccessTokenRespone) GetGithubUserAccessToken() string {
@@ -873,7 +953,7 @@ type HealthRequest struct {
 
 func (x *HealthRequest) Reset() {
 	*x = HealthRequest{}
-	mi := &file_src_protos_user_service_proto_msgTypes[15]
+	mi := &file_src_protos_user_service_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -885,7 +965,7 @@ func (x *HealthRequest) String() string {
 func (*HealthRequest) ProtoMessage() {}
 
 func (x *HealthRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_user_service_proto_msgTypes[15]
+	mi := &file_src_protos_user_service_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -898,7 +978,7 @@ func (x *HealthRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthRequest.ProtoReflect.Descriptor instead.
 func (*HealthRequest) Descriptor() ([]byte, []int) {
-	return file_src_protos_user_service_proto_rawDescGZIP(), []int{15}
+	return file_src_protos_user_service_proto_rawDescGZIP(), []int{17}
 }
 
 type HealthResponse struct {
@@ -911,7 +991,7 @@ type HealthResponse struct {
 
 func (x *HealthResponse) Reset() {
 	*x = HealthResponse{}
-	mi := &file_src_protos_user_service_proto_msgTypes[16]
+	mi := &file_src_protos_user_service_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -923,7 +1003,7 @@ func (x *HealthResponse) String() string {
 func (*HealthResponse) ProtoMessage() {}
 
 func (x *HealthResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_src_protos_user_service_proto_msgTypes[16]
+	mi := &file_src_protos_user_service_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -936,7 +1016,7 @@ func (x *HealthResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthResponse.ProtoReflect.Descriptor instead.
 func (*HealthResponse) Descriptor() ([]byte, []int) {
-	return file_src_protos_user_service_proto_rawDescGZIP(), []int{16}
+	return file_src_protos_user_service_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *HealthResponse) GetStatus() string {
@@ -995,7 +1075,10 @@ const file_src_protos_user_service_proto_rawDesc = "" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1a\n" +
 	"\bpassword\x18\x03 \x01(\tR\bpassword\"8\n" +
 	"\x0eSignUpResponse\x12&\n" +
-	"\x04user\x18\x01 \x01(\v2\x12.user_service.UserR\x04user\"7\n" +
+	"\x04user\x18\x01 \x01(\v2\x12.user_service.UserR\x04user\"3\n" +
+	"\x0eSignOutRequest\x12!\n" +
+	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\"\x11\n" +
+	"\x0fSignOutResponse\"7\n" +
 	"\x1cGetGithubRepositoriesRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\"p\n" +
 	"\x1dGetGithubRepositoriesResponse\x12O\n" +
@@ -1019,11 +1102,12 @@ const file_src_protos_user_service_proto_rawDesc = "" +
 	"\rHealthRequest\"B\n" +
 	"\x0eHealthResponse\x12\x16\n" +
 	"\x06status\x18\x01 \x01(\tR\x06status\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage2\x88\x05\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage2\xd0\x05\n" +
 	"\vUserService\x12=\n" +
 	"\x04Auth\x12\x19.user_service.AuthRequest\x1a\x1a.user_service.AuthResponse\x12C\n" +
 	"\x06SignIn\x12\x1b.user_service.SignInRequest\x1a\x1c.user_service.SignInResponse\x12C\n" +
-	"\x06SignUp\x12\x1b.user_service.SignUpRequest\x1a\x1c.user_service.SignUpResponse\x12p\n" +
+	"\x06SignUp\x12\x1b.user_service.SignUpRequest\x1a\x1c.user_service.SignUpResponse\x12F\n" +
+	"\aSignOut\x12\x1c.user_service.SignOutRequest\x1a\x1d.user_service.SignOutResponse\x12p\n" +
 	"\x15GetGithubRepositories\x12*.user_service.GetGithubRepositoriesRequest\x1a+.user_service.GetGithubRepositoriesResponse\x12\x7f\n" +
 	"\x1aExchangeGitHubCodeForToken\x12/.user_service.ExchangeGitHubCodeForTokenRequest\x1a0.user_service.ExchangeGitHubCodeForTokenResponse\x12x\n" +
 	"\x18GetGithubUserAccessToken\x12-.user_service.GetGithubUserAccessTokenRequest\x1a-.user_service.GetGithubUserAccessTokenRespone\x12C\n" +
@@ -1041,7 +1125,7 @@ func file_src_protos_user_service_proto_rawDescGZIP() []byte {
 	return file_src_protos_user_service_proto_rawDescData
 }
 
-var file_src_protos_user_service_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_src_protos_user_service_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_src_protos_user_service_proto_goTypes = []any{
 	(*User)(nil),                               // 0: user_service.User
 	(*GithubRepository)(nil),                   // 1: user_service.GithubRepository
@@ -1052,14 +1136,16 @@ var file_src_protos_user_service_proto_goTypes = []any{
 	(*SignInResponse)(nil),                     // 6: user_service.SignInResponse
 	(*SignUpRequest)(nil),                      // 7: user_service.SignUpRequest
 	(*SignUpResponse)(nil),                     // 8: user_service.SignUpResponse
-	(*GetGithubRepositoriesRequest)(nil),       // 9: user_service.GetGithubRepositoriesRequest
-	(*GetGithubRepositoriesResponse)(nil),      // 10: user_service.GetGithubRepositoriesResponse
-	(*ExchangeGitHubCodeForTokenRequest)(nil),  // 11: user_service.ExchangeGitHubCodeForTokenRequest
-	(*ExchangeGitHubCodeForTokenResponse)(nil), // 12: user_service.ExchangeGitHubCodeForTokenResponse
-	(*GetGithubUserAccessTokenRequest)(nil),    // 13: user_service.GetGithubUserAccessTokenRequest
-	(*GetGithubUserAccessTokenRespone)(nil),    // 14: user_service.GetGithubUserAccessTokenRespone
-	(*HealthRequest)(nil),                      // 15: user_service.HealthRequest
-	(*HealthResponse)(nil),                     // 16: user_service.HealthResponse
+	(*SignOutRequest)(nil),                     // 9: user_service.SignOutRequest
+	(*SignOutResponse)(nil),                    // 10: user_service.SignOutResponse
+	(*GetGithubRepositoriesRequest)(nil),       // 11: user_service.GetGithubRepositoriesRequest
+	(*GetGithubRepositoriesResponse)(nil),      // 12: user_service.GetGithubRepositoriesResponse
+	(*ExchangeGitHubCodeForTokenRequest)(nil),  // 13: user_service.ExchangeGitHubCodeForTokenRequest
+	(*ExchangeGitHubCodeForTokenResponse)(nil), // 14: user_service.ExchangeGitHubCodeForTokenResponse
+	(*GetGithubUserAccessTokenRequest)(nil),    // 15: user_service.GetGithubUserAccessTokenRequest
+	(*GetGithubUserAccessTokenRespone)(nil),    // 16: user_service.GetGithubUserAccessTokenRespone
+	(*HealthRequest)(nil),                      // 17: user_service.HealthRequest
+	(*HealthResponse)(nil),                     // 18: user_service.HealthResponse
 }
 var file_src_protos_user_service_proto_depIdxs = []int32{
 	0,  // 0: user_service.UserSession.user:type_name -> user_service.User
@@ -1070,19 +1156,21 @@ var file_src_protos_user_service_proto_depIdxs = []int32{
 	3,  // 5: user_service.UserService.Auth:input_type -> user_service.AuthRequest
 	5,  // 6: user_service.UserService.SignIn:input_type -> user_service.SignInRequest
 	7,  // 7: user_service.UserService.SignUp:input_type -> user_service.SignUpRequest
-	9,  // 8: user_service.UserService.GetGithubRepositories:input_type -> user_service.GetGithubRepositoriesRequest
-	11, // 9: user_service.UserService.ExchangeGitHubCodeForToken:input_type -> user_service.ExchangeGitHubCodeForTokenRequest
-	13, // 10: user_service.UserService.GetGithubUserAccessToken:input_type -> user_service.GetGithubUserAccessTokenRequest
-	15, // 11: user_service.UserService.Health:input_type -> user_service.HealthRequest
-	4,  // 12: user_service.UserService.Auth:output_type -> user_service.AuthResponse
-	6,  // 13: user_service.UserService.SignIn:output_type -> user_service.SignInResponse
-	8,  // 14: user_service.UserService.SignUp:output_type -> user_service.SignUpResponse
-	10, // 15: user_service.UserService.GetGithubRepositories:output_type -> user_service.GetGithubRepositoriesResponse
-	12, // 16: user_service.UserService.ExchangeGitHubCodeForToken:output_type -> user_service.ExchangeGitHubCodeForTokenResponse
-	14, // 17: user_service.UserService.GetGithubUserAccessToken:output_type -> user_service.GetGithubUserAccessTokenRespone
-	16, // 18: user_service.UserService.Health:output_type -> user_service.HealthResponse
-	12, // [12:19] is the sub-list for method output_type
-	5,  // [5:12] is the sub-list for method input_type
+	9,  // 8: user_service.UserService.SignOut:input_type -> user_service.SignOutRequest
+	11, // 9: user_service.UserService.GetGithubRepositories:input_type -> user_service.GetGithubRepositoriesRequest
+	13, // 10: user_service.UserService.ExchangeGitHubCodeForToken:input_type -> user_service.ExchangeGitHubCodeForTokenRequest
+	15, // 11: user_service.UserService.GetGithubUserAccessToken:input_type -> user_service.GetGithubUserAccessTokenRequest
+	17, // 12: user_service.UserService.Health:input_type -> user_service.HealthRequest
+	4,  // 13: user_service.UserService.Auth:output_type -> user_service.AuthResponse
+	6,  // 14: user_service.UserService.SignIn:output_type -> user_service.SignInResponse
+	8,  // 15: user_service.UserService.SignUp:output_type -> user_service.SignUpResponse
+	10, // 16: user_service.UserService.SignOut:output_type -> user_service.SignOutResponse
+	12, // 17: user_service.UserService.GetGithubRepositories:output_type -> user_service.GetGithubRepositoriesResponse
+	14, // 18: user_service.UserService.ExchangeGitHubCodeForToken:output_type -> user_service.ExchangeGitHubCodeForTokenResponse
+	16, // 19: user_service.UserService.GetGithubUserAccessToken:output_type -> user_service.GetGithubUserAccessTokenRespone
+	18, // 20: user_service.UserService.Health:output_type -> user_service.HealthResponse
+	13, // [13:21] is the sub-list for method output_type
+	5,  // [5:13] is the sub-list for method input_type
 	5,  // [5:5] is the sub-list for extension type_name
 	5,  // [5:5] is the sub-list for extension extendee
 	0,  // [0:5] is the sub-list for field type_name
@@ -1099,7 +1187,7 @@ func file_src_protos_user_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_src_protos_user_service_proto_rawDesc), len(file_src_protos_user_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   17,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

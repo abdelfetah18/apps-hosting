@@ -35,6 +35,21 @@ export async function signUp(createUserForm: CreateUserForm): Promise<Result<str
 
 }
 
+export async function signOut(): Promise<Result<string, void>> {
+    try {
+        const response = await axios.post<HttpResponse<void>>("/user/sign_out");
+        if (response.data.status == "error") {
+            return Result.failure(response.data.message!);
+        }
+        return Result.success(response.data.data!);
+    } catch (error) {
+        const err = error as AxiosError<any>;
+        console.error(err.response?.data.message);
+        return Result.failure(err.response?.data.message);
+    }
+
+}
+
 export async function auth(accessToken: string): Promise<Result<string, User>> {
     try {
         const response = await axios.get<HttpResponse<User>>("/user/auth", { headers: { Authorization: accessToken } });

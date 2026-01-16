@@ -8,6 +8,7 @@ service UserService {
     rpc Auth(AuthRequest) returns (AuthResponse);
     rpc SignIn(SignInRequest) returns (SignInResponse);
     rpc SignUp(SignUpRequest) returns (SignUpResponse);
+    rpc SignOut(SignOutRequest) returns (SignOutResponse);
     rpc GetGithubRepositories(GetGithubRepositoriesRequest) returns (GetGithubRepositoriesResponse);
     rpc ExchangeGitHubCodeForToken(ExchangeGitHubCodeForTokenRequest) returns  (ExchangeGitHubCodeForTokenResponse);
     rpc GetGithubUserAccessToken(GetGithubUserAccessTokenRequest) returns  (GetGithubUserAccessTokenRespone);
@@ -63,6 +64,11 @@ message SignUpRequest {
 message SignUpResponse{
     User user = 1;
 }
+
+message SignOutRequest {
+    string access_token = 1;
+}
+message SignOutResponse {}
 
 message GetGithubRepositoriesRequest{
     string user_id = 1;

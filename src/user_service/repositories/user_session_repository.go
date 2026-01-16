@@ -79,3 +79,18 @@ func (userSessionRepository *UserSessionRepository) GetUserSessionByAccessToken(
 
 	return userSession, nil
 }
+
+func (userSessionRepository *UserSessionRepository) DeleteUserSessionByAccessToken(ctx context.Context, accessToken string) error {
+	result, err := userSessionRepository.Database.
+		NewDelete().
+		Model(&UserSession{}).
+		Where("access_token = ?", accessToken).
+		Exec(ctx)
+
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		return ErrUserSessionNotFound
+	}
+
+	return err
+}

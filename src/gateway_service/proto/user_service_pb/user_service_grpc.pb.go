@@ -22,6 +22,7 @@ const (
 	UserService_Auth_FullMethodName                       = "/user_service.UserService/Auth"
 	UserService_SignIn_FullMethodName                     = "/user_service.UserService/SignIn"
 	UserService_SignUp_FullMethodName                     = "/user_service.UserService/SignUp"
+	UserService_SignOut_FullMethodName                    = "/user_service.UserService/SignOut"
 	UserService_GetGithubRepositories_FullMethodName      = "/user_service.UserService/GetGithubRepositories"
 	UserService_ExchangeGitHubCodeForToken_FullMethodName = "/user_service.UserService/ExchangeGitHubCodeForToken"
 	UserService_GetGithubUserAccessToken_FullMethodName   = "/user_service.UserService/GetGithubUserAccessToken"
@@ -35,6 +36,7 @@ type UserServiceClient interface {
 	Auth(ctx context.Context, in *AuthRequest, opts ...grpc.CallOption) (*AuthResponse, error)
 	SignIn(ctx context.Context, in *SignInRequest, opts ...grpc.CallOption) (*SignInResponse, error)
 	SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc.CallOption) (*SignUpResponse, error)
+	SignOut(ctx context.Context, in *SignOutRequest, opts ...grpc.CallOption) (*SignOutResponse, error)
 	GetGithubRepositories(ctx context.Context, in *GetGithubRepositoriesRequest, opts ...grpc.CallOption) (*GetGithubRepositoriesResponse, error)
 	ExchangeGitHubCodeForToken(ctx context.Context, in *ExchangeGitHubCodeForTokenRequest, opts ...grpc.CallOption) (*ExchangeGitHubCodeForTokenResponse, error)
 	GetGithubUserAccessToken(ctx context.Context, in *GetGithubUserAccessTokenRequest, opts ...grpc.CallOption) (*GetGithubUserAccessTokenRespone, error)
@@ -73,6 +75,16 @@ func (c *userServiceClient) SignUp(ctx context.Context, in *SignUpRequest, opts 
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SignUpResponse)
 	err := c.cc.Invoke(ctx, UserService_SignUp_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) SignOut(ctx context.Context, in *SignOutRequest, opts ...grpc.CallOption) (*SignOutResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SignOutResponse)
+	err := c.cc.Invoke(ctx, UserService_SignOut_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -126,6 +138,7 @@ type UserServiceServer interface {
 	Auth(context.Context, *AuthRequest) (*AuthResponse, error)
 	SignIn(context.Context, *SignInRequest) (*SignInResponse, error)
 	SignUp(context.Context, *SignUpRequest) (*SignUpResponse, error)
+	SignOut(context.Context, *SignOutRequest) (*SignOutResponse, error)
 	GetGithubRepositories(context.Context, *GetGithubRepositoriesRequest) (*GetGithubRepositoriesResponse, error)
 	ExchangeGitHubCodeForToken(context.Context, *ExchangeGitHubCodeForTokenRequest) (*ExchangeGitHubCodeForTokenResponse, error)
 	GetGithubUserAccessToken(context.Context, *GetGithubUserAccessTokenRequest) (*GetGithubUserAccessTokenRespone, error)
@@ -148,6 +161,9 @@ func (UnimplementedUserServiceServer) SignIn(context.Context, *SignInRequest) (*
 }
 func (UnimplementedUserServiceServer) SignUp(context.Context, *SignUpRequest) (*SignUpResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SignUp not implemented")
+}
+func (UnimplementedUserServiceServer) SignOut(context.Context, *SignOutRequest) (*SignOutResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SignOut not implemented")
 }
 func (UnimplementedUserServiceServer) GetGithubRepositories(context.Context, *GetGithubRepositoriesRequest) (*GetGithubRepositoriesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetGithubRepositories not implemented")
@@ -232,6 +248,24 @@ func _UserService_SignUp_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).SignUp(ctx, req.(*SignUpRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_SignOut_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SignOutRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).SignOut(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_SignOut_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).SignOut(ctx, req.(*SignOutRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -326,6 +360,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SignUp",
 			Handler:    _UserService_SignUp_Handler,
+		},
+		{
+			MethodName: "SignOut",
+			Handler:    _UserService_SignOut_Handler,
 		},
 		{
 			MethodName: "GetGithubRepositories",

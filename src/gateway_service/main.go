@@ -78,6 +78,7 @@ func main() {
 	userRouter.Handle("/auth", http.HandlerFunc(userHandler.AuthHandler)).Methods("GET")
 	userRouter.Handle("/sign_in", http.HandlerFunc(userHandler.SignInHandler)).Methods("POST")
 	userRouter.Handle("/sign_up", http.HandlerFunc(userHandler.SignUpHandler)).Methods("POST")
+	userRouter.Handle("/sign_out", http.HandlerFunc(userHandler.SignOutHandler)).Methods("POST")
 
 	userGithubRouter := userRouter.PathPrefix("/github").Subrouter()
 	userGithubRouter.Use(userHandler.AuthMiddleware)

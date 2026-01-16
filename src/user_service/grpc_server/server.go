@@ -245,6 +245,24 @@ func (server *GRPCUserServiceServer) SignUp(ctx context.Context, createUser *use
 	}, nil
 }
 
+func (server *GRPCUserServiceServer) SignOut(ctx context.Context, signOutRequest *user_service_pb.SignOutRequest) (*user_service_pb.SignOutResponse, error) {
+	span := trace.SpanFromContext(ctx)
+
+	err := server.UserSessionRepository.DeleteUserSessionByAccessToken(ctx, signOutRequest.AccessToken)
+
+	if err == repositories.ErrUserSessionNotFound {
+		span.SetAttributes(attribute.String("error", err.Error()))
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
+
+	if err != nil {
+		span.SetAttributes(attribute.String("error", err.Error()))
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &user_service_pb.SignOutResponse{}, nil
+}
+
 func (server *GRPCUserServiceServer) GetGithubRepositories(ctx context.Context, getGithubRepositoriesRequest *user_service_pb.GetGithubRepositoriesRequest) (*user_service_pb.GetGithubRepositoriesResponse, error) {
 	span := trace.SpanFromContext(ctx)
 

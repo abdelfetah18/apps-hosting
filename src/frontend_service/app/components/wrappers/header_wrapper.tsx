@@ -1,16 +1,27 @@
-import { Link, Outlet, useLocation, useOutletContext } from "react-router";
+import { Link, Outlet, useNavigate, useOutletContext } from "react-router";
 import type { Route } from "./+types/header_wrapper";
 import { DEFAULT_PROFILE_PICTURE } from "~/consts";
 import Iconify from "../Iconify";
 import { FocusRegion } from "../focus_region";
 import { useFocusManager } from "../focus_manager";
+import { signOut } from "~/services/auth_service";
 
 export default function HeaderWrapper({ params }: Route.ComponentProps) {
-    const location = useLocation();
+    const navigate = useNavigate();
     const outletData: UserSession = useOutletContext();
     const { activeRegion, setActiveRegion } = useFocusManager();
     const modelId = "user-profile";
     const isOpen = activeRegion == modelId;
+
+    const signOutHandler = async (): Promise<void> => {
+        const result = await signOut();
+        localStorage.removeItem("token");
+        if (result.isFailure()) {
+            alert(result.error);
+        } else {
+            navigate("/sign_in");
+        }
+    }
 
     return (
         <div className="w-full h-screen overflow-auto flex flex-col items-center">
@@ -37,7 +48,7 @@ export default function HeaderWrapper({ params }: Route.ComponentProps) {
                             <Iconify icon="quill:cog-alt" size={20} />
                             <div className="font-medium">Account setting</div>
                         </Link>
-                        <div className="w-full flex items-center gap-2 text-sm py-4 px-8 cursor-pointer hover:underline ">
+                        <div onClick={signOutHandler} className="w-full flex items-center gap-2 text-sm py-4 px-8 cursor-pointer hover:underline ">
                             <Iconify icon="material-symbols:logout-rounded" size={20} />
                             <div className="font-medium">Sign Out</div>
                         </div>

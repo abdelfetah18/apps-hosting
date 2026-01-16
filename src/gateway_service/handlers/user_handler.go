@@ -88,6 +88,22 @@ func (handler *UserHandler) SignInHandler(w http.ResponseWriter, r *http.Request
 	messaging.WriteSuccess(w, "SignIn Successfully", signInResponse.UserSession)
 }
 
+func (handler *UserHandler) SignOutHandler(w http.ResponseWriter, r *http.Request) {
+	accessToken := r.Header.Get("Authorization")
+
+	span := trace.SpanFromContext(r.Context())
+
+	_, err := handler.UserServiceClient.SignOut(r.Context(), &user_service_pb.SignOutRequest{AccessToken: accessToken})
+	if err != nil {
+		status, _ := status.FromError(err)
+		messaging.WriteError(w, http.StatusInternalServerError, status.Message())
+		span.SetAttributes(attribute.String("error", err.Error()))
+		return
+	}
+
+	messaging.WriteSuccess(w, "Sign Out Successfully", nil)
+}
+
 func (handler *UserHandler) AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		accessToken := r.Header.Get("Authorization")
