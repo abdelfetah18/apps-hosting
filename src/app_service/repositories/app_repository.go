@@ -30,7 +30,7 @@ type App struct {
 	Runtime    string    `bun:"runtime" json:"runtime"`
 	RepoURL    string    `bun:"repo_url" json:"repo_url"`
 	BuildCMD   string    `bun:"build_cmd" json:"build_cmd"`
-	StartCMD   string    `bun:"run_cmd" json:"start_cmd"`
+	StartCMD   string    `bun:"start_cmd" json:"start_cmd"`
 	CreatedAt  time.Time `bun:"created_at,default:now()" json:"created_at"`
 }
 
@@ -44,12 +44,9 @@ type CreateAppParams struct {
 }
 
 type UpdateAppParams struct {
-	Name       string
-	Runtime    string
-	RepoURL    string
-	StartCMD   string
-	BuildCMD   string
-	DomainName string
+	Name     string
+	StartCMD string
+	BuildCMD string
 }
 
 var Runtimes = []string{"NodeJS"}
@@ -103,18 +100,15 @@ func (repository *AppRepository) CreateApp(ctx context.Context, projectId string
 
 func (repository *AppRepository) UpdateApp(ctx context.Context, projectId, appId string, updateAppParams UpdateAppParams) (*App, error) {
 	app := App{
-		Name:       updateAppParams.Name,
-		Runtime:    updateAppParams.Runtime,
-		RepoURL:    updateAppParams.RepoURL,
-		StartCMD:   updateAppParams.StartCMD,
-		BuildCMD:   updateAppParams.BuildCMD,
-		DomainName: updateAppParams.DomainName,
+		Name:     updateAppParams.Name,
+		StartCMD: updateAppParams.StartCMD,
+		BuildCMD: updateAppParams.BuildCMD,
 	}
 
 	result, err := repository.Database.
 		NewUpdate().
 		Model(&app).
-		Column("name", "runtime", "repo_url", "build_cmd", "run_cmd", "domain_name").
+		Column("name", "build_cmd", "start_cmd").
 		Where("id = ? and project_id = ?", appId, projectId).
 		Returning("*").
 		Exec(ctx)

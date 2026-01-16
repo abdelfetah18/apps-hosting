@@ -606,10 +606,8 @@ type UpdateAppRequest struct {
 	ProjectId     string                 `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	AppId         string                 `protobuf:"bytes,2,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty"`
 	Name          *string                `protobuf:"bytes,3,opt,name=name,proto3,oneof" json:"name,omitempty"`
-	Runtime       *string                `protobuf:"bytes,4,opt,name=runtime,proto3,oneof" json:"runtime,omitempty"`
-	RepoUrl       *string                `protobuf:"bytes,5,opt,name=repo_url,json=repoUrl,proto3,oneof" json:"repo_url,omitempty"`
-	BuildCmd      *string                `protobuf:"bytes,6,opt,name=build_cmd,json=buildCmd,proto3,oneof" json:"build_cmd,omitempty"`
-	StartCmd      *string                `protobuf:"bytes,7,opt,name=start_cmd,json=startCmd,proto3,oneof" json:"start_cmd,omitempty"`
+	BuildCmd      *string                `protobuf:"bytes,4,opt,name=build_cmd,json=buildCmd,proto3,oneof" json:"build_cmd,omitempty"`
+	StartCmd      *string                `protobuf:"bytes,5,opt,name=start_cmd,json=startCmd,proto3,oneof" json:"start_cmd,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -661,20 +659,6 @@ func (x *UpdateAppRequest) GetAppId() string {
 func (x *UpdateAppRequest) GetName() string {
 	if x != nil && x.Name != nil {
 		return *x.Name
-	}
-	return ""
-}
-
-func (x *UpdateAppRequest) GetRuntime() string {
-	if x != nil && x.Runtime != nil {
-		return *x.Runtime
-	}
-	return ""
-}
-
-func (x *UpdateAppRequest) GetRepoUrl() string {
-	if x != nil && x.RepoUrl != nil {
-		return *x.RepoUrl
 	}
 	return ""
 }
@@ -1415,20 +1399,15 @@ const file_src_protos_app_service_proto_rawDesc = "" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tR\tprojectId\"7\n" +
 	"\x0fGetAppsResponse\x12$\n" +
-	"\x04apps\x18\x01 \x03(\v2\x10.app_service.AppR\x04apps\"\xa2\x02\n" +
+	"\x04apps\x18\x01 \x03(\v2\x10.app_service.AppR\x04apps\"\xca\x01\n" +
 	"\x10UpdateAppRequest\x12\x1d\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tR\tprojectId\x12\x15\n" +
 	"\x06app_id\x18\x02 \x01(\tR\x05appId\x12\x17\n" +
-	"\x04name\x18\x03 \x01(\tH\x00R\x04name\x88\x01\x01\x12\x1d\n" +
-	"\aruntime\x18\x04 \x01(\tH\x01R\aruntime\x88\x01\x01\x12\x1e\n" +
-	"\brepo_url\x18\x05 \x01(\tH\x02R\arepoUrl\x88\x01\x01\x12 \n" +
-	"\tbuild_cmd\x18\x06 \x01(\tH\x03R\bbuildCmd\x88\x01\x01\x12 \n" +
-	"\tstart_cmd\x18\a \x01(\tH\x04R\bstartCmd\x88\x01\x01B\a\n" +
-	"\x05_nameB\n" +
-	"\n" +
-	"\b_runtimeB\v\n" +
-	"\t_repo_urlB\f\n" +
+	"\x04name\x18\x03 \x01(\tH\x00R\x04name\x88\x01\x01\x12 \n" +
+	"\tbuild_cmd\x18\x04 \x01(\tH\x01R\bbuildCmd\x88\x01\x01\x12 \n" +
+	"\tstart_cmd\x18\x05 \x01(\tH\x02R\bstartCmd\x88\x01\x01B\a\n" +
+	"\x05_nameB\f\n" +
 	"\n" +
 	"_build_cmdB\f\n" +
 	"\n" +

@@ -167,3 +167,17 @@ export async function listBuilds(projectId: string, appID: string): Promise<Resu
     }
 
 }
+
+export async function updateAppById(projectId: string, appId: string, updateAppForm: UpdateAppForm): Promise<Result<string, App>> {
+    try {
+        const response = await axios.patch<HttpResponse<App>>(`/projects/${projectId}/apps/${appId}/update`, updateAppForm);
+        if (response.data.status == "error") {
+            return Result.failure(response.data.message!);
+        }
+        return Result.success(response.data.data!);
+    } catch (error) {
+        const err = error as AxiosError<any>;
+        console.error(err.response?.data.message);
+        return Result.failure(err.response?.data.message);
+    }
+}

@@ -275,18 +275,16 @@ func (server *GRPCAppServiceServer) UpdateApp(ctx context.Context, updateAppRequ
 		attribute.String("app.id", updateAppRequest.AppId),
 	)
 
-	if len(*updateAppRequest.Name) == 0 {
+	if updateAppRequest.Name == nil || len(*updateAppRequest.Name) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "Name cannot be empty")
 	}
 
-	if !slices.Contains(repositories.Runtimes, *updateAppRequest.Runtime) {
-		return nil, status.Error(codes.InvalidArgument, "Unsupported runtime")
+	if updateAppRequest.BuildCmd == nil || len(*updateAppRequest.BuildCmd) == 0 {
+		return nil, status.Error(codes.InvalidArgument, "Build Command cannot be empty")
 	}
 
-	repoURL, err := url.Parse(*updateAppRequest.RepoUrl)
-	if err != nil || repoURL.Hostname() != "github.com" {
-		span.SetAttributes(attribute.String("error", err.Error()))
-		return nil, status.Error(codes.InvalidArgument, "Invalid GitHub URL")
+	if updateAppRequest.StartCmd == nil || len(*updateAppRequest.StartCmd) == 0 {
+		return nil, status.Error(codes.InvalidArgument, "Start Command cannot be empty")
 	}
 
 	updatedApp, err := server.AppRepository.UpdateApp(
@@ -294,29 +292,10 @@ func (server *GRPCAppServiceServer) UpdateApp(ctx context.Context, updateAppRequ
 		updateAppRequest.ProjectId,
 		updateAppRequest.AppId,
 		repositories.UpdateAppParams{
-			Name:       *updateAppRequest.Name,
-			Runtime:    *updateAppRequest.Runtime,
-			RepoURL:    *updateAppRequest.RepoUrl,
-			StartCMD:   *updateAppRequest.StartCmd,
-			BuildCMD:   *updateAppRequest.BuildCmd,
-			DomainName: utils.GetDomainName(*updateAppRequest.Name),
+			Name:     *updateAppRequest.Name,
+			StartCMD: *updateAppRequest.StartCmd,
+			BuildCMD: *updateAppRequest.BuildCmd,
 		})
-
-	if err == repositories.ErrDomainNameInUse {
-		appName := *updateAppRequest.Name + "-" + uuid.NewString()
-		updatedApp, err = server.AppRepository.UpdateApp(
-			ctx,
-			updateAppRequest.ProjectId,
-			updateAppRequest.AppId,
-			repositories.UpdateAppParams{
-				Name:       *updateAppRequest.Name,
-				Runtime:    *updateAppRequest.Runtime,
-				RepoURL:    *updateAppRequest.RepoUrl,
-				StartCMD:   *updateAppRequest.StartCmd,
-				BuildCMD:   *updateAppRequest.BuildCmd,
-				DomainName: utils.GetDomainName(appName),
-			})
-	}
 
 	if err == repositories.ErrAppNameInUse {
 		span.SetAttributes(attribute.String("error", err.Error()))

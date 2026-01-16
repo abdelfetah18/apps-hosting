@@ -83,10 +83,8 @@ message UpdateAppRequest {
     string app_id = 2;
 
     optional string name = 3;
-    optional string runtime = 4;
-    optional string repo_url = 5;
-    optional string build_cmd = 6;
-    optional string start_cmd = 7;
+    optional string build_cmd = 4;
+    optional string start_cmd = 5;
 }
 message UpdateAppResponse {
     App app = 1;

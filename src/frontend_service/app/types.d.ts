@@ -92,6 +92,12 @@ interface CreateAppForm {
     };
 }
 
+interface UpdateAppForm {
+    name: string;
+    start_cmd: string;
+    build_cmd: string;
+}
+
 interface Environment {
     variables: Record<string, string>;
 }
