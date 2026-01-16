@@ -3,6 +3,8 @@ import { Link } from "react-router";
 import moment from "moment";
 import Iconify from "~/components/Iconify";
 import { getUserProjects } from "~/services/project_service";
+import { useState } from "react";
+import { textContainsQuery } from "~/helpers/utils";
 
 export function meta({ }: Route.MetaArgs) {
   return [
@@ -23,7 +25,8 @@ export async function clientLoader() {
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
-  const projects = loaderData.projects;
+  const [query, setQuery] = useState("");
+  const projects = loaderData.projects.filter(project => textContainsQuery(project.name, query));
 
   return (
     <div className="w-5/6 flex flex-col gap-4 p-8">
@@ -32,7 +35,13 @@ export default function Home({ loaderData }: Route.ComponentProps) {
         <Link to={"/projects/create"} className="w-fit bg-purple-700 px-8 py-1 rounded-lg text-sm text-white font-medium">New Project</Link>
         <div className="flex items-center gap-2 text-sm border border-gray-400 rounded-lg px-4 py-1">
           <Iconify icon="tabler:search" />
-          <input type="text" placeholder="Search for an app" className="outline-none border-none" />
+          <input
+            type="text"
+            placeholder="Search for an app"
+            className="outline-none border-none"
+            value={query}
+            onChange={(ev) => setQuery(ev.target.value)}
+          />
         </div>
       </div>
       <div className="w-full grid grid-cols-3 gap-2">
